@@ -9,7 +9,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleMenuToggle = () => {
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen((prev) => !prev);
   };
 
   return (

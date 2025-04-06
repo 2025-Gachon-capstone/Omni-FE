@@ -41,8 +41,40 @@ const MenuList: MenuListType = {
   },
 };
 
+// 메뉴 아이템 스타일
+const linkStyle = (isMobile: boolean): React.CSSProperties => ({
+  color: 'white',
+  fontSize: isMobile ? '1.2rem' : '1.6rem',
+  textDecoration: 'none',
+  position: 'relative',
+  cursor: 'pointer',
+});
+const linkHoverStyle = css`
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: all 0.3s ease-in-out;
+  }
+  &:hover {
+    &::after {
+      width: 100%;
+    }
+  }
+`;
+
 const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: () => void }) => {
-  const ROLE = location.pathname.startsWith('/shop') ? 'SHOPPER' : 'GUEST'; // 임시 역할 부여
+  let user: 'GUEST' | 'USER' | 'MANAGER' | 'SPONSOR' | 'SHOPPER' = true ? 'USER' : 'GUEST'; // 로그인 여부 (값 변경하면서 메뉴 변경가능)
+  const ROLE: 'GUEST' | 'USER' | 'MANAGER' | 'SPONSOR' | 'SHOPPER' = location.pathname.startsWith(
+    '/shop',
+  )
+    ? 'SHOPPER'
+    : user; // 쇼핑여부
+
   const { isMobile } = useDevice();
 
   return (
@@ -66,9 +98,11 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: () => void
       <div
         css={css`
           margin-right: auto;
+          z-index: 10;
+          cursor: pointer;
         `}
       >
-        <FiX style={{ cursor: 'pointer' }} size={40} color={'white'} onClick={setIsOpen} />
+        <FiX size={40} color={'white'} onClick={() => setIsOpen()} />
       </div>
       <div
         css={css`
@@ -85,34 +119,20 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: () => void
           <div>
             <Link
               to={MenuList[ROLE].link[index]}
-              onClick={setIsOpen}
+              onClick={() => setIsOpen()}
               key={index}
-              css={css`
-                color: white;
-                font-size: ${isMobile ? '1.2rem' : '1.6rem'};
-                text-decoration: none;
-                position: relative;
-                &::after {
-                  content: '';
-                  position: absolute;
-                  bottom: -5px;
-                  left: 0;
-                  width: 0;
-                  height: 2px;
-                  background-color: white;
-                  transition: all 0.3s ease-in-out;
-                }
-                &:hover {
-                  &::after {
-                    width: 100%;
-                  }
-                }
-              `}
+              style={linkStyle(isMobile)}
+              css={linkHoverStyle}
             >
               {menuName}
             </Link>
           </div>
         ))}
+        {ROLE !== 'GUEST' && ROLE !== 'SHOPPER' && (
+          <div style={linkStyle(isMobile)} css={linkHoverStyle}>
+            로그아웃
+          </div>
+        )}
       </div>
     </div>
   );
