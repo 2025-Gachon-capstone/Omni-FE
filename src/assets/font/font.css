@@ -1,0 +1,127 @@
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 100;
+  src:
+    url('./Pretendard-Thin.woff') format('woff'),
+    url('./Pretendard-Thin.ttf') format('truetype'),
+    url('./Pretendard-Thin.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 200;
+  src:
+    url('./Pretendard-ExtraLight.woff') format('woff'),
+    url('./Pretendard-ExtraLight.ttf') format('truetype'),
+    url('./Pretendard-ExtraLight.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 300;
+  src:
+    url('./Pretendard-Light.woff') format('woff'),
+    url('./Pretendard-Light.ttf') format('truetype'),
+    url('./Pretendard-Light.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  src:
+    url('./Pretendard-Regular.woff') format('woff'),
+    url('./Pretendard-Regular.ttf') format('truetype'),
+    url('./Pretendard-Regular.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 500;
+  src:
+    url('./Pretendard-Medium.woff') format('woff'),
+    url('./Pretendard-Medium.ttf') format('truetype'),
+    url('./Pretendard-Medium.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 600;
+  src:
+    url('./Pretendard-SemiBold.woff') format('woff'),
+    url('./Pretendard-SemiBold.ttf') format('truetype'),
+    url('./Pretendard-SemiBold.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    url('./Pretendard-Bold.woff') format('woff'),
+    url('./Pretendard-Bold.ttf') format('truetype'),
+    url('./Pretendard-Bold.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 800;
+  src:
+    url('./Pretendard-ExtraBold.woff') format('woff'),
+    url('./Pretendard-ExtraBold.ttf') format('truetype'),
+    url('./Pretendard-ExtraBold.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 900;
+  src:
+    url('./Pretendard-Black.woff') format('woff'),
+    url('./Pretendard-Black.ttf') format('truetype'),
+    url('./Pretendard-Black.otf') format('opentype');
+}
+
+/*
+  템플릿 전용 폰트
+*/
+@font-face {
+  font-family: 'BMHANNAPro';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_seven@1.0/BMHANNAPro.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'CookieRun-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/CookieRun-Regular.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DOSIyagiMedium';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/DOSIyagiMedium.woff2')
+    format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff')
+    format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ownglyph_ParkDaHyun';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2411-3@1.0/Ownglyph_ParkDaHyun.woff2')
+    format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
