@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import theme from '../../styles/theme';
+import { Fade } from 'react-awesome-reveal';
 import useDevice from '../../hooks/useDevice';
 import Bubble from './Bubble';
 
@@ -16,7 +17,7 @@ export const SecondSection = ({ ref }: { ref: React.ForwardedRef<HTMLDivElement>
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 7% 5% 10% 5%;
+        padding: 7% 5% 15% 5%;
         font-weight: 600;
         box-sizing: border-box;
       `}
@@ -29,7 +30,9 @@ export const SecondSection = ({ ref }: { ref: React.ForwardedRef<HTMLDivElement>
           margin-bottom: 10%;
         `}
       >
-        이런 고민 한번쯤 해보시지 않으셨나요?
+        <Fade delay={300} duration={500} cascade damping={0.1} triggerOnce>
+          이런 고민 한번쯤 해보시지 않으셨나요?
+        </Fade>
       </div>
       <div
         css={css`
@@ -39,33 +42,36 @@ export const SecondSection = ({ ref }: { ref: React.ForwardedRef<HTMLDivElement>
           gap: 5rem;
         `}
       >
-        <Bubble direction="left">
-          <span>
-            흩어져 있는 카드 혜택을 위해
-            <br />
-            <span
-              css={css`
-                color: ${theme.color.main};
-              `}
-            >
-              &nbsp;쓸데없이 많은 카드
+        <Fade direction="up" delay={1} cascade damping={0.4}>
+          <Bubble direction="left">
+            <span>
+              흩어져 있는 카드 혜택을 위해
+              <br />
+              <span
+                css={css`
+                  color: ${theme.color.main};
+                `}
+              >
+                &nbsp;쓸데없이 많은 카드
+              </span>
+              를 발급받지 않으셨나요?
             </span>
-            를 발급받지 않으셨나요?
-          </span>
-        </Bubble>
-        <Bubble direction="right">
-          <span>
-            기껏 발급받은 카드의
-            <span
-              css={css`
-                color: ${theme.color.main};
-              `}
-            >
-              &nbsp;혜택을 잊고계시진
+          </Bubble>
+
+          <Bubble direction="right">
+            <span>
+              기껏 발급받은 카드의
+              <span
+                css={css`
+                  color: ${theme.color.main};
+                `}
+              >
+                &nbsp;혜택을 잊고계시진
+              </span>
+              않나요?
             </span>
-            않나요?
-          </span>
-        </Bubble>
+          </Bubble>
+        </Fade>
       </div>
     </div>
   );

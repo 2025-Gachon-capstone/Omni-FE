@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useRef } from 'react';
 import { css } from '@emotion/react';
+import { Fade } from 'react-awesome-reveal';
 import { FirstSection } from '../components/home/FirstSection';
 import { SecondSection } from '../components/home/SecondSection';
 import { ThirdSection } from '../components/home/ThirdSection';
@@ -19,9 +20,13 @@ const Home = () => {
         max-width: 100vw;
       `}
     >
-      <FirstSection scrollSection={scrollSection} />
+      <Fade direction={'up'} duration={1500} triggerOnce>
+        <FirstSection scrollSection={scrollSection} />
+      </Fade>
       <SecondSection ref={scrollDownRef} />
-      <ThirdSection />
+      <Fade cascade damping={0.3} triggerOnce>
+        <ThirdSection />
+      </Fade>
       <FourthSection />
       <FifthSection />
     </div>

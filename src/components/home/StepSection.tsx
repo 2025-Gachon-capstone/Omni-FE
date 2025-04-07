@@ -12,6 +12,7 @@ export const StepSection = ({ step, title, description }: StepInfo) => {
   return (
     <div
       css={css`
+        height: 18rem;
         max-width: 19rem;
         padding: 0.5rem 1rem 3.8rem 1rem;
         border: 2px solid #d9d9d9;

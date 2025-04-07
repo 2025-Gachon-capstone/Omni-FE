@@ -15,7 +15,7 @@ export const ThirdSection = () => {
         justify-content: center;
         align-items: center;
         gap: 8rem;
-        padding: 10% 5% 15% 5%;
+        padding: 12% 5% 15% 5%;
         font-weight: 600;
         box-sizing: border-box;
       `}

@@ -14,7 +14,7 @@ export const FirstSection = ({ scrollSection }: { scrollSection: () => void }) =
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 15% 5% 20% 5%;
+        padding: 14.4% 5% 20% 5%;
         font-weight: 600;
         box-sizing: border-box;
       `}

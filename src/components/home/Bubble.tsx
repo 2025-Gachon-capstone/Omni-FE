@@ -14,7 +14,7 @@ const Bubble = ({ direction, children }: BubbleProps) => {
     <div
       css={css`
         position: relative;
-        max-width: 45.6rem;
+        max-width: 30rem;
         padding: ${isMobile ? '1rem 1.5rem' : '1.75rem 2.25rem'};
         background-color: white;
         border-radius: 12px;
