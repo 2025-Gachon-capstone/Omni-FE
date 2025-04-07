@@ -16,7 +16,6 @@ function Header() {
     <>
       <header
         css={css`
-          width: 100vw;
           padding: 2.5rem 0;
           display: flex;
           justify-content: center;
