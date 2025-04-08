@@ -35,7 +35,7 @@ jobs:
       - name: Build and push React Docker image
         run: |
           docker buildx build --push \
-            --tag asia-northeast3-docker.pkg.dev/${{ secrets.ORG_DEV_GCP_PROJECT_ID }}/${{ secrets.ORG_DEV_GCP_REGISTRY_NAME }}/omni-fe-dev:${{ github.sha }}${{ github.run_attempt }} .
+            --tag asia-northeast3-docker.pkg.dev/${{ secrets.ORG_DEV_GCP_PROJECT_ID }}/${{ secrets.ORG_DEV_GCP_REGISTRY_NAME }}/omni-fe-prd:${{ github.sha }}${{ github.run_attempt }} .
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
 
       - name: Update manifest
         run: |
-          sed -i "s|image: .*|image: asia-northeast3-docker.pkg.dev/${{ secrets.ORG_DEV_GCP_PROJECT_ID }}/${{ secrets.ORG_DEV_GCP_REGISTRY_NAME }}/devops-react-dev:${{ github.sha }}${{ github.run_attempt }}|" manifests/dev/devops-react/deployment.yaml
+          sed -i "s|image: .*|image: asia-northeast3-docker.pkg.dev/${{ secrets.ORG_DEV_GCP_PROJECT_ID }}/${{ secrets.ORG_DEV_GCP_REGISTRY_NAME }}/omni-fe-prd:${{ github.sha }}${{ github.run_attempt }}|" manifests/prd/Omni-FE/deployment.yaml
 
       - name: Commit and push changes
         working-directory: manifests
@@ -59,5 +59,5 @@ jobs:
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add .
-          git commit -m "Update image to devops-react-dev:${{ github.sha }}${{ github.run_attempt }}"
+          git commit -m "Update image to omni-fe-prd:${{ github.sha }}${{ github.run_attempt }}"
           git push

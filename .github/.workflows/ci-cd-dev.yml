@@ -51,7 +51,7 @@ jobs:
 
       - name: Update manifest
         run: |
-          sed -i "s|image: .*|image: asia-northeast3-docker.pkg.dev/${{ secrets.ORG_DEV_GCP_PROJECT_ID }}/${{ secrets.ORG_DEV_GCP_REGISTRY_NAME }}/omni-fe-dev:${{ github.sha }}${{ github.run_attempt }}|" manifests/dev/devops-react/deployment.yaml
+          sed -i "s|image: .*|image: asia-northeast3-docker.pkg.dev/${{ secrets.ORG_DEV_GCP_PROJECT_ID }}/${{ secrets.ORG_DEV_GCP_REGISTRY_NAME }}/omni-fe-dev:${{ github.sha }}${{ github.run_attempt }}|" manifests/dev/Omni-FE/deployment.yaml
 
       - name: Commit and push changes
         working-directory: manifests
