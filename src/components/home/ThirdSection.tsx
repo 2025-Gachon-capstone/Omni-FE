@@ -1,92 +1,47 @@
-/** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import theme from '../../styles/theme';
 import useDevice from '../../hooks/useDevice';
 import CardImg from '../../assets/img/landingImg.svg';
+import { ChatEmoji } from './ChatEmoji';
 
 export const ThirdSection = () => {
   const { isMobile } = useDevice();
 
   return (
-    <div
-      css={css`
-        display: flex;
-        flex-direction: ${isMobile ? 'column' : 'row'};
-        justify-content: center;
-        align-items: center;
-        gap: 8rem;
-        padding: 12% 5% 15% 5%;
-        font-weight: 600;
-        box-sizing: border-box;
-      `}
-    >
-      <div
-        css={css`
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-          ${isMobile && `margin-right:auto`};
-        `}
-      >
+    <Container isMobile={isMobile}>
+      <LeftContent isMobile={isMobile}>
         <ChatEmoji />
-        <div
-          css={css`
-            font-size: 1.5rem;
-
-            font-weight: 600;
-            color: ${theme.color.main};
-          `}
-        >
+        <div style={{ fontSize: '1.5rem', fontWeight: '600', color: `${theme.color.main}` }}>
           카드 하나로
         </div>
-        <div
-          css={css`
-            font-size: 1.75rem;
-            font-weight: 700;
-          `}
-        >
+        <div style={{ fontSize: '1.75rem', fontWeight: '700' }}>
           숨겨진 나만의 혜택을 <br />
           누려보세요!
         </div>
-      </div>
-      <div
-        css={css`
-          max-width: 39rem;
-        `}
-      >
+      </LeftContent>
+      <RightContent>
         <img src={CardImg} alt="카드미리보기" width={`100%`} />
-      </div>
-    </div>
+      </RightContent>
+    </Container>
   );
 };
 
-{
-  /** 챗이모지 컴포넌트 */
-}
-const ChatEmoji = () => {
-  return (
-    <div
-      css={css`
-        position: relative;
-        height: 2rem;
-        width: 3rem;
-        margin-left: -1rem;
-        margin-bottom: 1rem;
-        background-color: ${theme.color.main};
-        border-radius: 0.5rem;
-      `}
-    >
-      <div
-        css={css`
-          height: 1rem;
-          position: absolute;
-          bottom: -25px;
-          left: 10px;
-          border-left: 10px solid transparent;
-          border-right: 8px solid transparent;
-          border-top: 10px solid ${theme.color.main};
-        `}
-      />
-    </div>
-  );
-};
+const Container = styled.div<{ isMobile: boolean }>`
+  display: flex;
+  flex-direction: ${(props) => (props.isMobile ? 'column' : 'row')};
+  justify-content: center;
+  align-items: center;
+  gap: 8rem;
+  padding: 12% 5% 15% 5%;
+  font-weight: 600;
+  box-sizing: border-box;
+`;
+const LeftContent = styled.div<{ isMobile: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  ${(props) => props.isMobile && `margin-right:auto`};
+`;
+const RightContent = styled.div`
+  max-width: 39rem;
+`;
