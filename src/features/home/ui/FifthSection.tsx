@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
-import useDevice from '../../hooks/useDevice';
+import useDevice from '../../../shared/hooks/useDevice';
 import { RouterButton } from './RouterButton';
 
 export const FifthSection = () => {

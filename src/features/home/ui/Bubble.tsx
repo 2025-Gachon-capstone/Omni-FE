@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import useDevice from '../../hooks/useDevice';
+import useDevice from '../../../shared/hooks/useDevice';
 
 type BubbleProps = {
   direction: 'left' | 'right';

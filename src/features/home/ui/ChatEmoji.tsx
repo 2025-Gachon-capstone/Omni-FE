@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import theme from '../../styles/theme';
+import theme from '../../../shared/styles/theme';
 
 export const ChatEmoji = () => {
   return (

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
-import theme from '../../styles/theme';
+import theme from '../../../shared/styles/theme';
 import { StepSection } from './StepSection';
-import { data } from '../../data/StepData';
+import { data } from '../model/StepData';
 import { Fade } from 'react-awesome-reveal';
 
 export const FourthSection = () => {

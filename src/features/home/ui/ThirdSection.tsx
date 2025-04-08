@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
-import theme from '../../styles/theme';
-import useDevice from '../../hooks/useDevice';
-import CardImg from '../../assets/img/landingImg.svg';
+import theme from '../../../shared/styles/theme';
+import useDevice from '../../../shared/hooks/useDevice';
+import CardImg from '../../../shared/assets/img/landingImg.svg';
 import { ChatEmoji } from './ChatEmoji';
 
 export const ThirdSection = () => {

@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import styled from '@emotion/styled';
-import theme from '../../styles/theme';
+import theme from '../../../shared/styles/theme';
 import { Fade } from 'react-awesome-reveal';
-import useDevice from '../../hooks/useDevice';
+import useDevice from '../../../shared/hooks/useDevice';
 import Bubble from './Bubble';
 
 export const SecondSection = ({ ref }: { ref: React.ForwardedRef<HTMLDivElement> }) => {

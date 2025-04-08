@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import theme from './../../styles/theme';
+import theme from '../../shared/styles/theme';
 import { FiX } from 'react-icons/fi';
-import useDevice from '../../hooks/useDevice';
+import useDevice from '../../shared/hooks/useDevice';
 
 interface Menu {
   name: string[];

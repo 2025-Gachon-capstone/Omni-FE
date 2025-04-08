@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
-import theme from '../../styles/theme';
+import theme from '../../../shared/styles/theme';
 import { IoIosArrowDown } from 'react-icons/io';
-import useDevice from '../../hooks/useDevice';
+import useDevice from '../../../shared/hooks/useDevice';
 
 export const FirstSection = ({ scrollSection }: { scrollSection: () => void }) => {
   const { isMobile, isTablet } = useDevice();

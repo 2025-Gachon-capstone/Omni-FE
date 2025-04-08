@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import useDevice from '../../hooks/useDevice';
+import useDevice from '../../../shared/hooks/useDevice';
 import { IoArrowForwardCircleOutline } from 'react-icons/io5';
 
 export const RouterButton = ({ text, onClick }: { text: string; onClick: () => void }) => {
