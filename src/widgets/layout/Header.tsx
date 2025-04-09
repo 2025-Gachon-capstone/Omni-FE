@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { FiMenu } from 'react-icons/fi';
 import Logo from '/logo.svg';
 import Sidebar from './Sidebar';
 
 function Header() {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleMenuToggle = () => {
@@ -16,7 +18,9 @@ function Header() {
       <HeaderContainer>
         {/* 로고 (쇼핑탭에서는 삭제) */}
         <LogoBox>
-          {!location.pathname.startsWith('/shop') && <img src={Logo} alt="Logo" width={40} />}
+          {!location.pathname.startsWith('/shop') && (
+            <img src={Logo} alt="Logo" width={40} onClick={() => navigate('/')} />
+          )}
         </LogoBox>
         {/* 메뉴 아이콘 */}
         <MenuBox>
