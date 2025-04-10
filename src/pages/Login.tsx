@@ -58,14 +58,16 @@ export default Login;
 
 const Container = styled.div`
   max-width: 100vw;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: center;
 `;
 
 const LoginContainer = styled.div`
   width: 100%;
   max-width: 22.5rem;
-  margin-top: 10rem;
+  margin-top: -5.5rem;
   padding: 0 0.25rem;
   display: flex;
   flex-direction: column;
