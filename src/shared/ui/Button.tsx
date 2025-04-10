@@ -15,8 +15,8 @@ const StyledButton = styled.button<{
   height: auto;
   padding: ${(props) => props.padding};
   font-size: ${(props) => props.textColor};
-  color: ${(props) => props.textColor};
-  background-color: ${(props) => props.color};
+  color: ${(props) => (props.disabled ? 'white' : props.textColor)};
+  background-color: ${(props) => (props.disabled ? '#E8E8E8' : props.color)};
   box-sizing: border-box;
   transition: all 0.2s ease-in;
 
@@ -33,6 +33,7 @@ const Button = ({
   textSize,
   border,
   onClick,
+  disabled,
   children,
 }: {
   width?: string;
@@ -41,6 +42,7 @@ const Button = ({
   textColor?: string;
   textSize?: string;
   border?: string;
+  disabled?: boolean;
   onClick: () => void;
   children: React.ReactNode;
 }) => {
@@ -53,6 +55,7 @@ const Button = ({
       textSize={textSize || '1.25rem'}
       border={border || '0'}
       onClick={onClick}
+      disabled={disabled || false}
     >
       {children}
     </StyledButton>
