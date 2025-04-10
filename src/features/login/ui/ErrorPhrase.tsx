@@ -8,6 +8,6 @@ export const ErrorPhrase = () => {
 const Text = styled.div`
   color: ${theme.color.red};
   font-size: 0.75rem;
-  margin-left: 0.25rem;
+  margin-left: 0.5rem;
   margin-right: auto;
 `;
