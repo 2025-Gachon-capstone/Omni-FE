@@ -6,13 +6,15 @@ const StyledButton = styled.button<{
   padding: string;
   color: string;
   textColor: string;
+  textSize: string;
   border: string;
 }>`
   border-radius: 8px;
   border: ${(props) => props.border};
   width: ${(props) => props.width};
+  height: auto;
   padding: ${(props) => props.padding};
-  font-size: 1.25rem;
+  font-size: ${(props) => props.textColor};
   color: ${(props) => props.textColor};
   background-color: ${(props) => props.color};
   box-sizing: border-box;
@@ -28,6 +30,7 @@ const Button = ({
   padding,
   color,
   textColor,
+  textSize,
   border,
   onClick,
   children,
@@ -36,6 +39,7 @@ const Button = ({
   padding?: string;
   color?: string;
   textColor?: string;
+  textSize?: string;
   border?: string;
   onClick: () => void;
   children: React.ReactNode;
@@ -46,6 +50,7 @@ const Button = ({
       padding={padding || '1rem 1.25rem'}
       color={color || `${theme.color.main}`}
       textColor={textColor || 'white'}
+      textSize={textSize || '1.25rem'}
       border={border || '0'}
       onClick={onClick}
     >
