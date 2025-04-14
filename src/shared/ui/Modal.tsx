@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import theme from '../styles/theme';
 import { useEffect } from 'react';
+import useDevice from '../hooks/useDevice';
 
 type ModalButton = {
   text: string;
@@ -17,6 +18,8 @@ type ModalProps = {
 };
 
 const Modal = ({ icon, children, buttons = [] }: ModalProps) => {
+  const { isMobile } = useDevice();
+
   // body 스크롤 막기
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -27,7 +30,7 @@ const Modal = ({ icon, children, buttons = [] }: ModalProps) => {
 
   return (
     <Container>
-      <Content>
+      <Content isMobile={isMobile}>
         <Header>{icon ?? <Space />}</Header>
         <Description>{children}</Description>
         <ButtonWrapper>
@@ -61,7 +64,7 @@ const Container = styled.div`
   background-color: rgba(0, 0, 0, 0.4);
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -75,7 +78,7 @@ const Content = styled.div`
 
   width: 90vw;
   max-width: 16rem;
-  padding: 1.19rem 2.69rem;
+  padding: ${(props) => (props.isMobile ? '1.19rem 2.69rem' : '2rem 3.5rem')};
 
   background-color: white;
   border-radius: 0.25rem;
