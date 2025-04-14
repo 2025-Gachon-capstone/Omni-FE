@@ -7,6 +7,9 @@ import Login from '../pages/Login';
 import Join from '../pages/Join';
 import Sponsor from '../pages/Sponsor';
 import UserMyCard from '../pages/UserMyCard';
+import UserMyPage from '../pages/UserMyPage';
+import MyPageView from '../features/user/myPage/ui/MyPageView';
+import MyPageEdit from '../features/user/myPage/ui/MyPageEdit';
 
 function App() {
   return (
@@ -25,6 +28,10 @@ function App() {
 
           {/** 일반유저 페이지 */}
           <Route path="/mycard" element={<UserMyCard />} />
+          <Route path="/mypage" element={<UserMyPage />}>
+            <Route index element={<MyPageView />} />
+            <Route path="edit" element={<MyPageEdit />} />
+          </Route>
         </Routes>
         <CustomToast />
       </BrowserRouter>
