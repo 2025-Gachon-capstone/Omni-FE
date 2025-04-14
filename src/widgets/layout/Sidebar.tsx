@@ -22,7 +22,7 @@ const MenuList: MenuListType = {
   },
   USER: {
     name: ['홈', 'MY카드', '결제내역', '혜택 히스토리', '마이페이지'],
-    link: ['/', '/card', '/payment', '/benefit', '/mypage'],
+    link: ['/', '/mycard', '/payment', '/benefit', '/mypage'],
   },
   MANAGER: {
     name: ['홈', '전체 유저 관리', '전체 결제내역'],
