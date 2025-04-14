@@ -1,13 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { FiMenu } from 'react-icons/fi';
 import Logo from '/logo.svg';
 import Sidebar from './Sidebar';
+import { useHeaderStore } from '../../shared/store';
 
 function Header() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const headerRef = useRef<HTMLDivElement>(null);
+  const setHeaderHeight = useHeaderStore((state) => state.setHeaderHeight);
+
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.offsetHeight);
+    }
+  }, []);
 
   const handleMenuToggle = () => {
     setIsMenuOpen((prev) => !prev);
@@ -15,7 +25,7 @@ function Header() {
 
   return (
     <>
-      <HeaderContainer>
+      <HeaderContainer ref={headerRef}>
         {/* 로고 (쇼핑탭에서는 삭제) */}
         <LogoBox>
           {!location.pathname.startsWith('/shop') && (
