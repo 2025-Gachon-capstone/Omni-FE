@@ -44,8 +44,10 @@ export default Table;
 
 const StyledTable = styled.table`
   width: 100%;
-  min-width: 75rem;
+  min-width: 45rem;
+  max-width: 75rem;
   border-collapse: collapse;
+  table-layout: auto;
 `;
 
 const Th = styled.th`
