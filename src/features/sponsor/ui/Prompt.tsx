@@ -5,6 +5,7 @@ import { BsArrowUpSquareFill } from 'react-icons/bs';
 import { useHeaderStore } from '../../../shared/store';
 
 import { AiFillSmile } from 'react-icons/ai';
+import { BsPencilSquare } from 'react-icons/bs';
 
 export type MessageType = 'ai' | 'user';
 
@@ -35,8 +36,12 @@ export const Prompt = ({ messages, input, onInputChange, onKeyDown, onSend }: Pr
 
   useLayoutEffect(() => {
     if (inputRef.current) {
-      inputRef.current.style.height = 'auto'; // 초기화
-      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`; // 내용 기반 높이 재설정
+      const maxHeight = window.innerHeight * 0.3; // 30vh
+
+      inputRef.current.style.height = 'auto';
+
+      const newHeight = inputRef.current.scrollHeight;
+      inputRef.current.style.height = newHeight > maxHeight ? `${maxHeight}px` : `${newHeight}px`;
     }
   }, [input]);
 
@@ -51,19 +56,22 @@ export const Prompt = ({ messages, input, onInputChange, onKeyDown, onSend }: Pr
         ))}
       </ChatBox>
 
-      <InputWrapper>
-        <ChatInput
-          ref={inputRef}
-          value={input}
-          onChange={onInputChange}
-          onKeyDown={onKeyDown}
-          placeholder="작성중인 혜택에 대해 질문해보세요"
-          rows={1}
-        />
-        <SendButton onClick={onSend}>
-          <BsArrowUpSquareFill size={20} />
-        </SendButton>
-      </InputWrapper>
+      <BottomWrapper>
+        <Benefit />
+        <InputWrapper>
+          <ChatInput
+            ref={inputRef}
+            value={input}
+            onChange={onInputChange}
+            onKeyDown={onKeyDown}
+            placeholder="작성중인 혜택에 대해 질문해보세요"
+            rows={1}
+          />
+          <SendButton onClick={onSend}>
+            <BsArrowUpSquareFill size={20} />
+          </SendButton>
+        </InputWrapper>
+      </BottomWrapper>
     </Container>
   );
 };
@@ -118,7 +126,24 @@ const MessageBubble = styled.div<{ type: 'user' | 'ai' }>`
   white-space: pre-wrap; // ✅ 줄바꿈 적용!
 `;
 
+const BottomWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const Benefit = styled(BsPencilSquare)`
+  color: ${theme.color.main};
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  align-self: flex-end; // 우측 하단으로 보내고
+  margin-top: auto; // 위 요소가 커져도 자기 위치 유지
+  margin-bottom: 0.75rem;
+  margin-right: 1rem;
+`;
+
 const InputWrapper = styled.div`
+  flex: 1;
   display: flex;
   padding: 0.75rem;
   align-items: center; // ⬅️ 버튼이 항상 하단에 고정됨
