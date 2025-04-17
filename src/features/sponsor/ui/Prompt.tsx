@@ -1,8 +1,10 @@
 import styled from '@emotion/styled';
 import theme from '../../../shared/styles/theme';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { BsArrowUpSquareFill } from 'react-icons/bs';
 import { useHeaderStore } from '../../../shared/store';
+
+import { AiFillSmile } from 'react-icons/ai';
 
 export type MessageType = 'ai' | 'user';
 
@@ -14,13 +16,15 @@ interface MessageItem {
 interface PromptProps {
   messages: MessageItem[];
   input: string;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   onSend: () => void;
-  onEnter: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export const Prompt = ({ messages, input, onInputChange, onSend, onEnter }: PromptProps) => {
+export const Prompt = ({ messages, input, onInputChange, onKeyDown, onSend }: PromptProps) => {
   const chatRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
   const headerHeight = useHeaderStore((state) => state.headerHeight);
 
   useEffect(() => {
@@ -29,21 +33,32 @@ export const Prompt = ({ messages, input, onInputChange, onSend, onEnter }: Prom
     }
   }, [messages]);
 
+  useLayoutEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto'; // 초기화
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`; // 내용 기반 높이 재설정
+    }
+  }, [input]);
+
   return (
     <Container headerHeight={headerHeight}>
       <ChatBox ref={chatRef}>
         {messages.map((msg, idx) => (
-          <Message key={idx} type={msg.type}>
-            {msg.text}
-          </Message>
+          <MessageWrapper key={idx} type={msg.type}>
+            {msg.type === 'ai' && <Avatar />}
+            <MessageBubble type={msg.type}>{msg.text}</MessageBubble>
+          </MessageWrapper>
         ))}
       </ChatBox>
+
       <InputWrapper>
         <ChatInput
+          ref={inputRef}
           value={input}
           onChange={onInputChange}
-          onKeyDown={onEnter}
+          onKeyDown={onKeyDown}
           placeholder="작성중인 혜택에 대해 질문해보세요"
+          rows={1}
         />
         <SendButton onClick={onSend}>
           <BsArrowUpSquareFill size={20} />
@@ -73,7 +88,25 @@ const ChatBox = styled.div`
   gap: 0.5rem;
 `;
 
-const Message = styled.div<{ type: 'user' | 'ai' }>`
+const MessageWrapper = styled.div<{ type: 'user' | 'ai' }>`
+  display: flex;
+  align-items: flex-start;
+  justify-content: ${(props) => (props.type === 'user' ? 'flex-end' : 'flex-start')};
+  gap: 0.5rem;
+`;
+
+const Avatar = styled(AiFillSmile)`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: ${theme.color.white}; // 파란 배경
+  color: ${theme.color.main};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MessageBubble = styled.div<{ type: 'user' | 'ai' }>`
   align-self: ${(props) => (props.type === 'user' ? 'flex-end' : 'flex-start')};
   background-color: ${(props) => (props.type === 'user' ? theme.color.main : theme.color.white)};
   color: ${(props) => (props.type === 'user' ? theme.color.white : theme.color.black)};
@@ -82,23 +115,29 @@ const Message = styled.div<{ type: 'user' | 'ai' }>`
   max-width: 70%;
   font-size: 0.875rem;
   border: ${(props) => (props.type === 'ai' ? `1px solid ${theme.color.bold_border}` : 'none')};
+  white-space: pre-wrap; // ✅ 줄바꿈 적용!
 `;
 
 const InputWrapper = styled.div`
   display: flex;
   padding: 0.75rem;
-  align-items: center;
+  align-items: center; // ⬅️ 버튼이 항상 하단에 고정됨
   border: 1px solid ${theme.color.bold_border};
   background-color: ${theme.color.white};
+  max-height: 30vh; // 👉 화면의 30%까지만 늘어나게 제한
   border-radius: 0.5rem;
+  overflow-y: visible;
 `;
 
-const ChatInput = styled.input`
+const ChatInput = styled.textarea`
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: 0 1rem;
   font-size: 1rem;
+  height: 2rem;
   outline: none;
   border: none;
+  max-height: 100%;
+  overflow-y: auto;
 `;
 
 const SendButton = styled(BsArrowUpSquareFill)`
@@ -111,4 +150,7 @@ const SendButton = styled(BsArrowUpSquareFill)`
   font-size: 0.875rem;
   width: 2rem;
   height: 2rem;
+  flex-shrink: 0;
+  align-self: flex-end; // 우측 하단으로 보내고
+  margin-top: auto; // 위 요소가 커져도 자기 위치 유지
 `;

@@ -20,12 +20,19 @@ const Sponsor = () => {
     // TODO: 실제 AI 응답 로직 연결
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); // 줄바꿈 방지
+      handleSend(); // 전송
+    }
+  };
+
   return (
     <Prompt
       messages={messages}
       input={input}
       onInputChange={(e) => setInput(e.target.value)}
-      onEnter={(e) => e.key === 'Enter' && handleSend()}
+      onKeyDown={handleKeyDown}
       onSend={handleSend}
     />
   );
