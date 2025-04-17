@@ -20,9 +20,19 @@ interface PromptProps {
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   onSend: () => void;
+  onTogglePopover: () => void;
+  BenefitPopoverSlot?: React.ReactNode;
 }
 
-export const Prompt = ({ messages, input, onInputChange, onKeyDown, onSend }: PromptProps) => {
+export const Prompt = ({
+  messages,
+  input,
+  onInputChange,
+  onKeyDown,
+  onSend,
+  onTogglePopover,
+  BenefitPopoverSlot,
+}: PromptProps) => {
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -57,7 +67,8 @@ export const Prompt = ({ messages, input, onInputChange, onKeyDown, onSend }: Pr
       </ChatBox>
 
       <BottomWrapper>
-        <Benefit />
+        <Benefit onClick={onTogglePopover} />
+        {BenefitPopoverSlot}
         <InputWrapper>
           <ChatInput
             ref={inputRef}
