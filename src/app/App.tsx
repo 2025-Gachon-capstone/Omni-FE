@@ -11,6 +11,7 @@ import UserMyPage from '../pages/UserMyPage';
 import MyPageView from '../features/user/myPage/ui/MyPageView';
 import MyPageEdit from '../features/user/myPage/ui/MyPageEdit';
 import UserPayment from '../pages/UserPayment';
+import UserBenefit from '../pages/UserBenefit';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="edit" element={<MyPageEdit />} />
           </Route>
           <Route path="/payment" element={<UserPayment />} />
+          <Route path="/benefit" element={<UserBenefit />} />
         </Routes>
         <CustomToast />
       </BrowserRouter>
