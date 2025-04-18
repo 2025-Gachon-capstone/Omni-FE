@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Prompt, MessageType } from '../features/sponsor/ui/Prompt';
 import { BenefitPopover } from '../features/sponsor/ui/BenefitPopover';
 import { BenefitFormData } from '../features/sponsor/type/FormDataType';
+import { BenefitList } from '../features/sponsor/ui/BenefitList';
+import styled from '@emotion/styled';
 
 interface Message {
   type: MessageType;
@@ -23,6 +25,7 @@ const Sponsor = () => {
     amount: 0,
     targetMember: '',
   });
+  const [activeBenefitId, setActiveBenefitId] = useState<number | null>(null);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -58,24 +61,39 @@ const Sponsor = () => {
   };
 
   return (
-    <Prompt
-      messages={messages}
-      input={input}
-      onInputChange={(e) => setInput(e.target.value)}
-      onKeyDown={handleKeyDown}
-      onSend={handleSend}
-      onTogglePopover={() => setIsPopoverOpen((prev) => !prev)}
-      BenefitPopoverSlot={
-        isPopoverOpen && (
-          <BenefitPopover
-            data={benefitData}
-            handleData={handleBenefitDataChange}
-            handleDate={handleDateChange}
-          />
-        )
-      }
-    />
+    <Layout>
+      <BenefitList activeBenefitId={activeBenefitId} onSelect={(id:number) => setActiveBenefitId(id)} />
+      <PromptWrapper>
+        <Prompt
+          messages={messages}
+          input={input}
+          onInputChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onSend={handleSend}
+          onTogglePopover={() => setIsPopoverOpen((prev) => !prev)}
+          BenefitPopoverSlot={
+            isPopoverOpen && (
+              <BenefitPopover
+                data={benefitData}
+                handleData={handleBenefitDataChange}
+                handleDate={handleDateChange}
+              />
+            )
+          }
+        />
+      </PromptWrapper>
+    </Layout>
   );
 };
 
 export default Sponsor;
+
+const Layout = styled.div`
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  position: relative; // ✅ 기준점 만들기
+`;
+
+const PromptWrapper = styled.div`
+  grid-column: 2; // ✅ 오른쪽 그리드 칸에만 표시
+`;
