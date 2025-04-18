@@ -11,30 +11,6 @@ interface BenefitListProps {
 }
 
 export const BenefitList = ({ chatRooms, activeBenefitId, onSelect }: BenefitListProps) => {
-  chatRooms = chatRooms ?? [
-    {
-      benefitId: 1,
-      title: '신규회원 쿠폰',
-      startDate: new Date(),
-      endDate: new Date(),
-      discounRate: 10,
-      targetProduct: '초코 우유',
-      amount: 100,
-      targetMember: '신규가입자',
-      status: 'PENDING',
-    },
-    {
-      benefitId: 2,
-      title: 'VIP 전용 혜택',
-      startDate: new Date(),
-      endDate: new Date(),
-      discounRate: 20,
-      targetProduct: '바나나 우유',
-      amount: 50,
-      targetMember: 'VIP 등급 회원',
-      status: 'COMPLETED',
-    },
-  ];
 
   return (
     <Sidebar>

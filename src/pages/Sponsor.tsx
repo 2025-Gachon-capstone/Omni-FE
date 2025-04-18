@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Prompt, MessageType } from '../features/sponsor/ui/Prompt';
 import { BenefitPopover } from '../features/sponsor/ui/BenefitPopover';
 import { BenefitFormData } from '../features/sponsor/type/FormDataType';
 import { BenefitList } from '../features/sponsor/ui/BenefitList';
 import styled from '@emotion/styled';
+import { BenefitResponseDTO } from '../features/sponsor/type/ResponseDTO';
+import { benefitResponseDTOToFormData } from '../features/sponsor/type/converter';
 
 interface Message {
   type: MessageType;
@@ -16,16 +18,36 @@ const Sponsor = () => {
     { type: 'ai', text: '안녕하세요! 협찬 관련해서 어떤 걸 도와드릴까요?' },
   ]);
   const [input, setInput] = useState('');
-  const [benefitData, setBenefitData] = useState<BenefitFormData>({
-    title: '',
-    startDate: new Date(),
-    endDate: new Date(),
-    discounRate: 0,
-    targetProduct: '',
-    amount: 0,
-    targetMember: '',
-  });
+  const [benefitList, setBenefitList] = useState<BenefitResponseDTO[]>([]);
   const [activeBenefitId, setActiveBenefitId] = useState<number | null>(null);
+
+  const activeBenefit = benefitList.find((b) => b.benefitId === activeBenefitId);
+  useEffect(() => {
+    setBenefitList([
+      {
+        benefitId: 1,
+        title: '신규회원 쿠폰',
+        startDate: new Date(),
+        endDate: new Date(),
+        discounRate: 10,
+        targetProduct: '초코 우유',
+        amount: 100,
+        targetMember: '신규가입자',
+        status: 'PENDING',
+      },
+      {
+        benefitId: 2,
+        title: 'VIP 전용 혜택',
+        startDate: new Date(),
+        endDate: new Date(),
+        discounRate: 20,
+        targetProduct: '바나나 우유',
+        amount: 50,
+        targetMember: 'VIP 등급 회원',
+        status: 'COMPLETED',
+      },
+    ]);
+  }, []);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -45,24 +67,37 @@ const Sponsor = () => {
   const handleBenefitDataChange =
     (field: keyof BenefitFormData) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setBenefitData((prev) => ({
-        ...prev,
-        [field]: e.target.value,
-      }));
+      const value = e.target.value;
+      if (activeBenefitId === null) return;
+
+      setBenefitList((prev) =>
+        prev.map((benefit) =>
+          benefit.benefitId === activeBenefitId ? { ...benefit, [field]: value } : benefit,
+        ),
+      );
     };
 
   const handleDateChange = (field: keyof BenefitFormData) => (date: Date | null) => {
-    if (date) {
-      setBenefitData((prev) => ({
-        ...prev,
-        [field]: date,
-      }));
-    }
+    if (!date || activeBenefitId === null) return;
+
+    setBenefitList((prev) =>
+      prev.map((benefit) =>
+        benefit.benefitId === activeBenefitId ? { ...benefit, [field]: date } : benefit,
+      ),
+    );
   };
 
   return (
     <Layout>
-      <BenefitList activeBenefitId={activeBenefitId} onSelect={(id:number) => setActiveBenefitId(id)} />
+      <BenefitList
+        chatRooms={benefitList}
+        activeBenefitId={activeBenefitId}
+        onSelect={(id: number) => {
+          console.log('✅ 선택된 혜택 ID:', id); // ✅ 여기!
+          setActiveBenefitId(id);
+          setIsPopoverOpen(false); // 👉 혜택 변경 시 팝오버 닫기
+        }}
+      />
       <PromptWrapper>
         <Prompt
           messages={messages}
@@ -72,13 +107,17 @@ const Sponsor = () => {
           onSend={handleSend}
           onTogglePopover={() => setIsPopoverOpen((prev) => !prev)}
           BenefitPopoverSlot={
-            isPopoverOpen && (
+            isPopoverOpen &&
+            activeBenefit &&
+            (console.log('🧩 팝오버에 전달될 데이터:', benefitResponseDTOToFormData(activeBenefit)),
+            (
               <BenefitPopover
-                data={benefitData}
+                status={activeBenefit.status}
+                data={benefitResponseDTOToFormData(activeBenefit)}
                 handleData={handleBenefitDataChange}
                 handleDate={handleDateChange}
               />
-            )
+            ))
           }
         />
       </PromptWrapper>
