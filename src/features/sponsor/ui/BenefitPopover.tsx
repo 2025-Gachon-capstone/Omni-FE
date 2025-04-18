@@ -3,8 +3,10 @@ import styled from '@emotion/styled';
 import { BenefitFormData } from '../type/FormDataType';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { FiCheckCircle, FiTrash2 } from 'react-icons/fi';
 
 interface BenefitPopoverProps {
+  status: 'PENDING' | 'DELETED' | 'COMPLETED';
   data: BenefitFormData;
   handleData: (
     field: keyof BenefitFormData,
@@ -12,15 +14,31 @@ interface BenefitPopoverProps {
   handleDate: (field: keyof BenefitFormData) => (date: Date | null) => void;
 }
 
-export const BenefitPopover: React.FC<BenefitPopoverProps> = ({ data, handleData, handleDate }) => {
+export const BenefitPopover: React.FC<BenefitPopoverProps> = ({
+  status,
+  data,
+  handleData,
+  handleDate,
+}) => {
   return (
     <Popover>
-      <TitleInput
-        type="text"
-        value={data.title}
-        onChange={handleData('title')}
-        placeholder="제공하려는 협찬명을 적어주세요."
-      />
+      <TitleRow>
+        <TitleInput
+          type="text"
+          value={data.title}
+          onChange={handleData('title')}
+          placeholder="제공하려는 협찬명을 적어주세요."
+        />
+        {status === 'PENDING' ? (
+          <IconButton status={status}>
+            <FiTrash2 size={20} />
+          </IconButton>
+        ) : (
+          <IconButton status={status}>
+            <FiCheckCircle size={18} />
+          </IconButton>
+        )}
+      </TitleRow>
       <FormGrid>
         <Label>협찬 상품:</Label>
         <Input
@@ -61,17 +79,28 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({ data, handleData
           <span style={{ color: 'white' }}>%</span>
         </InlineInputs>
       </FormGrid>
-
       <TextArea
         rows={6}
         value={data.targetMember}
         onChange={handleData('targetMember')}
         placeholder="AI와 대화하여 협찬 대상을 자세하게 적어주세요."
       />
-      <Actions>
-        <Button type="button">임시저장</Button>
-        <SubmitButton type="submit">제출하기</SubmitButton>
-      </Actions>
+      {status !== 'COMPLETED' ? (
+        <Actions>
+          <Button type="button" status={status}>
+            임시저장
+          </Button>
+          <SubmitButton type="submit" status={status}>
+            제출하기
+          </SubmitButton>
+        </Actions>
+      ) : (
+        <Actions>
+          <Button type="button" status={status}>
+            제출완료
+          </Button>
+        </Actions>
+      )}
     </Popover>
   );
 };
@@ -101,6 +130,14 @@ const Popover = styled.div`
   }
 `;
 
+const TitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
 const TitleInput = styled.input`
   font-size: 1rem;
   font-weight: 700;
@@ -113,10 +150,32 @@ const TitleInput = styled.input`
   outline: none;
   color: ${theme.color.white};
 
-  margin-bottom: 1rem;
-
   &::placeholder {
     color: ${theme.color.white}; // 밝은 회색 계열 추천
+  }
+`;
+
+const IconButton = styled.button<{ status: 'PENDING' | 'COMPLETED' | 'DELETED' }>`
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: ${theme.color.white};
+  padding: 0.25rem;
+
+  cursor: ${({ status }) => (status === 'COMPLETED' ? 'not-allowed' : 'pointer')};
+  opacity: ${({ status }) => (status === 'COMPLETED' ? 0.8 : 1)};
+  pointer-events: ${({ status }) => (status === 'COMPLETED' ? 'none' : 'auto')};
+
+  ${({ status }) =>
+    status === 'PENDING' &&
+    `
+    &:hover {
+      opacity: 0.5;
+    }
+  `}
+
+  svg {
+    display: block;
   }
 `;
 
@@ -202,7 +261,7 @@ const Actions = styled.div`
   margin-top: 1rem;
 `;
 
-const Button = styled.button`
+const Button = styled.button<{ status: 'PENDING' | 'COMPLETED' | 'DELETED' }>`
   padding: 0.5rem 1rem;
   background: transparent;
   border: 1px solid ${theme.color.white};
@@ -210,9 +269,16 @@ const Button = styled.button`
   border-radius: 0.25rem;
   cursor: pointer;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
+  ${({ status }) =>
+    status === 'PENDING' &&
+    `
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  `}
+
+  cursor: ${({ status }) => (status === 'COMPLETED' ? 'not-allowed' : 'pointer')};
+  pointer-events: ${({ status }) => (status === 'COMPLETED' ? 'none' : 'auto')};
 `;
 
 const SubmitButton = styled(Button)`
