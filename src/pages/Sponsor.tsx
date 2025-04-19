@@ -21,7 +21,6 @@ const Sponsor = () => {
   const [benefitList, setBenefitList] = useState<BenefitResponseDTO[]>([]);
   const [activeBenefitId, setActiveBenefitId] = useState<number | null>(null);
 
-  const activeBenefit = benefitList.find((b) => b.benefitId === activeBenefitId);
   useEffect(() => {
     setBenefitList([
       {
@@ -47,7 +46,10 @@ const Sponsor = () => {
         status: 'COMPLETED',
       },
     ]);
+
+    setActiveBenefitId(1); // 기본으로 첫 번째 혜택 선택
   }, []);
+  const activeBenefit = benefitList.find((b) => b.benefitId === activeBenefitId);
 
   const handleSend = () => {
     if (!input.trim()) return;
