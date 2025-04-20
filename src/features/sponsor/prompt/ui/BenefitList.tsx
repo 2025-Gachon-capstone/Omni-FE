@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import theme from '../../../shared/styles/theme';
+import theme from '../../../../shared/styles/theme';
 import { BsPlusSquareFill } from 'react-icons/bs';
 import { BenefitResponseDTO } from '../type/ResponseDTO';
 import { FiLock, FiUnlock } from 'react-icons/fi';
@@ -11,7 +11,6 @@ interface BenefitListProps {
 }
 
 export const BenefitList = ({ chatRooms, activeBenefitId, onSelect }: BenefitListProps) => {
-
   return (
     <Sidebar>
       <Header>
@@ -29,7 +28,7 @@ export const BenefitList = ({ chatRooms, activeBenefitId, onSelect }: BenefitLis
             onClick={() => onSelect(room.benefitId)}
           >
             {room.title}
-            {room.status === 'COMPLETED' ? <FiLock size={16} /> : <FiUnlock size={16} />}
+            {room.status !== 'PENDING' ? <FiLock size={16} /> : <FiUnlock size={16} />}
           </ListItem>
         ))}
       </List>

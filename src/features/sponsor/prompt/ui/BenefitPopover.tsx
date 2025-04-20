@@ -1,32 +1,25 @@
-import theme from '../../../shared/styles/theme';
+import theme from '../../../../shared/styles/theme';
 import styled from '@emotion/styled';
 import { BenefitFormData } from '../type/FormDataType';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FiCheckCircle, FiTrash2 } from 'react-icons/fi';
+import { BenefitResponseDTO } from '../type/ResponseDTO';
 
 interface BenefitPopoverProps {
-  status: 'PENDING' | 'DELETED' | 'COMPLETED';
+  status: BenefitResponseDTO['status'];
   data: BenefitFormData;
-  handleData: (
-    field: keyof BenefitFormData,
-  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  handleDate: (field: keyof BenefitFormData) => (date: Date | null) => void;
+  handleData: (field: keyof BenefitFormData, value: string | Date) => void;
 }
 
-export const BenefitPopover: React.FC<BenefitPopoverProps> = ({
-  status,
-  data,
-  handleData,
-  handleDate,
-}) => {
+export const BenefitPopover: React.FC<BenefitPopoverProps> = ({ status, data, handleData }) => {
   return (
     <Popover>
       <TitleRow>
         <TitleInput
           type="text"
           value={data.title}
-          onChange={handleData('title')}
+          onChange={(e) => handleData('title', e.target.value)}
           placeholder="제공하려는 협찬명을 적어주세요."
         />
         {status === 'PENDING' ? (
@@ -44,7 +37,7 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({
         <Input
           type="text"
           value={data.targetProduct}
-          onChange={handleData('targetProduct')}
+          onChange={(e) => handleData('targetProduct', e.target.value)}
           style={{ textAlign: 'left' }}
         />
 
@@ -53,7 +46,7 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({
           <StyledDatePickerWrapper>
             <DatePicker
               selected={data.startDate}
-              onChange={handleDate('startDate')}
+              onChange={(e) => handleData('startDate', e!)}
               dateFormat="yyyy-MM-dd"
               placeholderText="시작일 선택"
               className="custom-datepicker"
@@ -63,7 +56,7 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({
           <StyledDatePickerWrapper>
             <DatePicker
               selected={data.endDate}
-              onChange={handleDate('endDate')}
+              onChange={(e) => handleData('endDate', e!)}
               dateFormat="yyyy-MM-dd"
               placeholderText="종료일 선택"
               className="custom-datepicker"
@@ -73,19 +66,27 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({
 
         <Label>수량/할인율:</Label>
         <InlineInputs>
-          <Input type="number" value={data.amount} onChange={handleData('amount')} />
+          <Input
+            type="number"
+            value={data.amount}
+            onChange={(e) => handleData('amount', e.target.value)}
+          />
           <span style={{ color: 'white' }}>개, </span>
-          <Input type="number" value={data.discounRate} onChange={handleData('discounRate')} />
+          <Input
+            type="number"
+            value={data.discounRate}
+            onChange={(e) => handleData('discounRate', e.target.value)}
+          />
           <span style={{ color: 'white' }}>%</span>
         </InlineInputs>
       </FormGrid>
       <TextArea
         rows={6}
         value={data.targetMember}
-        onChange={handleData('targetMember')}
+        onChange={(e) => handleData('targetMember', e.target.value)}
         placeholder="AI와 대화하여 협찬 대상을 자세하게 적어주세요."
       />
-      {status !== 'COMPLETED' ? (
+      {status === 'PENDING' ? (
         <Actions>
           <Button type="button" status={status}>
             임시저장
@@ -155,16 +156,16 @@ const TitleInput = styled.input`
   }
 `;
 
-const IconButton = styled.button<{ status: 'PENDING' | 'COMPLETED' | 'DELETED' }>`
+const IconButton = styled.button<{ status: BenefitResponseDTO['status'] }>`
   background: transparent;
   border: none;
   cursor: pointer;
   color: ${theme.color.white};
   padding: 0.25rem;
 
-  cursor: ${({ status }) => (status === 'COMPLETED' ? 'not-allowed' : 'pointer')};
-  opacity: ${({ status }) => (status === 'COMPLETED' ? 0.8 : 1)};
-  pointer-events: ${({ status }) => (status === 'COMPLETED' ? 'none' : 'auto')};
+  cursor: ${({ status }) => (status !== 'PENDING' ? 'not-allowed' : 'pointer')};
+  opacity: 1;
+  pointer-events: ${({ status }) => (status !== 'PENDING' ? 'none' : 'auto')};
 
   ${({ status }) =>
     status === 'PENDING' &&
@@ -261,7 +262,7 @@ const Actions = styled.div`
   margin-top: 1rem;
 `;
 
-const Button = styled.button<{ status: 'PENDING' | 'COMPLETED' | 'DELETED' }>`
+const Button = styled.button<{ status: BenefitResponseDTO['status'] }>`
   padding: 0.5rem 1rem;
   background: transparent;
   border: 1px solid ${theme.color.white};
@@ -277,8 +278,8 @@ const Button = styled.button<{ status: 'PENDING' | 'COMPLETED' | 'DELETED' }>`
     }
   `}
 
-  cursor: ${({ status }) => (status === 'COMPLETED' ? 'not-allowed' : 'pointer')};
-  pointer-events: ${({ status }) => (status === 'COMPLETED' ? 'none' : 'auto')};
+  cursor: ${({ status }) => (status !== 'PENDING' ? 'not-allowed' : 'pointer')};
+  pointer-events: ${({ status }) => (status !== 'PENDING' ? 'none' : 'auto')};
 `;
 
 const SubmitButton = styled(Button)`

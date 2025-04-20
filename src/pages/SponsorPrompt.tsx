@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Prompt, MessageType } from '../features/sponsor/ui/Prompt';
-import { BenefitPopover } from '../features/sponsor/ui/BenefitPopover';
-import { BenefitFormData } from '../features/sponsor/type/FormDataType';
-import { BenefitList } from '../features/sponsor/ui/BenefitList';
+import { Prompt, MessageType } from '../features/sponsor/prompt/ui/Prompt';
+import { BenefitPopover } from '../features/sponsor/prompt/ui/BenefitPopover';
+import { BenefitFormData } from '../features/sponsor/prompt/type/FormDataType';
+import { BenefitList } from '../features/sponsor/prompt/ui/BenefitList';
 import styled from '@emotion/styled';
-import { BenefitResponseDTO } from '../features/sponsor/type/ResponseDTO';
-import { benefitResponseDTOToFormData } from '../features/sponsor/type/converter';
+import { BenefitResponseDTO } from '../features/sponsor/prompt/type/ResponseDTO';
+import { convertBenefitResponseToForm } from '../features/sponsor/prompt/type/converter';
 
 interface Message {
   type: MessageType;
   text: string;
 }
 
-const Sponsor = () => {
+const SponsorPrompt = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { type: 'ai', text: '안녕하세요! 협찬 관련해서 어떤 걸 도와드릴까요?' },
@@ -43,7 +43,7 @@ const Sponsor = () => {
         targetProduct: '바나나 우유',
         amount: 50,
         targetMember: 'VIP 등급 회원',
-        status: 'COMPLETED',
+        status: 'BEFORE',
       },
     ]);
 
@@ -66,27 +66,17 @@ const Sponsor = () => {
     }
   };
 
-  const handleBenefitDataChange =
-    (field: keyof BenefitFormData) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = e.target.value;
-      if (activeBenefitId === null) return;
+  const handleBenefitDataChange = (field: keyof BenefitFormData, value: string | Date) => {
+    if (activeBenefitId === null) return;
 
-      setBenefitList((prev) =>
-        prev.map((benefit) =>
-          benefit.benefitId === activeBenefitId ? { ...benefit, [field]: value } : benefit,
-        ),
-      );
-    };
+    setBenefitList((prev) => {
+      const index = prev.findIndex((b) => b.benefitId === activeBenefitId);
+      if (index === -1) return prev;
 
-  const handleDateChange = (field: keyof BenefitFormData) => (date: Date | null) => {
-    if (!date || activeBenefitId === null) return;
-
-    setBenefitList((prev) =>
-      prev.map((benefit) =>
-        benefit.benefitId === activeBenefitId ? { ...benefit, [field]: date } : benefit,
-      ),
-    );
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
   };
 
   return (
@@ -111,13 +101,12 @@ const Sponsor = () => {
           BenefitPopoverSlot={
             isPopoverOpen &&
             activeBenefit &&
-            (console.log('🧩 팝오버에 전달될 데이터:', benefitResponseDTOToFormData(activeBenefit)),
+            (console.log('🧩 팝오버에 전달될 데이터:', convertBenefitResponseToForm(activeBenefit)),
             (
               <BenefitPopover
                 status={activeBenefit.status}
-                data={benefitResponseDTOToFormData(activeBenefit)}
+                data={convertBenefitResponseToForm(activeBenefit)}
                 handleData={handleBenefitDataChange}
-                handleDate={handleDateChange}
               />
             ))
           }
@@ -127,7 +116,7 @@ const Sponsor = () => {
   );
 };
 
-export default Sponsor;
+export default SponsorPrompt;
 
 const Layout = styled.div`
   display: grid;
