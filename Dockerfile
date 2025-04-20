@@ -20,6 +20,8 @@ FROM nginx:stable-alpine
 
 # Vite 빌드 결과 복사 (dist → nginx html)
 COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder app/nginx.conf /etc/nginx/conf.d 
+RUN rm /etc/nginx/conf.d/default.conf # 추가
 
 # 포트 노출
 EXPOSE 80
