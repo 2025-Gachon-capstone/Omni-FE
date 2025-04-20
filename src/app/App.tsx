@@ -5,6 +5,7 @@ import Header from '../widgets/layout/Header';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Join from '../pages/Join';
+import SponsorPrompt from '../pages/SponsorPrompt';
 import UserMyCard from '../pages/UserMyCard';
 import UserMyPage from '../pages/UserMyPage';
 import MyPageView from '../features/user/myPage/ui/MyPageView';
@@ -23,6 +24,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/join" element={<Join />} />
+
+          {/** 협찬사 페이지 */}
+          <Route path="/sponsor" element={<Home />} />
+          <Route path="/sponsor/prompt" element={<SponsorPrompt />} />
 
           {/** 일반유저 페이지 */}
           <Route path="/mycard" element={<UserMyCard />} />
