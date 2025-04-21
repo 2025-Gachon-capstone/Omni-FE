@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { getAccessToken, removeAccessToken, setAccessToken } from '../shared/utils/tokenHandler';
 import { toast } from 'react-toastify';
+import { useAuthStore } from '../shared/store';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -36,6 +37,7 @@ const refreshAccessToken = async () => {
         error.response.status.code === 'TOKEN4004')
     ) {
       removeAccessToken();
+      useAuthStore.getState().clearAuth();
       toast.error('다시 로그인해주세요.');
       window.location.href = '/login';
     }

@@ -3,17 +3,20 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import useDevice from '../../../shared/hooks/useDevice';
 import { RouterButton } from './RouterButton';
+import { useAuthStore } from '../../../shared/store';
 
 export const FifthSection = () => {
   const navigate = useNavigate();
   const { isMobile } = useDevice();
-  const isLogin = false; // 로그인 여부 (임시)
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   return (
     <Container isMobile={isMobile}>
       <div className="title">나만의 혜택을 더 알아보고싶다면?</div>
       <div className="btn-box">
-        {!isLogin && <RouterButton text="로그인 및 회원가입" onClick={() => navigate('/login')} />}
+        {!isLoggedIn && (
+          <RouterButton text="로그인 및 회원가입" onClick={() => navigate('/login')} />
+        )}
         <RouterButton text="쇼핑하러가기" onClick={() => navigate('/shop')} />
       </div>
     </Container>

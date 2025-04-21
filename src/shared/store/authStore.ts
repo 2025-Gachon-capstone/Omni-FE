@@ -5,7 +5,7 @@ export interface User {
   memberId: number;
   sponsorId: number;
   role: 'USER' | 'ADMIN' | 'SPONSOR';
-  name: string;
+  memberName: string;
 }
 
 interface AuthState {
