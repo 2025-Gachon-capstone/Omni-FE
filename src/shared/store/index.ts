@@ -1,2 +1,3 @@
 // index.ts
-export { useHeaderStore } from './headerStore'; 
+export { useHeaderStore } from './headerStore';
+export { useAuthStore } from './authStore';

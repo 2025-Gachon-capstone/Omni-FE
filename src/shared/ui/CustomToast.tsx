@@ -29,6 +29,10 @@ const StyledToastConatiner = styled(ToastContainer)`
     padding: 2rem 1.5rem;
     border-radius: 0.5rem;
 
+    border: 2px solid ${theme.color.main};
+    color: black;
+    background-color: white;
+
     font-size: 1rem;
   }
 
@@ -43,6 +47,7 @@ const StyledToastConatiner = styled(ToastContainer)`
 
   .Toastify__toast--error {
     // error 토스트 디자인
+    border: none;
     color: white;
     background: ${theme.color.red};
     svg {
@@ -51,6 +56,7 @@ const StyledToastConatiner = styled(ToastContainer)`
   }
 
   .Toastify__toast--success {
+    border: none;
     color: white;
     background: ${theme.color.main};
 
