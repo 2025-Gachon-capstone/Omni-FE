@@ -15,7 +15,7 @@ const RoleRoute = ({ allowedRole, message }: RoleRouteProps) => {
   useEffect(() => {
     if (userRole !== allowedRole) {
       toast(message || '접근 권한이 없습니다.');
-      navigate(-1);
+      navigate('/', { replace: true });
     }
   }, [userRole, allowedRole, message, navigate]);
 
