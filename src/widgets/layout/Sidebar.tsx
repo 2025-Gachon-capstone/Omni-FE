@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import theme from '../../shared/styles/theme';
 import { FiX } from 'react-icons/fi';
 import useDevice from '../../shared/hooks/useDevice';
+import { useAuthStore } from '../../shared/store';
 
 interface Menu {
   name: string[];
@@ -11,7 +12,7 @@ interface Menu {
 interface MenuListType {
   GUEST: Menu;
   USER: Menu;
-  MANAGER: Menu;
+  ADMIN: Menu;
   SPONSOR: Menu;
   SHOPPER: Menu;
 }
@@ -24,7 +25,7 @@ const MenuList: MenuListType = {
     name: ['홈', 'MY카드', '결제내역', '혜택 히스토리', '마이페이지'],
     link: ['/', '/mycard', '/payment', '/benefit', '/mypage'],
   },
-  MANAGER: {
+  ADMIN: {
     name: ['홈', '전체 유저 관리', '전체 결제내역'],
     link: ['/', '/users', '/payments'],
   },
@@ -41,13 +42,13 @@ const MenuList: MenuListType = {
 const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: () => void }) => {
   const navigate = useNavigate();
   const { isMobile } = useDevice();
+  const userRole = useAuthStore((state) => state.user?.role || 'GUEST');
 
-  let user: 'GUEST' | 'USER' | 'MANAGER' | 'SPONSOR' | 'SHOPPER' = true ? 'USER' : 'GUEST'; // 로그인 여부 (값 변경하면서 메뉴 변경가능)
-  const ROLE: 'GUEST' | 'USER' | 'MANAGER' | 'SPONSOR' | 'SHOPPER' = location.pathname.startsWith(
+  const ROLE: 'GUEST' | 'USER' | 'SPONSOR' | 'ADMIN' | 'SHOPPER' = location.pathname.startsWith(
     '/shop',
   )
     ? 'SHOPPER'
-    : user; // 쇼핑여부
+    : userRole; // 쇼핑여부
 
   return (
     <SidebarContainer isMobile={isMobile} isOpen={isOpen}>

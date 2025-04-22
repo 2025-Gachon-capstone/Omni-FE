@@ -4,6 +4,8 @@ import { Button } from '../shared/ui';
 import { LoginForm } from '../features/login/ui/LoginForm';
 import { ErrorPhrase } from '../features/login/ui/ErrorPhrase';
 import { JoinPhrase } from '../features/login/ui/JoinPhrase';
+import { useLogin } from '../features/login/api/useLogin';
+import Loading from './Loading';
 
 const Login = () => {
   // 아이디, 비밀번호
@@ -11,7 +13,8 @@ const Login = () => {
     id: '',
     password: '',
   });
-  const [isValidate, setIsValidate] = useState(-1); // (-1: 초기상태 , 0: 로그인 실패, 1: 로그인 성공)
+  const [isValidate] = useState(-1); // (-1: 초기상태 , 0: 로그인 실패, 1: 로그인 성공)
+  const { login, isLoading } = useLogin();
 
   // [id, password] 로그인 값 핸들링 함수
   const handleData = (type: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,23 +26,16 @@ const Login = () => {
 
   // 로그인 API
   const handleLogin = () => {
-    // 빈 값 체크
     if (loginData.id == '' || loginData.password == '') {
       alert('로그인 값을 입력해주세요.');
       return;
     }
-
-    // (임시)
-    if (true) {
-      // 로그인 실패
-      setIsValidate(0);
-    } else {
-      // 로그인 성공
-      setIsValidate(1);
-    }
+    login(loginData); // 로그인
   };
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <Container>
       <LoginContainer>
         <Title>로그인</Title>
