@@ -13,6 +13,8 @@ import MyPageEdit from '../features/user/myPage/ui/MyPageEdit';
 import UserPayment from '../pages/UserPayment';
 import UserBenefit from '../pages/UserBenefit';
 import { PrivateRoute, PublicRoute, RoleRoute } from './routes';
+import ShopHome from '../pages/ShopHome';
+import ShopProductDetail from '../pages/ShopProductDetail';
 
 function App() {
   return (
@@ -27,7 +29,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/join" element={<Join />} />
           </Route>
-
+          {/** 쇼핑몰 페이지 */}
+          <Route path="/shop">
+            <Route index element={<ShopHome />} />
+            <Route path=":productId" element={<ShopProductDetail />} />
+          </Route>
           <Route element={<PrivateRoute />}>
             {/** 협찬사 페이지 */}
             <Route
