@@ -3,14 +3,14 @@ import { Banner } from '../features/shop/home/ui/Banner';
 import { CategoryList } from '../features/shop/home/ui/CategoryList';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ProductItem } from '../features/shop/home/type/Product';
 import { ProductItems } from '../features/shop/home/ui/ProductItems';
 import { Pagination } from '../shared/ui';
+import { ProductList } from '../features/shop/home/type/ProductList';
 
 const SIZE = 8;
 
 const ShopHome = () => {
-  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [products, setProducts] = useState<ProductList[]>([]);
   const [totalElements, setTotalElements] = useState(0); // 전체 데이터 개수
 
   const [searchParams, setSearchParams] = useSearchParams();

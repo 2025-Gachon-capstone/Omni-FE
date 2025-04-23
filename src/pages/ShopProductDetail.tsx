@@ -2,13 +2,12 @@ import styled from '@emotion/styled';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProductInfo } from '../features/shop/detail/ui/ProductInfo';
-import { ProductItemDetail } from '../features/shop/detail/type/Product';
 import useDevice from '../shared/hooks/useDevice';
 
 const ShopProductDetail = () => {
   const { isMobile } = useDevice();
   const { productId } = useParams<{ productId: string }>();
-  const [product, setProduct] = useState<ProductItemDetail | null>(null);
+  const [product, setProduct] = useState<ProductItem | null>(null);
 
   useEffect(() => {
     // (임시) 상품 id로 데이터 불러오기
