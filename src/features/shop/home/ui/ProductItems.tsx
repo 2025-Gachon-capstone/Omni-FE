@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { ProductItem } from '../type/Product';
 import theme from '../../../../shared/styles/theme';
 import useDevice from '../../../../shared/hooks/useDevice';
 import { useNavigate } from 'react-router-dom';

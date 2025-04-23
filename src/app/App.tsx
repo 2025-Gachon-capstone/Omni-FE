@@ -15,6 +15,8 @@ import UserBenefit from '../pages/UserBenefit';
 import { PrivateRoute, PublicRoute, RoleRoute } from './routes';
 import ShopHome from '../pages/ShopHome';
 import ShopProductDetail from '../pages/ShopProductDetail';
+import ShopCart from '../pages/ShopCart';
+import ShopOrder from '../pages/ShopOrder';
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
           <Route path="/shop">
             <Route index element={<ShopHome />} />
             <Route path=":productId" element={<ShopProductDetail />} />
+            <Route path="cart" element={<ShopCart />} />
+            <Route path="order" element={<ShopOrder />} />
           </Route>
           <Route element={<PrivateRoute />}>
             {/** 협찬사 페이지 */}

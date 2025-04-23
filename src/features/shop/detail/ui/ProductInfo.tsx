@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import { useEffect, useMemo, useState } from 'react';
-import { ProductItemDetail } from '../type/Product';
 import theme from '../../../../shared/styles/theme';
 import { Button } from '../../../../shared/ui';
 import { ProductCount } from './ProductCount';
@@ -9,7 +8,7 @@ import { useCartStore } from '../../../../shared/store';
 import { BsEmojiSmile } from 'react-icons/bs';
 import Modal from '../../../../shared/ui/Modal';
 
-export const ProductInfo = ({ product }: { product: ProductItemDetail }) => {
+export const ProductInfo = ({ product }: { product: ProductItem }) => {
   const navigate = useNavigate();
   const items = useCartStore((state) => state.items);
   const cartItems = useMemo(() => items.map((item) => item.productId), [items]);
@@ -24,7 +23,11 @@ export const ProductInfo = ({ product }: { product: ProductItemDetail }) => {
   const handleToCart = () => {
     addItem({
       productId: product.productId,
-      quantity: count,
+      departmentName: product.departmentName,
+      productName: product.productName,
+      companyName: product.companyName,
+      image1: product.image1,
+      count: count,
       price: product.price,
     });
     setIsOpen(false);

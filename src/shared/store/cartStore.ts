@@ -1,12 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export interface CartItem {
-  productId: number;
-  quantity: number;
-  price: number;
-}
-
 interface CartState {
   items: CartItem[];
   addItem: (item: CartItem) => void;
@@ -25,7 +19,7 @@ export const useCartStore = create(
           set({
             items: get().items.map((item) =>
               item.productId === newItem.productId
-                ? { ...item, quantity: item.quantity + newItem.quantity }
+                ? { ...item, count: item.count + newItem.count }
                 : item,
             ),
           });
