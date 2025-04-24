@@ -17,6 +17,8 @@ import ShopHome from '../pages/ShopHome';
 import ShopProductDetail from '../pages/ShopProductDetail';
 import ShopCart from '../pages/ShopCart';
 import ShopOrder from '../pages/ShopOrder';
+import ShopPayment from '../pages/ShopPayment';
+import ShopPaymentResult from '../pages/ShopPaymentResult';
 
 function App() {
   return (
@@ -37,6 +39,11 @@ function App() {
             <Route path=":productId" element={<ShopProductDetail />} />
             <Route path="cart" element={<ShopCart />} />
             <Route path="order" element={<ShopOrder />} />
+            <Route path="pay">
+              <Route index element={<ShopPayment />} />
+              <Route path="success" element={<ShopPaymentResult type="success" />} />
+              <Route path="fail" element={<ShopPaymentResult type="fail" />} />
+            </Route>
           </Route>
           <Route element={<PrivateRoute />}>
             {/** 협찬사 페이지 */}

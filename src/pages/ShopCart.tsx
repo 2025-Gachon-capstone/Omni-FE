@@ -4,12 +4,15 @@ import { CartList } from '../features/shop/cart/ui/CartList';
 import { BenefitApply } from '../features/shop/cart/ui/BenefitApply';
 import { PriceBox } from '../features/shop/cart/ui/PriceBox';
 import { Button } from '../shared/ui';
-import { useCartStore } from '../shared/store';
+import { useCartStore, usePendingStore } from '../shared/store';
 import { FaBasketShopping } from 'react-icons/fa6';
 import theme from '../shared/styles/theme';
+import { useNavigate } from 'react-router-dom';
 
 const ShopCart = () => {
+  const navigate = useNavigate();
   const productList = useCartStore((state) => state.items); // 장바구니 데이터 불러오기
+  const { setItems, setPaymentInfo, setOrderCode } = usePendingStore();
 
   const [cardNumber, setCardNumber] = useState(''); // 카드번호
   const [discountRate, setDiscountRate] = useState(0); // 서버에서 받아올 할인율
@@ -22,12 +25,44 @@ const ShopCart = () => {
   const totalPrice = initialPrice - discountAmount;
 
   // 결제하기 API
-  const handlePay = () => {};
+  // 글자수 제한 함수
+  const truncate = (text: string, maxLength: number) => {
+    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+  };
+  const orderName =
+    productList.length > 0
+      ? productList.length === 1
+        ? truncate(productList[0].productName, 10)
+        : `${truncate(productList[0].productName, 10)} 외 ${productList.length - 1}개`
+      : '';
+
+  // 주문 생성
+  const handlePay = () => {
+    setItems(productList); // 주문상품 임시저장
+    setPaymentInfo({ cardNumber: cardNumber, orderName: orderName, totalPrice: totalPrice });
+
+    // 주문생성 API req [ cardName, orderName, items, totalPrice ]
+    // const body = {
+    //   cardNumber: cardNumber,
+    //   orderName: orderName,
+    //   items: productList.map((product) => ({
+    //     productId: product.productId,
+    //     quantity: product.count,
+    //   })),
+    //   totalPrice: totalPrice,
+    // };
+    // await privateAxios('/payment/v1/orders',body)
+    const generateRandomString = () => {
+      return window.btoa(Math.random().toString()).slice(0, 20);
+    };
+    setOrderCode(generateRandomString()); // (임시) 서버응답값 orderId으로 교체 예정
+    navigate('/shop/pay');
+  };
 
   return (
     <Container>
       <Title>장바구니 내역을 확인해주세요.</Title>
-      {productList.length > 0 ? (
+      {productList?.length > 0 ? (
         <CartList productList={productList} type="cart" onDelete={() => setIsApply(false)} />
       ) : (
         <EmptyCart>
