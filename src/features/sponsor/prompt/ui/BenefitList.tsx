@@ -8,14 +8,15 @@ interface BenefitListProps {
   chatRooms: BenefitResponseDTO[];
   activeBenefitId: number | null;
   onSelect: (id: number) => void;
+  onAdd: () => Promise<void>;
 }
 
-export const BenefitList = ({ chatRooms, activeBenefitId, onSelect }: BenefitListProps) => {
+export const BenefitList = ({ chatRooms, activeBenefitId, onSelect, onAdd }: BenefitListProps) => {
   return (
     <Sidebar>
       <Header>
         <Title>협찬 내역</Title>
-        <AddButton>
+        <AddButton onClick={onAdd}>
           <BsPlusSquareFill size={20} />
         </AddButton>
       </Header>

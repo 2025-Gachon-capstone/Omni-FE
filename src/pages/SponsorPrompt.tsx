@@ -6,6 +6,8 @@ import { BenefitList } from '../features/sponsor/prompt/ui/BenefitList';
 import styled from '@emotion/styled';
 import { BenefitResponseDTO } from '../features/sponsor/prompt/type/ResponseDTO';
 import { convertBenefitResponseToForm } from '../features/sponsor/prompt/type/converter';
+import { postBenefit } from '../features/sponsor/prompt/api/postBenefit';
+import { useAuthStore } from '../shared/store';
 
 interface Message {
   type: MessageType;
@@ -13,6 +15,7 @@ interface Message {
 }
 
 const SponsorPrompt = () => {
+  const sponsorId = useAuthStore((state) => state.user?.sponsorId);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { type: 'ai', text: '안녕하세요! 협찬 관련해서 어떤 걸 도와드릴까요?' },
@@ -79,6 +82,35 @@ const SponsorPrompt = () => {
     });
   };
 
+  const handleAddBenefit = async () => {
+    if (sponsorId === undefined) {
+      console.error('Sponsor ID is undefined');
+      return;
+    }
+
+    const benefitId = await postBenefit(sponsorId);
+
+    if (benefitId === undefined) {
+      console.error('benefit ID is undefined');
+      return;
+    }
+
+    const newBenefit: BenefitResponseDTO = {
+      benefitId,
+      title: '',
+      startDate: new Date(),
+      endDate: new Date(),
+      discounRate: 0,
+      targetProduct: '',
+      amount: 0,
+      targetMember: '',
+      status: 'PENDING',
+    };
+
+    setBenefitList((prev) => [newBenefit, ...prev]);
+    setActiveBenefitId(benefitId); // 새로 만든 항목 선택 상태로
+  };
+
   return (
     <Layout>
       <BenefitList
@@ -89,6 +121,7 @@ const SponsorPrompt = () => {
           setActiveBenefitId(id);
           setIsPopoverOpen(false); // 👉 혜택 변경 시 팝오버 닫기
         }}
+        onAdd={handleAddBenefit} // ✅ 신규 혜택 추가
       />
       <PromptWrapper>
         <Prompt
