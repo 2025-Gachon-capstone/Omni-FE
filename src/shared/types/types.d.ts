@@ -1,3 +1,17 @@
+export {}; // 중요!
+
 declare global {
-  // 자주 사용되는 타입 선언
+  interface ProductItem {
+    productId: number;
+    departmentName: string;
+    productName: string;
+    companyName: string;
+    image1: string;
+    price: number;
+  }
+
+  interface CartItem extends ProductItem {
+    count: number;
+    addToCartOrder: number;
+  }
 }
