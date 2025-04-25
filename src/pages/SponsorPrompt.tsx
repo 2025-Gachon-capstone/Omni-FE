@@ -8,6 +8,8 @@ import { BenefitResponseDTO } from '../features/sponsor/prompt/type/ResponseDTO'
 import { convertBenefitResponseToForm } from '../features/sponsor/prompt/type/converter';
 import { postBenefit } from '../features/sponsor/prompt/api/postBenefit';
 import { useAuthStore } from '../shared/store';
+import { useBenefitList } from '../features/sponsor/prompt/api/useBenefitList';
+import Loading from './Loading';
 
 interface Message {
   type: MessageType;
@@ -22,36 +24,30 @@ const SponsorPrompt = () => {
   ]);
   const [input, setInput] = useState('');
   const [benefitList, setBenefitList] = useState<BenefitResponseDTO[]>([]);
+  const { getBenefitList, isLoading } = useBenefitList();
   const [activeBenefitId, setActiveBenefitId] = useState<number | null>(null);
 
   useEffect(() => {
-    setBenefitList([
-      {
-        benefitId: 1,
-        title: '신규회원 쿠폰',
-        startDate: new Date(),
-        endDate: new Date(),
-        discounRate: 10,
-        targetProduct: '초코 우유',
-        amount: 100,
-        targetMember: '신규가입자',
-        status: 'PENDING',
-      },
-      {
-        benefitId: 2,
-        title: 'VIP 전용 혜택',
-        startDate: new Date(),
-        endDate: new Date(),
-        discounRate: 20,
-        targetProduct: '바나나 우유',
-        amount: 50,
-        targetMember: 'VIP 등급 회원',
-        status: 'BEFORE',
-      },
-    ]);
+    const fetchBenefits = async () => {
+      if (sponsorId === undefined) {
+        console.error('Sponsor ID is undefined');
+        return;
+      }
 
-    setActiveBenefitId(1); // 기본으로 첫 번째 혜택 선택
+      const list = await getBenefitList({ sponsorId });
+      if (list.length === 0) {
+        console.log('혜택내역이 없습니다. 신규 혜택이 생성됩니다.');
+        await handleAddBenefit();
+      } else {
+        console.log('혜택내역이 있습니다. 처음 혜택이 활성화됩니다.');
+        setBenefitList(list);
+        setActiveBenefitId(list[0]?.benefitId ?? null); // 첫 번째 혜택 선택
+      }
+    };
+
+    fetchBenefits();
   }, []);
+
   const activeBenefit = benefitList.find((b) => b.benefitId === activeBenefitId);
 
   const handleSend = () => {
@@ -111,7 +107,9 @@ const SponsorPrompt = () => {
     setActiveBenefitId(benefitId); // 새로 만든 항목 선택 상태로
   };
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <Layout>
       <BenefitList
         chatRooms={benefitList}
