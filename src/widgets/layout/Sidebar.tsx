@@ -4,6 +4,8 @@ import theme from '../../shared/styles/theme';
 import { FiX } from 'react-icons/fi';
 import useDevice from '../../shared/hooks/useDevice';
 import { useAuthStore } from '../../shared/store';
+import { useLogout } from '../../shared/hooks/useLogout';
+import Loading from '../../pages/Loading';
 
 interface Menu {
   name: string[];
@@ -42,6 +44,7 @@ const MenuList: MenuListType = {
 const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: () => void }) => {
   const navigate = useNavigate();
   const { isMobile } = useDevice();
+  const { logout, isLoading } = useLogout();
   const userRole = useAuthStore((state) => state.user?.role || 'GUEST');
 
   const ROLE: 'GUEST' | 'USER' | 'SPONSOR' | 'ADMIN' | 'SHOPPER' = location.pathname.startsWith(
@@ -50,7 +53,9 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: () => void
     ? 'SHOPPER'
     : userRole; // 쇼핑여부
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <SidebarContainer isMobile={isMobile} isOpen={isOpen}>
       <div className="closeBtn">
         <FiX size={40} color={'white'} onClick={() => setIsOpen()} />
@@ -71,7 +76,9 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: () => void
           </div>
         ))}
         {ROLE !== 'GUEST' && ROLE !== 'SHOPPER' && (
-          <MenuItem isMobile={isMobile}>로그아웃</MenuItem>
+          <MenuItem isMobile={isMobile} onClick={logout}>
+            로그아웃
+          </MenuItem>
         )}
       </MenuItems>
     </SidebarContainer>
