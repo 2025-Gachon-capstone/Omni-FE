@@ -35,6 +35,7 @@ const ShopOrder = () => {
   const productList = serverProductList.map((product) => ({
     ...product,
     count: Number(count),
+    addToCartOrder: 1,
   }));
 
   // 1. 서버에서 가져온 할인율

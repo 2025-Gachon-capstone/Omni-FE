@@ -10,9 +10,8 @@ import Modal from '../../../../shared/ui/Modal';
 
 export const ProductInfo = ({ product }: { product: ProductItem }) => {
   const navigate = useNavigate();
-  const items = useCartStore((state) => state.items);
+  const { addItem, items } = useCartStore((state) => state);
   const cartItems = useMemo(() => items.map((item) => item.productId), [items]);
-  const addItem = useCartStore((state) => state.addItem);
 
   const [count, setCount] = useState(1); // 상품 개수
   const [totalPrice, setTotalPrice] = useState(product.price); // 상품 총 가격
@@ -28,6 +27,7 @@ export const ProductInfo = ({ product }: { product: ProductItem }) => {
       companyName: product.companyName,
       image1: product.image1,
       count: count,
+      addToCartOrder: items.length + 1,
       price: product.price,
     });
     setIsOpen(false);

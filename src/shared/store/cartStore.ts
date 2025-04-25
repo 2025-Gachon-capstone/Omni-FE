@@ -29,7 +29,13 @@ export const useCartStore = create(
         }
       },
       removeItem: (productId) => {
-        set({ items: get().items.filter((item) => item.productId !== productId) });
+        const updatedItems = get().items.filter((item) => item.productId !== productId);
+        const reorderedItems = updatedItems.map((item, index) => ({
+          ...item,
+          addToCartOrder: index + 1, // 담긴 순서 재정렬
+        }));
+
+        set({ items: reorderedItems });
       },
       clearCart: () => {
         set({ items: [] });

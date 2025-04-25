@@ -12,5 +12,6 @@ declare global {
 
   interface CartItem extends ProductItem {
     count: number;
+    addToCartOrder: number;
   }
 }
