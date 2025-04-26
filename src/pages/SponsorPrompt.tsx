@@ -5,20 +5,30 @@ import { BenefitFormData } from '../features/sponsor/prompt/type/FormDataType';
 import { BenefitList } from '../features/sponsor/prompt/ui/BenefitList';
 import styled from '@emotion/styled';
 import { BenefitResponseDTO } from '../features/sponsor/prompt/type/ResponseDTO';
-import { convertBenefitResponseToForm } from '../features/sponsor/prompt/type/converter';
+import {
+  convertBenefitResToReq,
+  convertBenefitResToForm,
+} from '../features/sponsor/prompt/type/converter';
 import { postBenefit } from '../features/sponsor/prompt/api/postBenefit';
 import { useAuthStore } from '../shared/store';
 import { useBenefitList } from '../features/sponsor/prompt/api/useBenefitList';
 import Loading from './Loading';
+import { patchBenefit } from '../features/sponsor/prompt/api/patchBenefit';
+import { DeleteModal, SubmitModal } from '../features/sponsor/prompt/ui/Modals';
+import { deleteBenefit } from '../features/sponsor/prompt/api/deleteBenefit';
+import { toast } from 'react-toastify';
 
 interface Message {
   type: MessageType;
   text: string;
 }
 
+type ModalType = 'submit' | 'delete' | null;
+
 const SponsorPrompt = () => {
   const sponsorId = useAuthStore((state) => state.user?.sponsorId);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [modalType, setModalType] = useState<ModalType>(null);
   const [messages, setMessages] = useState<Message[]>([
     { type: 'ai', text: '안녕하세요! 협찬 관련해서 어떤 걸 도와드릴까요?' },
   ]);
@@ -107,7 +117,52 @@ const SponsorPrompt = () => {
     setActiveBenefitId(benefitId); // 새로 만든 항목 선택 상태로
   };
 
-  return isLoading ? (
+  const handleReqBtn = async () => {
+    if (activeBenefitId === null) return;
+    // 삭제 API
+    if (modalType === 'delete') {
+      if (benefitList.length < 2) {
+        toast.error(`혜택을 삭제하실 수 없습니다.`);
+        return;
+      }
+
+      await deleteBenefit(activeBenefitId);
+      setBenefitList((prev) => prev.filter((benefit) => benefit.benefitId !== activeBenefitId));
+      setActiveBenefitId(benefitList[0].benefitId);
+      setModalType(null);
+
+      return;
+    }
+    if (activeBenefit === undefined) return;
+    // 임시저장, 제출 API
+    const today = new Date().setHours(0, 0, 0, 0);
+    const startDay = activeBenefit.startDate.setHours(0, 0, 0, 0);
+    const endDay = activeBenefit.endDate.setHours(0, 0, 0, 0);
+    if (startDay < today) {
+      toast.error(`시작일이 오늘보다 빠릅니다`);
+      return;
+    } else if (endDay < today) {
+      toast.error(`종료일이 오늘보다 빠릅니다`);
+      return;
+    } else if (startDay >= endDay) {
+      toast.error('시작일이 종료일보다 늦거나 같습니다');
+      return;
+    }
+
+    if (modalType === 'submit') {
+      if (startDay > today) activeBenefit.status = 'BEFORE';
+      else activeBenefit.status = 'ONGOING';
+    }
+    console.log(`로그 출력`);
+    const request = convertBenefitResToReq(activeBenefit);
+    console.log(`request: ${request}`);
+
+    await patchBenefit(activeBenefitId, request);
+
+    setModalType(null);
+  };
+
+  return isLoading && activeBenefitId ? (
     <Loading />
   ) : (
     <Layout>
@@ -132,12 +187,21 @@ const SponsorPrompt = () => {
           BenefitPopoverSlot={
             isPopoverOpen &&
             activeBenefit &&
-            (console.log('🧩 팝오버에 전달될 데이터:', convertBenefitResponseToForm(activeBenefit)),
+            (console.log('🧩 팝오버에 전달될 데이터:', convertBenefitResToForm(activeBenefit)),
             (
               <BenefitPopover
                 status={activeBenefit.status}
-                data={convertBenefitResponseToForm(activeBenefit)}
+                data={convertBenefitResToForm(activeBenefit)}
                 handleData={handleBenefitDataChange}
+                setModalType={setModalType}
+                onClickSave={handleReqBtn}
+                ModalSlot={
+                  modalType === 'submit' ? (
+                    <SubmitModal onCancel={() => setModalType(null)} onConfirm={handleReqBtn} />
+                  ) : modalType === 'delete' ? (
+                    <DeleteModal onCancel={() => setModalType(null)} onConfirm={handleReqBtn} />
+                  ) : null
+                }
               />
             ))
           }
