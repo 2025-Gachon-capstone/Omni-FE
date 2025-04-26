@@ -10,9 +10,19 @@ interface BenefitPopoverProps {
   status: BenefitResponseDTO['status'];
   data: BenefitFormData;
   handleData: (field: keyof BenefitFormData, value: string | Date) => void;
+  setModalType: (type: 'submit' | 'delete') => void; // ✅ 추가
+  onClickSave?: () => void;
+  ModalSlot?: React.ReactNode; // ✅ 추가
 }
 
-export const BenefitPopover: React.FC<BenefitPopoverProps> = ({ status, data, handleData }) => {
+export const BenefitPopover: React.FC<BenefitPopoverProps> = ({
+  status,
+  data,
+  handleData,
+  setModalType,
+  onClickSave,
+  ModalSlot,
+}) => {
   return (
     <Popover>
       <TitleRow>
@@ -24,7 +34,7 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({ status, data, ha
         />
         {status === 'PENDING' ? (
           <IconButton status={status}>
-            <FiTrash2 size={20} />
+            <FiTrash2 size={20} onClick={() => setModalType?.('delete')} />
           </IconButton>
         ) : (
           <IconButton status={status}>
@@ -88,10 +98,10 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({ status, data, ha
       />
       {status === 'PENDING' ? (
         <Actions>
-          <Button type="button" status={status}>
+          <Button type="button" status={status} onClick={onClickSave}>
             임시저장
           </Button>
-          <SubmitButton type="submit" status={status}>
+          <SubmitButton type="submit" status={status} onClick={() => setModalType?.('submit')}>
             제출하기
           </SubmitButton>
         </Actions>
@@ -102,6 +112,7 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({ status, data, ha
           </Button>
         </Actions>
       )}
+      {ModalSlot} {/* ✅ 여기서 children 렌더링 */}
     </Popover>
   );
 };
