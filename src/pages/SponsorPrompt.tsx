@@ -222,21 +222,28 @@ const SponsorPrompt = () => {
   const handleLoadNext = async () => {
     if (!messageSlice.hasNext || activeBenefitId === null) return;
 
-    console.log('이전 채팅 불러오는 중...');
+    if (throttle) return;
+    if (!throttle) {
+      setThrottle(true);
+      setTimeout(async () => {
+        console.log('이전 채팅 불러오는 중...');
 
-    const prevSlice = await getMessageList({
-      benefitId: activeBenefitId,
-      page: messageSlice.currentPage + 1,
-      size: 5,
-    });
+        const prevSlice = await getMessageList({
+          benefitId: activeBenefitId,
+          page: messageSlice.currentPage + 1,
+          size: 5,
+        });
 
-    if (prevSlice) {
-      setMessageSlice((prev) => ({
-        messages: [...prev.messages, ...prevSlice.messages], // 기존 메시지 뒤에 추가
-        hasNext: prevSlice.hasNext,
-        hasPrev: prevSlice.hasPrev,
-        currentPage: prevSlice.currentPage,
-      }));
+        if (prevSlice) {
+          setMessageSlice((prev) => ({
+            messages: [...prev.messages, ...prevSlice.messages], // 기존 메시지 뒤에 추가
+            hasNext: prevSlice.hasNext,
+            hasPrev: prevSlice.hasPrev,
+            currentPage: prevSlice.currentPage,
+          }));
+        }
+        setThrottle(false);
+      }, 300);
     }
   };
 
