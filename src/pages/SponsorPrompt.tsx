@@ -22,6 +22,7 @@ import { DeleteModal, SubmitModal } from '../features/sponsor/prompt/ui/Modals';
 import { deleteBenefit } from '../features/sponsor/prompt/api/deleteBenefit';
 import { toast } from 'react-toastify';
 import { useMessageList } from '../features/sponsor/prompt/api/useMessageList';
+import { postMessage } from '../features/sponsor/prompt/api/postMessage';
 
 type ModalType = 'submit' | 'delete' | null;
 
@@ -84,7 +85,7 @@ const SponsorPrompt = () => {
         currentPage: 1,
       });
 
-      const slice = await getMessageList({ benefitId: activeBenefitId, size: 5 });
+      const slice = await getMessageList({ benefitId: activeBenefitId, size: 15 });
 
       if (slice === undefined) {
         console.error('채팅 내역 조회 실패');
@@ -102,10 +103,14 @@ const SponsorPrompt = () => {
   const activeBenefit = benefitList.find((b) => b.benefitId === activeBenefitId);
 
   const handleSend = () => {
-    if (!input.trim()) return;
+    if (input === undefined || !input.trim()) {
+      console.log('input이 undefined 혹은 비어있습니다.');
+      toast.error('비어있는 채팅은 보낼 수 없습니다.');
+      return;
+    }
 
-    if (throttle) return;
-    if (!throttle) {
+    if (throttle || activeBenefitId == null) return;
+    else if (!throttle) {
       setThrottle(true);
       setTimeout(async () => {
         const newMessage: MessageDTO = {
@@ -114,12 +119,14 @@ const SponsorPrompt = () => {
           content: input,
         };
 
+        console.log('📨 handleSend 실행됨:', input);
+        const resMessage = await postMessage(activeBenefitId, newMessage, setInput);
+        if (resMessage === undefined) return;
+
         setMessageSlice((prevResponse) => ({
           ...prevResponse, // 이전 상태 복사 (messages, hasNext, hasPrev)
-          messages: [newMessage, ...prevResponse.messages], // 기존 메시지 배열에 새 메시지 추가
+          messages: [resMessage, newMessage, ...prevResponse.messages], // 기존 메시지 배열에 새 메시지 추가
         }));
-        setInput('');
-        console.log('📨 handleSend 실행됨:', input);
         setThrottle(false);
       }, 300);
     }
@@ -231,7 +238,7 @@ const SponsorPrompt = () => {
         const prevSlice = await getMessageList({
           benefitId: activeBenefitId,
           page: messageSlice.currentPage + 1,
-          size: 5,
+          size: 15,
         });
 
         if (prevSlice) {

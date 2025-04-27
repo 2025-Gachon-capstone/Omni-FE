@@ -55,7 +55,7 @@ export function convertMessageJsonToRes(json: any): MessageResponseDTO {
   };
 }
 
-export function convertMessageResToReq(response: MessageDTO): MesssageRequestDTO {
+export function convertMessageToReq(response: MessageDTO): MesssageRequestDTO {
   return {
     content: response.content,
   };

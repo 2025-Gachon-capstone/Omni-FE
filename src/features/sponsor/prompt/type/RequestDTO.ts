@@ -7,4 +7,6 @@ export interface BenefitRequestDTO extends Omit<BenefitFormData, 'startDate' | '
   status: 'PENDING' | 'BEFORE' | 'ONGOING' | 'EXPIRED' | 'DELETED';
 }
   
-
+export interface MesssageRequestDTO {
+  content: string;
+}
