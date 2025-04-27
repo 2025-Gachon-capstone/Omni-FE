@@ -1,7 +1,8 @@
 import { BenefitFormData } from './FormDataType';
-import { BenefitRequestDTO } from './RequestDTO';
-import { BenefitResponseDTO } from './ResponseDTO';
+import { BenefitRequestDTO, MesssageRequestDTO } from './RequestDTO';
+import { BenefitResponseDTO, MessageDTO, MessageResponseDTO } from './ResponseDTO';
 
+/** 혜택 컨버터 */
 export function convertBenefitJsonToRes(json: any): BenefitResponseDTO {
   return {
     benefitId: json.benefitId,
@@ -33,5 +34,29 @@ export function convertBenefitResToReq(response: BenefitResponseDTO): BenefitReq
         ? response.endDate.toISOString().split('T')[0]
         : response.endDate,
     discounRate: response.discounRate / 100,
+  };
+}
+
+/** Message 컨버터 */
+export function convertMessageJsonToDto(json: any): MessageDTO {
+  return {
+    chatMessageId: json.chatMessageId,
+    authorType: json.authorType,
+    content: json.content,
+  };
+}
+
+export function convertMessageJsonToRes(json: any): MessageResponseDTO {
+  return {
+    hasPrev: json.hasPrev,
+    hasNext: json.hasNext,
+    currentPage: json.currentPage,
+    messages: json.messages.map(convertMessageJsonToDto),
+  };
+}
+
+export function convertMessageResToReq(response: MessageDTO): MesssageRequestDTO {
+  return {
+    content: response.content,
   };
 }

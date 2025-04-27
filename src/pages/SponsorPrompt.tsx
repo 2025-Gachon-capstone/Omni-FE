@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Prompt, MessageType } from '../features/sponsor/prompt/ui/Prompt';
+import { Prompt } from '../features/sponsor/prompt/ui/Prompt';
 import { BenefitPopover } from '../features/sponsor/prompt/ui/BenefitPopover';
 import { BenefitFormData } from '../features/sponsor/prompt/type/FormDataType';
 import { BenefitList } from '../features/sponsor/prompt/ui/BenefitList';
 import styled from '@emotion/styled';
-import { BenefitResponseDTO } from '../features/sponsor/prompt/type/ResponseDTO';
+import {
+  BenefitResponseDTO,
+  MessageDTO,
+  MessageResponseDTO,
+} from '../features/sponsor/prompt/type/ResponseDTO';
 import {
   convertBenefitResToReq,
   convertBenefitResToForm,
@@ -17,25 +21,33 @@ import { patchBenefit } from '../features/sponsor/prompt/api/patchBenefit';
 import { DeleteModal, SubmitModal } from '../features/sponsor/prompt/ui/Modals';
 import { deleteBenefit } from '../features/sponsor/prompt/api/deleteBenefit';
 import { toast } from 'react-toastify';
-
-interface Message {
-  type: MessageType;
-  text: string;
-}
+import { useMessageList } from '../features/sponsor/prompt/api/useMessageList';
 
 type ModalType = 'submit' | 'delete' | null;
+
+const initialMessage: MessageDTO = {
+  chatMessageId: -1,
+  authorType: 'AI', // 이미 "AI" | "USER" 타입에 포함됨
+  content: '안녕하세요! 협찬 관련해서 어떤 걸 도와드릴까요?',
+};
 
 const SponsorPrompt = () => {
   const sponsorId = useAuthStore((state) => state.user?.sponsorId);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [modalType, setModalType] = useState<ModalType>(null);
-  const [messages, setMessages] = useState<Message[]>([
-    { type: 'ai', text: '안녕하세요! 협찬 관련해서 어떤 걸 도와드릴까요?' },
-  ]);
+  const [throttle, setThrottle] = useState(false);
+  const [messageSlice, setMessageSlice] = useState<MessageResponseDTO>({
+    messages: [initialMessage],
+    hasNext: false,
+    hasPrev: false,
+    currentPage: 1,
+  });
+
   const [input, setInput] = useState('');
   const [benefitList, setBenefitList] = useState<BenefitResponseDTO[]>([]);
   const { getBenefitList, isLoading } = useBenefitList();
   const [activeBenefitId, setActiveBenefitId] = useState<number | null>(null);
+  const { getMessageList, isMessageLoading } = useMessageList();
 
   useEffect(() => {
     const fetchBenefits = async () => {
@@ -58,14 +70,59 @@ const SponsorPrompt = () => {
     fetchBenefits();
   }, []);
 
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (activeBenefitId === null) {
+        console.error('benefit ID is undefined');
+        return;
+      }
+
+      setMessageSlice({
+        messages: [initialMessage],
+        hasNext: false,
+        hasPrev: false,
+        currentPage: 1,
+      });
+
+      const slice = await getMessageList({ benefitId: activeBenefitId, size: 5 });
+
+      if (slice === undefined) {
+        console.error('채팅 내역 조회 실패');
+        return;
+      }
+
+      if (slice.messages.length !== 0) {
+        setMessageSlice(slice);
+      }
+    };
+
+    fetchMessages();
+  }, [activeBenefitId]);
+
   const activeBenefit = benefitList.find((b) => b.benefitId === activeBenefitId);
 
   const handleSend = () => {
     if (!input.trim()) return;
-    setMessages((prev) => [...prev, { type: 'user', text: input }]);
-    setInput('');
-    console.log('📨 handleSend 실행됨:', input);
-    // TODO: 실제 AI 응답 로직 연결
+
+    if (throttle) return;
+    if (!throttle) {
+      setThrottle(true);
+      setTimeout(async () => {
+        const newMessage: MessageDTO = {
+          chatMessageId: null,
+          authorType: 'USER',
+          content: input,
+        };
+
+        setMessageSlice((prevResponse) => ({
+          ...prevResponse, // 이전 상태 복사 (messages, hasNext, hasPrev)
+          messages: [newMessage, ...prevResponse.messages], // 기존 메시지 배열에 새 메시지 추가
+        }));
+        setInput('');
+        console.log('📨 handleSend 실행됨:', input);
+        setThrottle(false);
+      }, 300);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -162,7 +219,28 @@ const SponsorPrompt = () => {
     setModalType(null);
   };
 
-  return isLoading && activeBenefitId ? (
+  const handleLoadNext = async () => {
+    if (!messageSlice.hasNext || activeBenefitId === null) return;
+
+    console.log('이전 채팅 불러오는 중...');
+
+    const prevSlice = await getMessageList({
+      benefitId: activeBenefitId,
+      page: messageSlice.currentPage + 1,
+      size: 5,
+    });
+
+    if (prevSlice) {
+      setMessageSlice((prev) => ({
+        messages: [...prev.messages, ...prevSlice.messages], // 기존 메시지 뒤에 추가
+        hasNext: prevSlice.hasNext,
+        hasPrev: prevSlice.hasPrev,
+        currentPage: prevSlice.currentPage,
+      }));
+    }
+  };
+
+  return isLoading && isMessageLoading ? (
     <Loading />
   ) : (
     <Layout>
@@ -178,12 +256,13 @@ const SponsorPrompt = () => {
       />
       <PromptWrapper>
         <Prompt
-          messages={messages}
+          messages={messageSlice.messages}
           input={input}
           onInputChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           onSend={handleSend}
           onTogglePopover={() => setIsPopoverOpen((prev) => !prev)}
+          onLoadNext={handleLoadNext}
           BenefitPopoverSlot={
             isPopoverOpen &&
             activeBenefit &&
