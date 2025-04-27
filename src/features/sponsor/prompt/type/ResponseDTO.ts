@@ -5,3 +5,16 @@ export interface BenefitResponseDTO extends BenefitFormData {
   benefitId: number;
   status: 'PENDING' | 'BEFORE' | 'ONGOING' | 'EXPIRED' | 'DELETED';
 }
+
+export interface MessageDTO {
+  chatMessageId: number | null;
+  authorType: 'USER' | 'AI';
+  content: string;
+}
+
+export interface MessageResponseDTO {
+  messages: MessageDTO[];
+  hasNext: boolean;
+  hasPrev: boolean;
+  currentPage: number;
+}

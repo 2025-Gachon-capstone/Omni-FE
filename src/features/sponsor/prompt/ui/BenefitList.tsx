@@ -8,14 +8,15 @@ interface BenefitListProps {
   chatRooms: BenefitResponseDTO[];
   activeBenefitId: number | null;
   onSelect: (id: number) => void;
+  onAdd: () => Promise<void>;
 }
 
-export const BenefitList = ({ chatRooms, activeBenefitId, onSelect }: BenefitListProps) => {
+export const BenefitList = ({ chatRooms, activeBenefitId, onSelect, onAdd }: BenefitListProps) => {
   return (
     <Sidebar>
       <Header>
         <Title>협찬 내역</Title>
-        <AddButton>
+        <AddButton onClick={onAdd}>
           <BsPlusSquareFill size={20} />
         </AddButton>
       </Header>
@@ -89,6 +90,7 @@ const List = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  overflow-y: auto; /* ✅ 세로 스크롤 추가 */
 `;
 
 const ListItem = styled.li<{ isActive: boolean }>`

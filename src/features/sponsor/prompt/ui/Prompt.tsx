@@ -6,21 +6,16 @@ import { useHeaderStore } from '../../../../shared/store';
 
 import { AiFillSmile } from 'react-icons/ai';
 import { BsPencilSquare } from 'react-icons/bs';
-
-export type MessageType = 'ai' | 'user';
-
-interface MessageItem {
-  type: MessageType;
-  text: string;
-}
+import { MessageDTO } from '../type/ResponseDTO';
 
 interface PromptProps {
-  messages: MessageItem[];
+  messages: MessageDTO[];
   input: string;
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   onSend: () => void;
   onTogglePopover: () => void;
+  onLoadNext: () => void;
   BenefitPopoverSlot?: React.ReactNode;
 }
 
@@ -31,18 +26,25 @@ export const Prompt = ({
   onKeyDown,
   onSend,
   onTogglePopover,
+  onLoadNext,
   BenefitPopoverSlot,
 }: PromptProps) => {
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const headerHeight = useHeaderStore((state) => state.headerHeight);
+  var threshold = -417;
 
   useEffect(() => {
     if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      const latestMessage = messages[messages.length - 1];
+      if (latestMessage && latestMessage.chatMessageId === null) {
+        console.log('스크롤 최하단 이동');
+        console.log(`latestMessage: ${latestMessage.chatMessageId}`);
+        chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      }
     }
-  }, [messages]);
+  }, [onKeyDown]);
 
   useLayoutEffect(() => {
     if (inputRef.current) {
@@ -55,13 +57,38 @@ export const Prompt = ({
     }
   }, [input]);
 
+  useEffect(() => {
+    const chatBox = chatRef.current;
+    if (!chatBox) return;
+
+    const handleScroll = () => {
+      console.log(`스크롤 높이: ${chatBox.scrollTop}`);
+
+      if (chatBox.scrollTop === 0) {
+        console.log('스크롤 최하단');
+      }
+
+      if (chatBox.scrollTop <= threshold) {
+        threshold += -417;
+        console.log(`스크롤 최상단(옛날 메시지 불러오기): ${threshold}`);
+        onLoadNext();
+      }
+    };
+
+    chatBox.addEventListener('scroll', handleScroll);
+
+    return () => {
+      chatBox.removeEventListener('scroll', handleScroll);
+    };
+  }, [onLoadNext]);
+
   return (
     <Container headerHeight={headerHeight}>
       <ChatBox ref={chatRef}>
         {messages.map((msg, idx) => (
-          <MessageWrapper key={idx} type={msg.type}>
-            {msg.type === 'ai' && <Avatar />}
-            <MessageBubble type={msg.type}>{msg.text}</MessageBubble>
+          <MessageWrapper key={idx} type={msg.authorType}>
+            {msg.authorType === 'AI' && <Avatar />}
+            <MessageBubble type={msg.authorType}>{msg.content}</MessageBubble>
           </MessageWrapper>
         ))}
       </ChatBox>
@@ -103,14 +130,14 @@ const ChatBox = styled.div`
   padding: 1rem;
   overflow-y: auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: 0.5rem;
 `;
 
-const MessageWrapper = styled.div<{ type: 'user' | 'ai' }>`
+const MessageWrapper = styled.div<{ type: 'USER' | 'AI' }>`
   display: flex;
   align-items: flex-start;
-  justify-content: ${(props) => (props.type === 'user' ? 'flex-end' : 'flex-start')};
+  justify-content: ${(props) => (props.type === 'USER' ? 'flex-end' : 'flex-start')};
   gap: 0.5rem;
 `;
 
@@ -125,15 +152,15 @@ const Avatar = styled(AiFillSmile)`
   align-items: center;
 `;
 
-const MessageBubble = styled.div<{ type: 'user' | 'ai' }>`
-  align-self: ${(props) => (props.type === 'user' ? 'flex-end' : 'flex-start')};
-  background-color: ${(props) => (props.type === 'user' ? theme.color.main : theme.color.white)};
-  color: ${(props) => (props.type === 'user' ? theme.color.white : theme.color.black)};
+const MessageBubble = styled.div<{ type: 'USER' | 'AI' }>`
+  align-self: ${(props) => (props.type === 'USER' ? 'flex-end' : 'flex-start')};
+  background-color: ${(props) => (props.type === 'USER' ? theme.color.main : theme.color.white)};
+  color: ${(props) => (props.type === 'USER' ? theme.color.white : theme.color.black)};
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   max-width: 70%;
   font-size: 0.875rem;
-  border: ${(props) => (props.type === 'ai' ? `1px solid ${theme.color.bold_border}` : 'none')};
+  border: ${(props) => (props.type === 'AI' ? `1px solid ${theme.color.bold_border}` : 'none')};
   white-space: pre-wrap; // ✅ 줄바꿈 적용!
 `;
 
