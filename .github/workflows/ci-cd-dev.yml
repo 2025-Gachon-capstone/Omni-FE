@@ -35,7 +35,8 @@ jobs:
       - name: Build and push React Docker image
         run: |
           docker buildx build --push \
-            --build-arg REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            --build-arg VITE_VERIFY_SPONSOR_API_KEY=${{ secrets.VITE_VERIFY_SPONSOR_API_KEY }}
             --tag asia-northeast3-docker.pkg.dev/${{ secrets.ORG_DEV_GCP_PROJECT_ID }}/${{ secrets.ORG_DEV_GCP_REGISTRY_NAME }}/omni-fe-dev:${{ github.sha }}${{ github.run_attempt }} .
 
   deploy:
