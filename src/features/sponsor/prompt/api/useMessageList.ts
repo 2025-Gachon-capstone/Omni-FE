@@ -59,7 +59,7 @@ export const useMessageList = () => {
       toast.error(message);
       setInput(message.content);
     } finally {
-      setIsMessageLoading(true);
+      setIsMessageLoading(false);
       const endTime = Date.now(); // 요청 끝난 시간 기록
       console.log(`⏱️ postMessage API 호출 소요시간: ${(endTime - startTime) / 1000}s`);
     }

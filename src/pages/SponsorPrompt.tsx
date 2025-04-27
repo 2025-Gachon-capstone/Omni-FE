@@ -255,53 +255,54 @@ const SponsorPrompt = () => {
     }
   };
 
-  return isLoading && isMessageLoading ? (
-    <Loading />
-  ) : (
-    <Layout>
-      <BenefitList
-        chatRooms={benefitList}
-        activeBenefitId={activeBenefitId}
-        onSelect={(id: number) => {
-          console.log('✅ 선택된 혜택 ID:', id); // ✅ 여기!
-          setActiveBenefitId(id);
-          setIsPopoverOpen(false); // 👉 혜택 변경 시 팝오버 닫기
-        }}
-        onAdd={handleAddBenefit} // ✅ 신규 혜택 추가
-      />
-      <PromptWrapper>
-        <Prompt
-          messages={messageSlice.messages}
-          input={input}
-          onInputChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onSend={handleSend}
-          onTogglePopover={() => setIsPopoverOpen((prev) => !prev)}
-          onLoadNext={handleLoadNext}
-          BenefitPopoverSlot={
-            isPopoverOpen &&
-            activeBenefit &&
-            (console.log('🧩 팝오버에 전달될 데이터:', convertBenefitResToForm(activeBenefit)),
-            (
-              <BenefitPopover
-                status={activeBenefit.status}
-                data={convertBenefitResToForm(activeBenefit)}
-                handleData={handleBenefitDataChange}
-                setModalType={setModalType}
-                onClickSave={handleReqBtn}
-                ModalSlot={
-                  modalType === 'submit' ? (
-                    <SubmitModal onCancel={() => setModalType(null)} onConfirm={handleReqBtn} />
-                  ) : modalType === 'delete' ? (
-                    <DeleteModal onCancel={() => setModalType(null)} onConfirm={handleReqBtn} />
-                  ) : null
-                }
-              />
-            ))
-          }
+  return (
+    <>
+      {(isLoading || isMessageLoading) && <Loading />}
+      <Layout>
+        <BenefitList
+          chatRooms={benefitList}
+          activeBenefitId={activeBenefitId}
+          onSelect={(id: number) => {
+            console.log('✅ 선택된 혜택 ID:', id); // ✅ 여기!
+            setActiveBenefitId(id);
+            setIsPopoverOpen(false); // 👉 혜택 변경 시 팝오버 닫기
+          }}
+          onAdd={handleAddBenefit} // ✅ 신규 혜택 추가
         />
-      </PromptWrapper>
-    </Layout>
+        <PromptWrapper>
+          <Prompt
+            messages={messageSlice.messages}
+            input={input}
+            onInputChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onSend={handleSend}
+            onTogglePopover={() => setIsPopoverOpen((prev) => !prev)}
+            onLoadNext={handleLoadNext}
+            BenefitPopoverSlot={
+              isPopoverOpen &&
+              activeBenefit &&
+              (console.log('🧩 팝오버에 전달될 데이터:', convertBenefitResToForm(activeBenefit)),
+              (
+                <BenefitPopover
+                  status={activeBenefit.status}
+                  data={convertBenefitResToForm(activeBenefit)}
+                  handleData={handleBenefitDataChange}
+                  setModalType={setModalType}
+                  onClickSave={handleReqBtn}
+                  ModalSlot={
+                    modalType === 'submit' ? (
+                      <SubmitModal onCancel={() => setModalType(null)} onConfirm={handleReqBtn} />
+                    ) : modalType === 'delete' ? (
+                      <DeleteModal onCancel={() => setModalType(null)} onConfirm={handleReqBtn} />
+                    ) : null
+                  }
+                />
+              ))
+            }
+          />
+        </PromptWrapper>
+      </Layout>
+    </>
   );
 };
 
