@@ -13,16 +13,12 @@ import {
   convertBenefitResToReq,
   convertBenefitResToForm,
 } from '../features/sponsor/prompt/type/converter';
-import { postBenefit } from '../features/sponsor/prompt/api/postBenefit';
 import { useAuthStore } from '../shared/store';
 import { useBenefitList } from '../features/sponsor/prompt/api/useBenefitList';
 import Loading from './Loading';
-import { patchBenefit } from '../features/sponsor/prompt/api/patchBenefit';
 import { DeleteModal, SubmitModal } from '../features/sponsor/prompt/ui/Modals';
-import { deleteBenefit } from '../features/sponsor/prompt/api/deleteBenefit';
 import { toast } from 'react-toastify';
 import { useMessageList } from '../features/sponsor/prompt/api/useMessageList';
-import { postMessage } from '../features/sponsor/prompt/api/postMessage';
 
 type ModalType = 'submit' | 'delete' | null;
 
@@ -46,9 +42,9 @@ const SponsorPrompt = () => {
 
   const [input, setInput] = useState('');
   const [benefitList, setBenefitList] = useState<BenefitResponseDTO[]>([]);
-  const { getBenefitList, isLoading } = useBenefitList();
+  const { getBenefitList, postBenefit, patchBenefit, deleteBenefit, isLoading } = useBenefitList();
   const [activeBenefitId, setActiveBenefitId] = useState<number | null>(null);
-  const { getMessageList, isMessageLoading } = useMessageList();
+  const { getMessageList, postMessage, isMessageLoading } = useMessageList();
 
   useEffect(() => {
     const fetchBenefits = async () => {
@@ -191,8 +187,13 @@ const SponsorPrompt = () => {
       }
 
       await deleteBenefit(activeBenefitId);
-      setBenefitList((prev) => prev.filter((benefit) => benefit.benefitId !== activeBenefitId));
-      setActiveBenefitId(benefitList[0].benefitId);
+      setBenefitList((prev) => {
+        const newBenefitList = prev.filter((benefit) => benefit.benefitId !== activeBenefitId);
+        setActiveBenefitId(newBenefitList[0].benefitId);
+        return newBenefitList;
+      });
+
+      setIsPopoverOpen(false);
       setModalType(null);
 
       return;
