@@ -25,14 +25,14 @@ export const validateFormData = (
     );
   } else {
     // 일반유저 유효성검사
-    const { name, id, password, passwordCheck, cardPassword } = userData;
+    const { name, loginId, password, eqPassword, cardPassword } = userData;
 
     return !(
       isEmpty(name) ||
-      isEmpty(id) ||
+      isEmpty(loginId) ||
       isEmpty(password) ||
-      isEmpty(passwordCheck) ||
-      password !== passwordCheck ||
+      isEmpty(eqPassword) ||
+      password !== eqPassword ||
       isEmpty(cardPassword) ||
       cardPassword.length !== 4 ||
       isNaN(Number(cardPassword))

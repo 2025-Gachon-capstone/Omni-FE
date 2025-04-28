@@ -1,9 +1,9 @@
 /** (일반유저) 회원가입 데이터 타입 */
 export type UserFormData = {
   name: string;
-  id: string;
+  loginId: string;
   password: string;
-  passwordCheck: string;
+  eqPassword: string;
   cardPassword: string;
 };
 

@@ -13,19 +13,22 @@ import Modal from '../shared/ui/Modal';
 import theme from '../shared/styles/theme';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useJoin } from '../features/join/api/useJoin';
+import Loading from './Loading';
 
 const Join = () => {
   const { isMobile } = useDevice();
   const navigate = useNavigate();
 
+  const { signup, loading } = useJoin();
   const [isOpen, setIsOpen] = useState(false); // 모달창 오픈 여부
   const [isSponsor, setIsSponsor] = useState(false); // 회원가입 타입
   // 일반유저 데이터
   const [userFormData, setUserFormData] = useState<UserFormData>({
     name: '',
-    id: '',
+    loginId: '',
     password: '',
-    passwordCheck: '',
+    eqPassword: '',
     cardPassword: '',
   });
   // 협찬사 데이터
@@ -45,9 +48,9 @@ const Join = () => {
     setUserFormData((prev) => ({
       ...prev,
       name: '',
-      id: '',
+      loginId: '',
       password: '',
-      passwordCheck: '',
+      eqPassword: '',
       cardPassword: '',
     }));
     setSponsorFormData((prev) => ({
@@ -63,12 +66,15 @@ const Join = () => {
     }));
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const data = isSponsor ? sponsorFormData : userFormData;
     console.log('회원가입 데이터:', data);
     // 유효성 검사
     if (validateFormData(isSponsor, userFormData, sponsorFormData)) {
-      setIsOpen(true);
+      const isSuccess = await signup(isSponsor, data);
+      if (isSuccess) {
+        setIsOpen(true);
+      }
     } else {
       toast.error('모든 항목을 정확히 입력해주세요');
     }
@@ -76,32 +82,36 @@ const Join = () => {
 
   return (
     <>
-      <Container>
-        <JoinContainer isMobile={isMobile}>
-          <Title>회원가입</Title>
-          <ToggleButton
-            caption="사업자 여부"
-            isSponsor={isSponsor}
-            toggleHandler={() => {
-              resetData();
-              setIsSponsor((prev) => !prev);
-            }}
-          />
-          {!isSponsor ? (
-            <JoinUserForm formData={userFormData} setFormData={setUserFormData} />
-          ) : (
-            <JoinSponsorForm formData={sponsorFormData} setFormData={setSponsorFormData} />
-          )}
-          <Button
-            width="100%"
-            onClick={handleLogin}
-            disabled={!validateFormData(isSponsor, userFormData, sponsorFormData)}
-          >
-            회원가입
-          </Button>
-          <LoginPhrase />
-        </JoinContainer>
-      </Container>
+      {loading ? (
+        <Loading />
+      ) : (
+        <Container>
+          <JoinContainer isMobile={isMobile}>
+            <Title>회원가입</Title>
+            <ToggleButton
+              caption="사업자 여부"
+              isSponsor={isSponsor}
+              toggleHandler={() => {
+                resetData();
+                setIsSponsor((prev) => !prev);
+              }}
+            />
+            {!isSponsor ? (
+              <JoinUserForm formData={userFormData} setFormData={setUserFormData} />
+            ) : (
+              <JoinSponsorForm formData={sponsorFormData} setFormData={setSponsorFormData} />
+            )}
+            <Button
+              width="100%"
+              onClick={handleLogin}
+              disabled={!validateFormData(isSponsor, userFormData, sponsorFormData)}
+            >
+              회원가입
+            </Button>
+            <LoginPhrase />
+          </JoinContainer>
+        </Container>
+      )}
       {isOpen && (
         <Modal
           icon={<BsCheckCircle size={32} color={theme.color.main} />}
