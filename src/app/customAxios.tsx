@@ -10,7 +10,6 @@ const BASE_URL = import.meta.env.VITE_API_URL;
  */
 const publicAxios = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -19,7 +18,9 @@ const publicAxios = axios.create({
 // refresh 이용한 aceess 재발급
 const refreshAccessToken = async () => {
   try {
-    const response = await privateAxios.post('/user/v1/auth/reissue');
+    const response = await privateAxios.post('/user/v1/auth/reissue', null, {
+      withCredentials: true,
+    });
     const newAccessToken = response.headers['authorization'];
     if (newAccessToken) {
       setAccessToken(newAccessToken);
@@ -50,7 +51,6 @@ const refreshAccessToken = async () => {
  */
 const privateAxios = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },

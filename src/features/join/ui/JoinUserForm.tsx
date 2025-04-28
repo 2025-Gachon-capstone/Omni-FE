@@ -16,7 +16,7 @@ export const JoinUserForm = ({
   return (
     <Container>
       <Input placeholder="이름" value={formData.name} onChange={handleData('name')} />
-      <Input placeholder="아이디" value={formData.id} onChange={handleData('id')} />
+      <Input placeholder="아이디" value={formData.loginId} onChange={handleData('loginId')} />
       <Input
         type="password"
         placeholder="비밀번호"
@@ -26,8 +26,8 @@ export const JoinUserForm = ({
       <Input
         type="password"
         placeholder="비밀번호 확인"
-        value={formData.passwordCheck}
-        onChange={handleData('passwordCheck')}
+        value={formData.eqPassword}
+        onChange={handleData('eqPassword')}
       />
       <Input
         type="password"

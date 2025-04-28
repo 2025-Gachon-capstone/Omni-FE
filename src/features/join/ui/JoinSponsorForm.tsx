@@ -23,7 +23,7 @@ export const JoinSponsorForm = ({
 
   // 사업자 인증 API
   const checkSponsor = async () => {
-    const isValid = await verifySponsor(formData.bNumber);
+    const isValid = await verifySponsor(formData.sponsorNumber);
     if (isValid) {
       toast.success('사업자 인증에 성공했습니다.');
       setFormData((prev) => ({ ...prev, isValid: true }));
@@ -36,7 +36,7 @@ export const JoinSponsorForm = ({
   return (
     <Container>
       <Input placeholder="이름" value={formData.name} onChange={handleData('name')} />
-      <Input placeholder="아이디" value={formData.id} onChange={handleData('id')} />
+      <Input placeholder="아이디" value={formData.loginId} onChange={handleData('loginId')} />
       <Input
         type="password"
         placeholder="비밀번호"
@@ -46,16 +46,16 @@ export const JoinSponsorForm = ({
       <Input
         type="password"
         placeholder="비밀번호 확인"
-        value={formData.passwordCheck}
-        onChange={handleData('passwordCheck')}
+        value={formData.eqPassword}
+        onChange={handleData('eqPassword')}
       />
       <div className="business-form">
         <BusinessInput
           maxLength={10}
           placeholder="사업자등록번호(10자리)"
-          value={formData.bNumber.toString()}
+          value={formData.sponsorNumber.toString()}
           onChange={(e) =>
-            setFormData((prev) => ({ ...prev, bNumber: e.target.value, isValid: false }))
+            setFormData((prev) => ({ ...prev, sponsorNumber: e.target.value, isValid: false }))
           }
         />
         <Button
@@ -67,10 +67,16 @@ export const JoinSponsorForm = ({
           인증
         </Button>
       </div>
-      <Input placeholder="회사명" value={formData.bName} onChange={handleData('bName')} />
+      <Input
+        placeholder="회사명"
+        value={formData.sponsorName}
+        onChange={handleData('sponsorName')}
+      />
       <Category
-        bCategory={formData.bCategory}
-        setBCategory={(category) => setFormData((prev) => ({ ...prev, bCategory: category }))}
+        category={formData.category}
+        setBCategory={(category, categoryId) =>
+          setFormData((prev) => ({ ...prev, category: category, categoryId: categoryId }))
+        }
       />
     </Container>
   );

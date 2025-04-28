@@ -10,29 +10,30 @@ export const validateFormData = (
   // 현재는 빈 값 체크만.
   if (isSponsor) {
     // 협찬사 유효성검사
-    const { name, id, password, passwordCheck, bNumber, bName, bCategory, isValid } = sponsorData;
+    const { name, loginId, password, eqPassword, sponsorNumber, sponsorName, category, isValid } =
+      sponsorData;
 
     return !(
       isEmpty(name) ||
-      isEmpty(id) ||
+      isEmpty(loginId) ||
       isEmpty(password) ||
-      isEmpty(passwordCheck) ||
-      password !== passwordCheck ||
-      isEmpty(bNumber) ||
-      isEmpty(bName) ||
-      isEmpty(bCategory) ||
+      isEmpty(eqPassword) ||
+      password !== eqPassword ||
+      isEmpty(sponsorNumber) ||
+      isEmpty(sponsorName) ||
+      isEmpty(category) ||
       !isValid
     );
   } else {
     // 일반유저 유효성검사
-    const { name, id, password, passwordCheck, cardPassword } = userData;
+    const { name, loginId, password, eqPassword, cardPassword } = userData;
 
     return !(
       isEmpty(name) ||
-      isEmpty(id) ||
+      isEmpty(loginId) ||
       isEmpty(password) ||
-      isEmpty(passwordCheck) ||
-      password !== passwordCheck ||
+      isEmpty(eqPassword) ||
+      password !== eqPassword ||
       isEmpty(cardPassword) ||
       cardPassword.length !== 4 ||
       isNaN(Number(cardPassword))
