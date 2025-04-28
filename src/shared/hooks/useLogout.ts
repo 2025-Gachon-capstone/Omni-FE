@@ -13,7 +13,7 @@ export const useLogout = () => {
   const logout = async () => {
     setIsLoading(true);
     try {
-      await privateAxios.post('/user/v1/auth/logout');
+      await privateAxios.post('/user/v1/auth/logout', null, { withCredentials: true });
       removeAccessToken(); // 토큰 제거
       clearAuth(); // Zustand 상태 초기화
       toast.info('로그아웃 되었습니다.');
