@@ -1,21 +1,25 @@
 import styled from '@emotion/styled';
 import { useState } from 'react';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { data } from '../model/SponsorCategoryData';
+import { useGetCategory } from '../api/useGetCategory';
+import Loading from '../../../pages/Loading';
 
 export const Category = ({
-  bCategory,
+  category,
   setBCategory,
 }: {
-  bCategory: string;
-  setBCategory: (category: string) => void;
+  category: string;
+  setBCategory: (category: string, categoryId: number) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false); // 메뉴 오픈
+  const { categories, loading } = useGetCategory(); // 카테고리 데이터 가져오기
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <SelectBox onClick={() => setIsOpen((prev) => !prev)}>
-      <label style={{ color: `${bCategory == '' ? '#999999' : 'black'}` }}>
-        {bCategory || '회사 카테고리'}
+      <label style={{ color: `${category == '' ? '#999999' : 'black'}` }}>
+        {category || '회사 카테고리'}
       </label>
       {!isOpen ? (
         <IoIosArrowDown size={20} color="#999999" />
@@ -23,17 +27,17 @@ export const Category = ({
         <IoIosArrowUp size={20} color="#999999" />
       )}
       <SelectOptions visible={isOpen}>
-        {data.map((option) => (
+        {categories.map((option) => (
           <Option
             onClick={(e) => {
               e.stopPropagation();
-              setBCategory(option.name);
+              setBCategory(option.title, option.categoryId);
               setIsOpen(false);
             }}
-            key={option.id}
-            className={option.name === bCategory ? 'selected' : ''}
+            key={option.categoryId}
+            className={option.title === category ? 'selected' : ''}
           >
-            {option.name}
+            {option.title}
           </Option>
         ))}
       </SelectOptions>

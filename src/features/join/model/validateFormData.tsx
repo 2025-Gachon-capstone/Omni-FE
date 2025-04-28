@@ -10,17 +10,18 @@ export const validateFormData = (
   // 현재는 빈 값 체크만.
   if (isSponsor) {
     // 협찬사 유효성검사
-    const { name, id, password, passwordCheck, bNumber, bName, bCategory, isValid } = sponsorData;
+    const { name, loginId, password, eqPassword, sponsorNumber, sponsorName, category, isValid } =
+      sponsorData;
 
     return !(
       isEmpty(name) ||
-      isEmpty(id) ||
+      isEmpty(loginId) ||
       isEmpty(password) ||
-      isEmpty(passwordCheck) ||
-      password !== passwordCheck ||
-      isEmpty(bNumber) ||
-      isEmpty(bName) ||
-      isEmpty(bCategory) ||
+      isEmpty(eqPassword) ||
+      password !== eqPassword ||
+      isEmpty(sponsorNumber) ||
+      isEmpty(sponsorName) ||
+      isEmpty(category) ||
       !isValid
     );
   } else {

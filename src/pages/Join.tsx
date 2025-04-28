@@ -34,12 +34,13 @@ const Join = () => {
   // 협찬사 데이터
   const [sponsorFormData, setSponsorFormData] = useState<SponsorFormData>({
     name: '',
-    id: '',
+    loginId: '',
     password: '',
-    passwordCheck: '',
-    bNumber: '',
-    bName: '',
-    bCategory: '',
+    eqPassword: '',
+    sponsorNumber: '',
+    sponsorName: '',
+    categoryId: -1,
+    category: '',
     isValid: false,
   });
 
@@ -56,18 +57,25 @@ const Join = () => {
     setSponsorFormData((prev) => ({
       ...prev,
       name: '',
-      id: '',
+      loginId: '',
       password: '',
-      passwordCheck: '',
-      bNumber: '',
-      bName: '',
-      bCategory: '',
+      eqPassword: '',
+      sponsorNumber: '',
+      sponsorName: '',
+      categoryId: -1,
+      category: '',
       isValid: false,
     }));
   };
 
   const handleLogin = async () => {
-    const data = isSponsor ? sponsorFormData : userFormData;
+    let data;
+    if (isSponsor) {
+      const { category, isValid, ...submitSponsorData } = sponsorFormData;
+      data = submitSponsorData;
+    } else {
+      data = userFormData;
+    }
     console.log('회원가입 데이터:', data);
     // 유효성 검사
     if (validateFormData(isSponsor, userFormData, sponsorFormData)) {

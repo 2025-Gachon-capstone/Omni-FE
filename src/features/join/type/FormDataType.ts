@@ -10,11 +10,12 @@ export type UserFormData = {
 /** (협찬사) 회원가입 데이터 타입 */
 export type SponsorFormData = {
   name: string;
-  id: string;
+  loginId: string;
   password: string;
-  passwordCheck: string;
-  bNumber: string;
-  bName: string;
-  bCategory: string;
+  eqPassword: string;
+  sponsorNumber: string;
+  sponsorName: string;
+  categoryId: number;
+  category: string;
   isValid: boolean;
 };
