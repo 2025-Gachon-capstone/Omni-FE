@@ -17,7 +17,7 @@ export const AvailableList = ({ data }: { data: Benefit[] }) => {
       </TitleWrap>
       <Content>
         {data.map((el) => {
-          return <BenefitItem key={el.cardBenefitId}>{el.benefitName}</BenefitItem>;
+          return <BenefitItem key={el.cardBenefitId}>{el.title}</BenefitItem>;
         })}
       </Content>
     </Container>
