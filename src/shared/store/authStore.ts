@@ -3,7 +3,8 @@ import { persist } from 'zustand/middleware';
 
 export interface User {
   memberId: number;
-  sponsorId: number;
+  sponsorId: string;
+  loginId: string;
   role: 'USER' | 'ADMIN' | 'SPONSOR';
   memberName: string;
 }
@@ -21,7 +22,10 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       isLoggedIn: false,
-      setAuth: ({ isLoggedIn, user }) => set({ isLoggedIn, user }),
+      setAuth: ({ isLoggedIn, user }) => {
+        const userId = user.role === 'SPONSOR' ? user.sponsorId : user.loginId;
+        set({ isLoggedIn, user: { ...user, loginId: userId } });
+      },
       getUser: () => get().user,
       clearAuth: () => set({ isLoggedIn: false, user: null }),
     }),

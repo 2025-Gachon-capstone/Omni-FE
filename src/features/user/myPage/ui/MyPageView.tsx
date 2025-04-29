@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
 import useDevice from '../../../../shared/hooks/useDevice';
+import { useAuthStore } from '../../../../shared/store';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../../../shared/ui';
 import { BsQuestionCircle } from 'react-icons/bs';
@@ -9,6 +10,7 @@ import Modal from '../../../../shared/ui/Modal';
 
 const MyPageView = () => {
   const { isMobile } = useDevice();
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false); // 모달창 오픈 여부
@@ -20,7 +22,7 @@ const MyPageView = () => {
           <InfoBox isMobile={isMobile}>
             <div className="label">아이디</div>
             <Input
-              value="id입니다"
+              value={user?.loginId || 'no id...'}
               styleType="outline"
               width={isMobile ? '15rem' : '27.5rem'}
               disabled
