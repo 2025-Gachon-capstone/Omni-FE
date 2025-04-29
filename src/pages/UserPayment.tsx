@@ -272,7 +272,7 @@ export default UserPayment;
 const Container = styled.div`
   width: 95vw;
   max-width: 75rem;
-  min-height: 100vh;
+  min-height: 80vh;
   margin: 3rem auto;
   display: flex;
   flex-direction: column;
