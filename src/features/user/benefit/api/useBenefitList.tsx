@@ -58,7 +58,7 @@ export const useBenefitList = () => {
     setLoading(true);
     try {
       const res = await privateAxios('/card/v1/my/cardBenefits/available');
-      console.log(res);
+
       return res.data.result;
     } catch (err: any) {
       const message = err.response?.data?.message || '혜택 불러오기 실패';
