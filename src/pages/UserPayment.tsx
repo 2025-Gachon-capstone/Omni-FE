@@ -7,141 +7,21 @@ import { Keyword } from '../features/user/payment/type/Keyword';
 import { SearchBar } from '../features/user/payment/ui/SearchBar';
 import { toast } from 'react-toastify';
 import { Table } from '../shared/ui';
-import { PaymentResDto, AugmentedPayment } from '../features/user/payment/type/Payment';
+import { PaymentResDto } from '../features/user/payment/type/Payment';
 import { paymentColumns } from '../features/user/payment/model/PaymentColumn';
 import theme from '../shared/styles/theme';
 import dayjs from 'dayjs';
 import Pagination from '../shared/ui/Pagination';
-
-// 임시데이터
-const result: { PaymentResDtos: PaymentResDto[] } = {
-  PaymentResDtos: [
-    {
-      paymentId: 1,
-      createdAt: '2025-04-15T12:00:00Z',
-      orderCode: 'ORDER12345',
-      Items: [
-        { orderId: 1, name: '버거킹 와퍼', price: 5000, quantity: 1 },
-        { orderId: 2, name: '감자튀김', price: 5000, quantity: 2 },
-      ],
-      totalPrice: 15000,
-      status: '결제 완료',
-    },
-    {
-      paymentId: 2,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 3,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 4,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 5,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 6,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 7,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 8,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 9,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 10,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 11,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 12,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-
-    {
-      paymentId: 13,
-      createdAt: '2025-04-14T10:00:00Z',
-      orderCode: 'ORDER54321',
-      Items: [{ orderId: 3, name: '치즈버거', price: 3000, quantity: 2 }],
-      totalPrice: 6000,
-      status: '결제 완료',
-    },
-  ],
-};
+import { usePaymentList } from '../features/user/payment/api/usePaymentList';
+import { LuSearchX } from 'react-icons/lu';
+import Loading from './Loading';
 
 const SIZE = 10;
 
 const UserPayment = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { loading, getPaymentList } = usePaymentList();
 
   // URL 파라미터에서 초기 상태 파싱
   const initialPage = Number(searchParams.get('page')) || 1;
@@ -153,7 +33,7 @@ const UserPayment = () => {
 
   const [page, setPage] = useState(initialPage); // 현재 페이지
   const [totalElements, setTotalElements] = useState(0); // 전체 데이터 개수
-  const [data, setData] = useState<AugmentedPayment[]>([]); // 데이터 (단위 : 한페이지 당 10개의 데이터)
+  const [data, setData] = useState<PaymentResDto[]>([]); // 데이터 (단위 : 한페이지 당 10개의 데이터)
   const [keyword, setKeyword] = useState<Keyword>(initialKeyword); // (입력중) 검색 키워드
   const [searchKeyword, setSearchKeyword] = useState<Keyword>(initialKeyword); // (입력완료) 검색 키워드
 
@@ -162,7 +42,6 @@ const UserPayment = () => {
     const { startDate, endDate, orderName } = params.keyword;
     const urlParams = new URLSearchParams();
     urlParams.set('page', params.page.toString());
-    urlParams.set('size', SIZE.toString());
 
     if (startDate) urlParams.set('startDate', dayjs(startDate).format('YYYY-MM-DD'));
     if (endDate) urlParams.set('endDate', dayjs(endDate).format('YYYY-MM-DD'));
@@ -179,7 +58,6 @@ const UserPayment = () => {
       toast.error('검색 조건을 올바르게 입력해주세요.');
       return;
     }
-
     const newParams = buildQueryParams({ page: 1, keyword });
     navigate(`/payment?${newParams.toString()}`);
     setPage(1);
@@ -193,33 +71,18 @@ const UserPayment = () => {
   };
 
   const fetchPayments = async () => {
-    // (임시 API)
-    try {
-      // const query = buildQueryParams({ page, keyword: searchKeyword });
-      // const { result } = await axios.get(`/payments?${query.toString()}`);
-
-      // 데이터 변환 (.. 외 건) =  서버에서 받아온 데이터 할당..
-      const tableData: AugmentedPayment[] = result.PaymentResDtos.map((payment) => {
-        const firstItem = payment.Items[0];
-        const extra = payment.Items.length > 1 ? ` 외 ${payment.Items.length - 1}건` : '';
-        return {
-          ...payment,
-          itemsSummary: `${firstItem.name}${extra}`,
-        };
-      });
-      // 임시데이터 사용
-      setData(tableData.slice(0, SIZE));
-      setTotalElements(result.PaymentResDtos.length); // result.totalElements
-    } catch (error) {
-      toast.error('결제 내역을 불러오는 데 실패했습니다.');
-    }
+    const result = await getPaymentList({ page: page - 1, size: SIZE });
+    setData(result.Items);
+    setTotalElements(result.totalElements);
   };
 
   useEffect(() => {
     fetchPayments();
   }, [page, searchKeyword]);
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <Container>
       {/** 결제내역 타이틀 */}
       <Title main="결제내역" sub="유저가 결제한 내역을 확인해보세요." />
@@ -229,33 +92,44 @@ const UserPayment = () => {
       <DataCount>총 {totalElements.toLocaleString()}건의 결과</DataCount>
 
       {/** 결제내역 테이블 */}
-      <div className="table">
-        <Table
-          columns={paymentColumns}
-          data={data}
-          rowKey="paymentId"
-          renderCell={(key, value) => {
-            if (key === 'totalPrice') return `${value.toLocaleString()}원`;
-            if (key === 'createdAt') return dayjs(value).format('YYYY-MM-DD');
-            if (key === 'status') {
-              let color, bgColor;
-              if (value === '결제 완료') {
-                color = `${theme.color.main}`;
-                bgColor = '#E8F3FF';
-              } else if (value === '결제 취소') {
-                color = `${theme.color.red}`;
-                bgColor = '#FFE8E8';
+      {data.length == 0 ? (
+        <EmptyContent>
+          <LuSearchX size={40} color={theme.color.main} />
+          <div className="empty-title">결제내역 리스트가 없습니다.</div>
+          <div className="empty-subTitle">쇼핑을 하면 결제내역이 추가됩니다.</div>
+        </EmptyContent>
+      ) : (
+        <div className="table">
+          <Table
+            columns={paymentColumns}
+            data={data}
+            rowKey="paymentId"
+            renderCell={(key, value) => {
+              if (key === 'paymentPrice') return `${value.toLocaleString()}원`;
+              if (key === 'createdAt') return dayjs(value).format('YYYY-MM-DD');
+              if (key === 'paymentStatus') {
+                let color, bgColor;
+                if (value === 'SUCCESS') {
+                  color = `${theme.color.main}`;
+                  bgColor = '#E8F3FF';
+                } else {
+                  color = `${theme.color.red}`;
+                  bgColor = '#FFE8E8';
+                }
+                return (
+                  <StatusBadge color={color || '#959595'} bgColor={bgColor || '#E8E8E8'}>
+                    {value}
+                  </StatusBadge>
+                );
               }
-              return (
-                <StatusBadge color={color || '#959595'} bgColor={bgColor || '#E8E8E8'}>
-                  {value}
-                </StatusBadge>
-              );
-            }
-            return value;
-          }}
-        />
-      </div>
+              if (key === 'orderCode') {
+                return <WrapCell>{value}</WrapCell>;
+              }
+              return value;
+            }}
+          />
+        </div>
+      )}
       {/** 페이징 컴포넌트*/}
       <Pagination
         page={page}
@@ -298,4 +172,26 @@ const StatusBadge = styled.span<{ color: string; bgColor: string }>`
   font-weight: 600;
   color: ${({ color }) => color};
   background-color: ${({ bgColor }) => bgColor};
+`;
+
+const WrapCell = styled.div`
+  word-break: break-word;
+  white-space: normal;
+  max-width: 6rem;
+`;
+
+const EmptyContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 5rem auto 0 auto;
+  font-size: 1.75rem;
+  font-weight: 500;
+
+  .empty-subTitle {
+    font-size: 1rem;
+    font-weight: 300;
+  }
 `;
