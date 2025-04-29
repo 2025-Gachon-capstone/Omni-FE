@@ -4,6 +4,8 @@ import theme from '../../../../shared/styles/theme';
 import { BsArrowRightCircleFill } from 'react-icons/bs';
 import { toast } from 'react-toastify';
 import useDevice from '../../../../shared/hooks/useDevice';
+import { useCardInfo } from '../api/useCardInfo';
+import Loading from '../../../../pages/Loading';
 
 interface PasswordAuthProps {
   cardPassword: string;
@@ -19,26 +21,29 @@ export const PasswordAuth: React.FC<PasswordAuthProps> = ({
   handleIsMine,
 }) => {
   const { isMobile } = useDevice();
+  const { verifyCard, loading } = useCardInfo();
 
   // 카드 비밀번호 확인 API
-  const checkPassword = () => {
+  const checkPassword = async () => {
     if (isNaN(Number(cardPassword)) || cardPassword.length !== 4) {
       toast.error('비밀번호를 정확히 입력해주세요.');
     } else {
-      // API
-      let result = true;
-      if (result) {
+      const { isSuccess, message } = await verifyCard(cardPassword);
+      if (isSuccess) {
         // 인증 성공
         handleIsMine(1);
-        toast.success('인증에 성공하였습니다.');
+        toast.success(message);
       } else {
         // 인증 실패
         handleIsMine(0);
+        toast.error(message);
       }
     }
   };
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <Form isMobile={isMobile}>
       <Title
         main="비밀번호 인증"
