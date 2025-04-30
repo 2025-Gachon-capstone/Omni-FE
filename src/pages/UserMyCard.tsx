@@ -45,7 +45,7 @@ export default UserMyCard;
 
 const Container = styled.div`
   max-width: 100vw;
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   justify-content: center;
 `;

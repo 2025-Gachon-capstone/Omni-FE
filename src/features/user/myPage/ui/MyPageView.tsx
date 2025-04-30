@@ -1,26 +1,44 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
 import useDevice from '../../../../shared/hooks/useDevice';
+import { useAuthStore } from '../../../../shared/store';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../../../shared/ui';
 import { BsQuestionCircle } from 'react-icons/bs';
 import theme from '../../../../shared/styles/theme';
 import Modal from '../../../../shared/ui/Modal';
+import { useWithDrawal } from '../api/useWithDrawal';
+import { removeAccessToken } from '../../../../shared/utils/tokenHandler';
+import Loading from '../../../../pages/Loading';
 
 const MyPageView = () => {
   const { isMobile } = useDevice();
+  const { user, clearAuth } = useAuthStore((state) => state);
+  const { loading, deleteUser } = useWithDrawal();
   const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false); // 모달창 오픈 여부
 
-  return (
+  // 회원탈퇴
+  const handleWithDrawal = async () => {
+    const result = await deleteUser();
+    if (result) {
+      clearAuth();
+      removeAccessToken();
+      navigate('/', { replace: true });
+    }
+  };
+
+  return loading ? (
+    <Loading />
+  ) : (
     <>
       <Container>
         <div className="info">
           <InfoBox isMobile={isMobile}>
             <div className="label">아이디</div>
             <Input
-              value="id입니다"
+              value={user?.loginId || 'no id...'}
               styleType="outline"
               width={isMobile ? '15rem' : '27.5rem'}
               disabled
@@ -49,8 +67,8 @@ const MyPageView = () => {
             {
               text: '탈퇴하기',
               onClick: () =>
-                // 탈퇴API 및 토큰 삭제, 이동 (추후 추가)
-                navigate('/', { replace: true }),
+                // 탈퇴API 및 토큰 삭제, 이동
+                handleWithDrawal(),
               bgColor: `${theme.color.red}`,
               textColor: 'white',
             },

@@ -62,6 +62,7 @@ const PaginationWrapper = styled.div`
   justify-content: center;
   gap: 0.5rem;
   margin-top: 4rem;
+  margin-bottom: 5rem;
 `;
 
 const PageButton = styled.button<{ isActive: boolean }>`

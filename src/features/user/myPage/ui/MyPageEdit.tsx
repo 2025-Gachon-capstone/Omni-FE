@@ -5,10 +5,13 @@ import theme from '../../../../shared/styles/theme';
 import useDevice from '../../../../shared/hooks/useDevice';
 import { Button, Input } from '../../../../shared/ui';
 import { toast } from 'react-toastify';
+import { useManagePassword } from '../api/useManagePassword';
+import Loading from '../../../../pages/Loading';
 
 const MyPageEdit = () => {
   const navigate = useNavigate();
   const { isMobile } = useDevice();
+  const { loading, checkPassword, modifyPassword } = useManagePassword();
 
   const [password, setPassword] = useState({
     current: '', // 현재 비밀번호
@@ -26,24 +29,28 @@ const MyPageEdit = () => {
     };
 
   // 현재 비밀번호 일치 여부
-  const checkCurrentPassword = () => {
-    const result = true; // (임시) API 결과 대체
+  const checkCurrentPassword = async () => {
+    const result = await checkPassword(password.current);
     setIsCorrect(result ? 1 : 0);
   };
 
   // 비밀번호 수정
-  const modifyPassword = () => {
-    // 비밀번호 수정 API 호출
+  const handleModifyPassword = async () => {
     if (password.new !== password.confirm) {
       toast.error('비밀번호가 일치하지 않습니다.');
     } else {
       // 수정 API
-      toast.success('비밀번호가 정상수정되었습니다.');
-      navigate('..', { replace: true });
+      const result = await modifyPassword(password);
+      if (result) {
+        toast.success('비밀번호가 정상수정되었습니다.');
+        navigate('..', { replace: true });
+      }
     }
   };
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <Container>
       {/* 현재 비밀번호 */}
       <InputRow isMobile={isMobile}>
@@ -55,9 +62,15 @@ const MyPageEdit = () => {
             onChange={handleChange('current')}
             styleType="outline"
             width={isMobile ? '15rem' : '21.25rem'}
+            disabled={isCorrect == 1}
           />
           <div style={{ marginLeft: '0.75rem' }}>
-            <Button onClick={checkCurrentPassword} width="5rem" padding="1.25rem">
+            <Button
+              onClick={checkCurrentPassword}
+              width="5rem"
+              padding="1.25rem"
+              disabled={isCorrect == 1}
+            >
               확인
             </Button>
           </div>
@@ -102,7 +115,7 @@ const MyPageEdit = () => {
           </InputRow>
           {/* 수정 완료 버튼 */}
           <ButtonWrapper>
-            <Button onClick={modifyPassword} width={isMobile ? '93%' : '100%'}>
+            <Button onClick={handleModifyPassword} width={isMobile ? '93%' : '100%'}>
               수정 완료
             </Button>
           </ButtonWrapper>
