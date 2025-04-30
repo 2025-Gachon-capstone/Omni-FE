@@ -3,8 +3,8 @@ import { persist } from 'zustand/middleware';
 
 export interface User {
   memberId: number;
-  sponsorId: string;
-  loginId: string;
+  sponsorId: number;
+  loginId: string | number;
   role: 'USER' | 'ADMIN' | 'SPONSOR';
   memberName: string;
 }
