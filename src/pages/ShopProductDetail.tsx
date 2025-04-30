@@ -1,36 +1,26 @@
 import styled from '@emotion/styled';
-import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProductInfo } from '../features/shop/detail/ui/ProductInfo';
 import useDevice from '../shared/hooks/useDevice';
+import { useGetProductDetail } from '../features/shop/detail/api/useGetProductDetail';
+import Loading from './Loading';
 
 const ShopProductDetail = () => {
   const { isMobile } = useDevice();
   const { productId } = useParams<{ productId: string }>();
-  const [product, setProduct] = useState<ProductItem | null>(null);
 
-  useEffect(() => {
-    // (임시) 상품 id로 데이터 불러오기
-    if (productId) {
-      setProduct({
-        productId: Number(productId),
-        departmentName: '생활',
-        productName: '페리오치약',
-        price: 4000,
-        companyName: '이마트',
-        image1: 'https://buly.kr/AF041k0',
-      });
-    }
-  }, [productId]);
+  const { loading, data } = useGetProductDetail(Number(productId) || null);
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <Container isMobile={isMobile}>
       {/** 상품이미지 */}
       <ImgContainer>
-        <Img src={product?.image1} />
+        <Img src={data?.imageUrl} />
       </ImgContainer>
       {/** 상품 정보 */}
-      {product && <ProductInfo product={product} />}
+      {data && <ProductInfo product={data} />}
     </Container>
   );
 };

@@ -14,7 +14,7 @@ export const ProductInfo = ({ product }: { product: ProductItem }) => {
   const cartItems = useMemo(() => items.map((item) => item.productId), [items]);
 
   const [count, setCount] = useState(1); // 상품 개수
-  const [totalPrice, setTotalPrice] = useState(product.price); // 상품 총 가격
+  const [totalPrice, setTotalPrice] = useState(product.productPrice); // 상품 총 가격
   const [isCartIn, setIsCartIn] = useState(false); // 장바구니 존재여부
   const [isOpen, setIsOpen] = useState(false); // 모달창
 
@@ -22,13 +22,13 @@ export const ProductInfo = ({ product }: { product: ProductItem }) => {
   const handleToCart = () => {
     addItem({
       productId: product.productId,
-      departmentName: product.departmentName,
+      productCategoryName: product.productCategoryName,
       productName: product.productName,
-      companyName: product.companyName,
-      image1: product.image1,
+      sponsorName: product.sponsorName,
+      imageUrl: product.imageUrl,
       count: count,
       addToCartOrder: items.length + 1,
-      price: product.price,
+      productPrice: product.productPrice,
     });
     setIsOpen(false);
     navigate('/shop/cart'); // 장바구니 이동
@@ -41,8 +41,8 @@ export const ProductInfo = ({ product }: { product: ProductItem }) => {
   };
 
   useEffect(() => {
-    setTotalPrice(product.price * count);
-  }, [count, product.price]);
+    setTotalPrice(product.productPrice * count);
+  }, [count, product.productPrice]);
 
   useEffect(() => {
     if (product && cartItems.includes(product.productId)) {
@@ -57,8 +57,8 @@ export const ProductInfo = ({ product }: { product: ProductItem }) => {
       <Containter>
         {/** 상품 태그 */}
         <div className="tag-container">
-          <Tag>{product.companyName}</Tag>
-          <Tag>{product.departmentName}</Tag>
+          <Tag>{product.sponsorName}</Tag>
+          <Tag>{product.productCategoryName}</Tag>
         </div>
         {/** 상품 정보 */}
         <div className="title-container">
@@ -69,12 +69,12 @@ export const ProductInfo = ({ product }: { product: ProductItem }) => {
             {product.productName}
           </Caption>
           <Caption size="1.75rem" weight="400">
-            {product.price.toLocaleString()}원
+            {product.productPrice.toLocaleString()}원
           </Caption>
         </div>
         {/** 상품 개수 */}
         <ProductCount
-          price={product.price}
+          price={product.productPrice}
           count={count}
           decrease={() => setCount((prev) => Math.max(1, prev - 1))}
           increase={() => setCount((prev) => prev + 1)}
