@@ -7,7 +7,7 @@ export const useGetProductDetail = (
   productId: number | null,
 ): { loading: boolean; data: ProductItem | null } => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<ProductItem | null>(null); // 카테고리 데이터
+  const [data, setData] = useState<ProductItem | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
