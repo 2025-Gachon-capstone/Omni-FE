@@ -2,8 +2,9 @@ import styled from '@emotion/styled';
 import theme from '../../../../shared/styles/theme';
 import useDevice from '../../../../shared/hooks/useDevice';
 import { useNavigate } from 'react-router-dom';
+import { ProductList } from '../type/ProductList';
 
-export const ProductItems = ({ products }: { products: ProductItem[] }) => {
+export const ProductItems = ({ products }: { products: ProductList[] }) => {
   const { isMobile } = useDevice();
   const navigate = useNavigate();
 
@@ -12,11 +13,11 @@ export const ProductItems = ({ products }: { products: ProductItem[] }) => {
       {products.map((item) => (
         <ProductCard key={item.productId} onClick={() => navigate(`/shop/${item.productId}`)}>
           <ImgCard isMobile={isMobile}>
-            <ProductTag>{item.companyName}</ProductTag>
-            <ProductImage src={item.image1} alt={item.productName} />
+            <ProductTag>{item.sponsorName}</ProductTag>
+            <ProductImage src={item.imageUrl} alt={item.productName} />
           </ImgCard>
           <ProductName>{item.productName}</ProductName>
-          <ProductPrice>{item.price.toLocaleString()}원</ProductPrice>
+          <ProductPrice>{item.productPrice.toLocaleString()}원</ProductPrice>
         </ProductCard>
       ))}
     </ProductGrid>
@@ -48,8 +49,8 @@ const ProductCard = styled.div`
 `;
 
 const ImgCard = styled.div<{ isMobile: boolean }>`
-  max-width: 15rem;
-  max-height: 15rem;
+  width: 15rem;
+  height: 15rem;
   position: relative;
   border: 1px solid #dbdbdb;
   border-radius: 10px;
