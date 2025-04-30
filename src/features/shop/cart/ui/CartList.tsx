@@ -5,16 +5,14 @@ import { useCartStore } from '../../../../shared/store';
 interface CartListProps {
   productList: CartItem[];
   type: string;
-  onDelete?: () => void;
 }
 
-export const CartList = ({ productList, type, onDelete }: CartListProps) => {
+export const CartList = ({ productList, type }: CartListProps) => {
   const deleteItem = useCartStore((state) => state.removeItem);
 
   // 상품 삭제하기
   const handleDelete = (id: number) => {
     deleteItem(id); // id가 일치하는 아이템 삭제
-    onDelete?.(); // 삭제 후 혜택 적용 초기화
   };
 
   return (
@@ -37,22 +35,22 @@ export const CartList = ({ productList, type, onDelete }: CartListProps) => {
         </div>
         <div className="table-body">
           {productList?.map((el) => (
-            <Row>
-              <div key={el.productId} className="table-body-row">
+            <Row key={el.productId}>
+              <div className="table-body-row">
                 <TD width="40%">
                   <Img>
-                    <img src={el?.image1} alt="상품 이미지" />
+                    <img src={el?.imageUrl} alt="상품 이미지" />
                   </Img>
                   <span className="text">{el?.productName}</span>
                 </TD>
                 <TD width="20%" center>
-                  ₩ {el?.price.toLocaleString()}
+                  ₩ {el?.productPrice.toLocaleString()}
                 </TD>
                 <TD width="20%" center>
                   {el.count}
                 </TD>
                 <TD width="20%" center>
-                  ₩ {(el.count * Number(el?.price)).toLocaleString()}
+                  ₩ {(el.count * Number(el?.productPrice)).toLocaleString()}
                 </TD>
               </div>
               {type === 'cart' && (

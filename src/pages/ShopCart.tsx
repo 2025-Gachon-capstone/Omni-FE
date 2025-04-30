@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CartList } from '../features/shop/cart/ui/CartList';
 import { BenefitApply } from '../features/shop/cart/ui/BenefitApply';
 import { PriceBox } from '../features/shop/cart/ui/PriceBox';
@@ -15,14 +15,21 @@ const ShopCart = () => {
   const { setItems, setPaymentInfo, setOrderCode } = usePendingStore();
 
   const [cardNumber, setCardNumber] = useState(''); // 카드번호
-  const [discountRate, setDiscountRate] = useState(0); // 서버에서 받아올 할인율
   const [isApply, setIsApply] = useState(false); // 혜택 적용 여부
 
   // 1. 서버에서 가져온 할인율
   // 2. 계산하여 PriceBox 컴포넌트로 전달
-  const initialPrice = productList.reduce((acc, cur) => acc + cur.count * cur.price, 0);
-  const discountAmount = initialPrice * discountRate; // 할인율 적용로직은 달라질 수 있음.
-  const totalPrice = initialPrice - discountAmount;
+  const [initialPrice, setInitialPrice] = useState(0); // 초기 금액
+  const [discount, setDiscount] = useState(0); // 할인 금액
+  const [orderPrice, setOrderPrice] = useState(initialPrice); // 최종 금액
+
+  useEffect(() => {
+    const total = productList.reduce((acc, cur) => acc + cur.count * cur.productPrice, 0);
+    setInitialPrice(total);
+    setOrderPrice(total); // 할인 미적용 상태로 재설정
+    setDiscount(0); // 할인 초기화
+    setIsApply(false); // 혜택 적용 해제
+  }, [productList]);
 
   // 결제하기 API
   // 글자수 제한 함수
@@ -39,9 +46,9 @@ const ShopCart = () => {
   // 주문 생성
   const handlePay = () => {
     setItems(productList); // 주문상품 임시저장
-    setPaymentInfo({ cardNumber: cardNumber, orderName: orderName, totalPrice: totalPrice });
+    setPaymentInfo({ cardNumber: cardNumber, orderName: orderName, orderPrice: orderPrice });
 
-    // 주문생성 API req [ cardName, orderName, items, totalPrice ]
+    // 주문생성 API req [ cardName, orderName, items, orderPrice ]
     // const body = {
     //   cardNumber: cardNumber,
     //   orderName: orderName,
@@ -49,7 +56,7 @@ const ShopCart = () => {
     //     productId: product.productId,
     //     quantity: product.count,
     //   })),
-    //   totalPrice: totalPrice,
+    //   orderPrice: orderPrice,
     // };
     // await privateAxios('/payment/v1/orders',body)
     const generateRandomString = () => {
@@ -63,7 +70,7 @@ const ShopCart = () => {
     <Container>
       <Title>장바구니 내역을 확인해주세요.</Title>
       {productList?.length > 0 ? (
-        <CartList productList={productList} type="cart" onDelete={() => setIsApply(false)} />
+        <CartList productList={productList} type="cart" />
       ) : (
         <EmptyCart>
           <FaBasketShopping size={100} color={theme.color.main} />
@@ -71,12 +78,15 @@ const ShopCart = () => {
         </EmptyCart>
       )}
       <BenefitApply
+        productList={productList}
         cardNumber={cardNumber}
         setCardNumber={setCardNumber}
         isApply={setIsApply}
-        setDiscountRate={setDiscountRate}
+        initial={initialPrice}
+        setDiscount={setDiscount}
+        setOrderPrice={setOrderPrice}
       />
-      <PriceBox initial={initialPrice} discount={discountAmount} total={totalPrice} />
+      <PriceBox initial={initialPrice} discount={discount} total={orderPrice} />
       <div className="button-wrapper">
         <Button onClick={handlePay} width="15rem" disabled={productList.length <= 0 || !isApply}>
           결제하기

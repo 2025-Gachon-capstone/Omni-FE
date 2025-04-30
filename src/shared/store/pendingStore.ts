@@ -4,7 +4,7 @@ import { persist, PersistStorage } from 'zustand/middleware';
 interface PaymentInfo {
   cardNumber: string;
   orderName: string;
-  totalPrice: number;
+  orderPrice: number;
 }
 
 interface PendingState {
@@ -38,7 +38,7 @@ export const usePendingStore = create<PendingState>()(
       paymentInfo: {
         cardNumber: '',
         orderName: '',
-        totalPrice: 0,
+        orderPrice: 0,
       },
       orderCode: '',
       setItems: (items) => set({ items }),
@@ -50,7 +50,7 @@ export const usePendingStore = create<PendingState>()(
           paymentInfo: {
             cardNumber: '',
             orderName: '',
-            totalPrice: 0,
+            orderPrice: 0,
           },
           orderCode: '',
         }),

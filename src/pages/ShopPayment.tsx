@@ -27,13 +27,13 @@ const ShopPayment = () => {
       );
       paymentWidgetRef.current = paymentWidget;
 
-      paymentWidget.renderPaymentMethods('#payment-widget', { value: paymentInfo.totalPrice }); // 금액 설정
+      paymentWidget.renderPaymentMethods('#payment-widget', { value: paymentInfo.orderPrice }); // 금액 설정
     })();
   }, []);
 
   // 결제 취소
   const handleCancel = () => {
-    navigate(-1);
+    navigate('/shop');
     usePendingStore.getState().reset(); // 결제 대기 상품 취소
   };
 
@@ -58,11 +58,9 @@ const ShopPayment = () => {
     <Container>
       <h2>결제를 진행해주세요!</h2>
       <div className="item-content">
-        <Img>
-          <img src={items[0].image1} />
-        </Img>
+        <Img>{items[0].imageUrl && <img src={items[0].imageUrl} />}</Img>
         <OrderName>{paymentInfo.orderName}</OrderName>
-        <TotalPrice>총 {paymentInfo.totalPrice.toLocaleString()}원</TotalPrice>
+        <TotalPrice>총 {paymentInfo.orderPrice.toLocaleString()}원</TotalPrice>
       </div>
 
       <PaymentBox id="payment-widget" />
