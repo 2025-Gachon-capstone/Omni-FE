@@ -33,7 +33,7 @@ const Container = styled.div<{ isMobile: boolean }>`
   display: flex;
   flex-direction: ${(props) => (props.isMobile ? 'column' : 'row')};
   justify-content: center;
-  align-items: flex-start;
+  align-items: ${(props) => (props.isMobile ? 'center' : 'flex-start')};
   gap: 6.5rem;
 `;
 
