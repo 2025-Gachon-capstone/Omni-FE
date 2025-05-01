@@ -71,7 +71,17 @@ const UserPayment = () => {
   };
 
   const fetchPayments = async () => {
-    const result = await getPaymentList({ page: page - 1, size: SIZE });
+    const result = await getPaymentList({
+      page: page - 1,
+      size: SIZE,
+      orderName: searchKeyword.orderName,
+      startDate: searchKeyword.startDate
+        ? dayjs(searchKeyword.startDate).format('YYYY-MM-DD')
+        : undefined,
+      endDate: searchKeyword.endDate
+        ? dayjs(searchKeyword.endDate).format('YYYY-MM-DD')
+        : undefined,
+    });
     setData(result.Items);
     setTotalElements(result.totalElements);
   };
@@ -108,17 +118,19 @@ const UserPayment = () => {
               if (key === 'paymentPrice') return `${value.toLocaleString()}원`;
               if (key === 'createdAt') return dayjs(value).format('YYYY-MM-DD');
               if (key === 'paymentStatus') {
-                let color, bgColor;
+                let color, bgColor, title;
                 if (value === 'SUCCESS') {
                   color = `${theme.color.main}`;
                   bgColor = '#E8F3FF';
+                  title = '결제완료';
                 } else {
                   color = `${theme.color.red}`;
                   bgColor = '#FFE8E8';
+                  title = '결제실패';
                 }
                 return (
                   <StatusBadge color={color || '#959595'} bgColor={bgColor || '#E8E8E8'}>
-                    {value}
+                    {title}
                   </StatusBadge>
                 );
               }
@@ -177,7 +189,8 @@ const StatusBadge = styled.span<{ color: string; bgColor: string }>`
 const WrapCell = styled.div`
   word-break: break-word;
   white-space: normal;
-  max-width: 6rem;
+  max-width: 10rem;
+  margin: 0 auto;
 `;
 
 const EmptyContent = styled.div`
