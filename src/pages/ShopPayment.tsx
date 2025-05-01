@@ -1,13 +1,16 @@
 import styled from '@emotion/styled';
 import { useEffect, useRef } from 'react';
-import { loadPaymentWidget, PaymentWidgetInstance } from '@tosspayments/payment-widget-sdk';
+import {
+  ANONYMOUS,
+  loadPaymentWidget,
+  PaymentWidgetInstance,
+} from '@tosspayments/payment-widget-sdk';
 import { Button } from '../shared/ui';
 import { useAuthStore, usePendingStore } from '../shared/store';
 import { useNavigate } from 'react-router-dom';
 import theme from '../shared/styles/theme';
 
 const clientKey = 'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm'; // 클라이언트 키
-const customerKey = 1111111;
 
 const ShopPayment = () => {
   const navigate = useNavigate();
@@ -21,10 +24,7 @@ const ShopPayment = () => {
 
   useEffect(() => {
     (async () => {
-      const paymentWidget = await loadPaymentWidget(
-        clientKey,
-        String(user?.memberId) || String(customerKey),
-      );
+      const paymentWidget = await loadPaymentWidget(clientKey, String(user?.memberId) || ANONYMOUS);
       paymentWidgetRef.current = paymentWidget;
 
       paymentWidget.renderPaymentMethods('#payment-widget', { value: paymentInfo.orderPrice }); // 금액 설정
@@ -40,7 +40,6 @@ const ShopPayment = () => {
   // 결제 진행
   const handlePayment = async () => {
     if (!paymentWidgetRef.current) return;
-    console.log(orderCode, paymentInfo);
     try {
       await paymentWidgetRef.current.requestPayment({
         orderId: orderCode, // orderCode

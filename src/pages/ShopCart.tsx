@@ -8,9 +8,11 @@ import { useCartStore, usePendingStore } from '../shared/store';
 import { FaBasketShopping } from 'react-icons/fa6';
 import theme from '../shared/styles/theme';
 import { useNavigate } from 'react-router-dom';
+import { usePostOrder } from '../features/shop/cart/api/usePostOrder';
 
 const ShopCart = () => {
   const navigate = useNavigate();
+  const { postOrder } = usePostOrder();
   const productList = useCartStore((state) => state.items); // 장바구니 데이터 불러오기
   const { setItems, setPaymentInfo, setOrderCode } = usePendingStore();
 
@@ -31,7 +33,7 @@ const ShopCart = () => {
     setIsApply(false); // 혜택 적용 해제
   }, [productList]);
 
-  // 결제하기 API
+  /** --------- (API) 주문 생성 ---------- */
   // 글자수 제한 함수
   const truncate = (text: string, maxLength: number) => {
     return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
@@ -43,27 +45,26 @@ const ShopCart = () => {
         : `${truncate(productList[0].productName, 10)} 외 ${productList.length - 1}개`
       : '';
 
-  // 주문 생성
-  const handlePay = () => {
+  const handlePay = async () => {
     setItems(productList); // 주문상품 임시저장
     setPaymentInfo({ cardNumber: cardNumber, orderName: orderName, orderPrice: orderPrice });
 
     // 주문생성 API req [ cardName, orderName, items, orderPrice ]
-    // const body = {
-    //   cardNumber: cardNumber,
-    //   orderName: orderName,
-    //   items: productList.map((product) => ({
-    //     productId: product.productId,
-    //     quantity: product.count,
-    //   })),
-    //   orderPrice: orderPrice,
-    // };
-    // await privateAxios('/payment/v1/orders',body)
-    const generateRandomString = () => {
-      return window.btoa(Math.random().toString()).slice(0, 20);
+    const body = {
+      cardNumber: cardNumber.replace(/-/g, ''),
+      orderName: orderName,
+      items: productList.map((product) => ({
+        productId: product.productId,
+        quantity: product.count,
+      })),
+      orderPrice: orderPrice,
     };
-    setOrderCode(generateRandomString()); // (임시) 서버응답값 orderId으로 교체 예정
-    navigate('/shop/pay');
+
+    const result = await postOrder(body);
+    if (result.orderCode !== null) {
+      setOrderCode(result.orderCode);
+      navigate('/shop/pay');
+    }
   };
 
   return (

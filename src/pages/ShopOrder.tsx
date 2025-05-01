@@ -8,9 +8,11 @@ import { Button } from '../shared/ui';
 import { usePendingStore } from '../shared/store';
 import { useGetProductDetail } from '../features/shop/detail/api/useGetProductDetail';
 import Loading from './Loading';
+import { usePostOrder } from '../features/shop/cart/api/usePostOrder';
 
 const ShopOrder = () => {
   const { setItems, setPaymentInfo, setOrderCode } = usePendingStore();
+  const { postOrder } = usePostOrder();
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -50,7 +52,7 @@ const ShopOrder = () => {
     return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   };
 
-  const handlePay = () => {
+  const handlePay = async () => {
     const orderName =
       productList.length === 1
         ? truncate(productList[0].productName, 10)
@@ -60,21 +62,21 @@ const ShopOrder = () => {
     setPaymentInfo({ cardNumber: cardNumber, orderName: orderName, orderPrice: orderPrice });
 
     // 주문생성 API req [ cardName, orderName, items, orderPrice ]
-    // const body = {
-    //   cardNumber: cardNumber,
-    //   orderName: orderName,
-    //   items: productList.map((product) => ({
-    //     productId: product.productId,
-    //     quantity: product.count,
-    //   })),
-    //   orderPrice: orderPrice,
-    // };
-    // await privateAxios('/payment/v1/orders',body)
-    const generateRandomString = () => {
-      return window.btoa(Math.random().toString()).slice(0, 20);
+    const body = {
+      cardNumber: cardNumber.replace(/-/g, ''),
+      orderName: orderName,
+      items: productList.map((product) => ({
+        productId: product.productId,
+        quantity: product.count,
+      })),
+      orderPrice: orderPrice,
     };
-    setOrderCode(generateRandomString()); // (임시) 서버응답값 orderId으로 교체 예정
-    navigate('/shop/pay');
+
+    const result = await postOrder(body);
+    if (result.orderCode !== null) {
+      setOrderCode(result.orderCode);
+      navigate('/shop/pay');
+    }
   };
 
   return loading ? (
