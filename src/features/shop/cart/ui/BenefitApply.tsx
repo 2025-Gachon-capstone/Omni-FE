@@ -41,7 +41,7 @@ export const BenefitApply = ({
     }
 
     // 3. 혜택 적용 가능여부 판단
-    let totalDiscount = 3000; // 총 할인 금액.
+    let totalDiscount = 0; // 총 할인 금액.
 
     productList.forEach((item) => {
       const matchedBenefit = result.find((benefit) => benefit.targetProduct === item.productName);
