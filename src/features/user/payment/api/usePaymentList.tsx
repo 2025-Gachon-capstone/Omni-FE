@@ -30,21 +30,20 @@ export const usePaymentList = () => {
   }): Promise<PaymentListResponse> => {
     setLoading(true);
     const params: any = {
-      page,
-      size,
+      page: page,
+      size: size,
     };
 
     // 선택 파라미터 조건부 추가
-    if (startDate) params.startDate = startDate;
-    if (endDate) params.endDate = endDate;
-    if (orderName) params.orderName = orderName;
+    if (startDate !== undefined) params.startDate = startDate;
+    if (endDate !== undefined) params.endDate = endDate;
+    if (orderName !== undefined) params.orderName = orderName;
 
     try {
-      const res = await privateAxios.post('/payment/v1/my/payments', { params });
+      const res = await privateAxios.get('/payment/v1/my/payments', { params });
       const data = res.data?.result;
-
       return {
-        Items: data.orderItems ?? [],
+        Items: data.payments ?? [],
         totalElements: data.totalElements,
         isFirst: data.isFirst,
         last: data.last,

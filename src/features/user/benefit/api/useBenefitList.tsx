@@ -23,12 +23,12 @@ export const useBenefitList = () => {
     size: number;
   }): Promise<BenefitListResponse> => {
     setLoading(true);
-    let body = {
+    let params = {
       page: page,
       size: size,
     };
     try {
-      const res = await privateAxios.get('/card/v1/my/cardBenefits', { params: body });
+      const res = await privateAxios.get('/card/v1/my/cardBenefits', { params });
       const data = res.data?.result;
 
       return {

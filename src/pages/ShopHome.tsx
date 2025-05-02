@@ -6,102 +6,67 @@ import { useSearchParams } from 'react-router-dom';
 import { ProductItems } from '../features/shop/home/ui/ProductItems';
 import { Pagination } from '../shared/ui';
 import { ProductList } from '../features/shop/home/type/ProductList';
+import { useGetProductList } from '../features/shop/home/api/useGetProductList';
+import { LuSearchX } from 'react-icons/lu';
+import theme from '../shared/styles/theme';
+import Loading from './Loading';
 
 const SIZE = 8;
 
 const ShopHome = () => {
+  const { loading, getProductList } = useGetProductList();
   const [products, setProducts] = useState<ProductList[]>([]);
   const [totalElements, setTotalElements] = useState(0); // 전체 데이터 개수
 
   const [searchParams, setSearchParams] = useSearchParams();
   const departmentId = searchParams.get('departmentId') ?? '';
-  const page = Number(searchParams.get('page') ?? '1');
+  const page = Number(searchParams.get('page') ?? 1);
 
   useEffect(() => {
-    // 상품 목록 불러오기 (예시)
-    setProducts([
-      {
-        productId: 1,
-        departmentId: 1,
-        departmentName: '생활',
-        productName: '페리오치약',
-        price: 4000,
-        companyName: '이마트',
-        image1: 'https://buly.kr/AF041k0',
-      },
-      {
-        productId: 2,
-        departmentId: 1,
-        departmentName: '생활',
-        productName: '페리오치약',
-        price: 4000,
-        companyName: '이마트',
-        image1: 'https://buly.kr/AF041k0',
-      },
-      {
-        productId: 3,
-        departmentId: 1,
-        departmentName: '생활',
-        productName: '페리오치약',
-        price: 4000,
-        companyName: '이마트',
-        image1: 'https://buly.kr/AF041k0',
-      },
-      {
-        productId: 4,
-        departmentId: 1,
-        departmentName: '생활',
-        productName: '페리오치약',
-        price: 4000,
-        companyName: '이마트',
-        image1:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOwwAkodNfe6Q6om2bz1Z75q0ifuTKIumJzw&s',
-      },
-      {
-        productId: 5,
-        departmentId: 1,
-        departmentName: '생활',
-        productName: '페리오치약',
-        price: 4000,
-        companyName: '이마트',
-        image1: 'https://buly.kr/AF041k0',
-      },
-      {
-        productId: 6,
-        departmentId: 1,
-        departmentName: '생활',
-        productName: '페리오치약',
-        price: 4000,
-        companyName: '이마트',
-        image1: 'https://buly.kr/AF041k0',
-      },
-      {
-        productId: 7,
-        departmentId: 1,
-        departmentName: '생활',
-        productName: '페리오치약',
-        price: 4000,
-        companyName: '이마트',
-        image1: 'https://buly.kr/AF041k0',
-      },
-    ]);
-    setTotalElements(7);
+    const fetchProducts = async () => {
+      const params: any = {
+        page: Number(page) - 1,
+        size: SIZE,
+      };
+
+      if (departmentId && departmentId !== '0') {
+        params.productCategoryId = departmentId;
+      }
+      const result = await getProductList(params);
+
+      setProducts(result.Items);
+      setTotalElements(result.totalElements);
+    };
+
+    fetchProducts();
   }, [departmentId, page]);
 
   const handlePageChange = (newPage: number) => {
     setSearchParams({ departmentId, page: String(newPage) });
   };
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <Container>
       <Banner />
       <CategoryList />
-      <ProductItems products={products} />
-      <Pagination
-        page={page}
-        size={SIZE}
-        totalElements={totalElements}
-        onPageChange={handlePageChange}
-      />
+      {products.length === 0 ? (
+        <EmptyContent>
+          <LuSearchX size={40} color={theme.color.main} />
+          <div className="empty-title">상품 리스트가 없습니다.</div>
+          <div className="empty-subTitle">추가될 상품을 기다려주세요.</div>
+        </EmptyContent>
+      ) : (
+        <>
+          <ProductItems products={products} />
+          <Pagination
+            page={page}
+            size={SIZE}
+            totalElements={totalElements}
+            onPageChange={handlePageChange}
+          />
+        </>
+      )}
     </Container>
   );
 };
@@ -115,4 +80,20 @@ const Container = styled.div`
   align-items: center;
 
   margin-bottom: 5rem;
+`;
+
+const EmptyContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 5rem auto 0 auto;
+  font-size: 1.75rem;
+  font-weight: 600;
+
+  .empty-subTitle {
+    font-size: 1rem;
+    font-weight: 300;
+  }
 `;

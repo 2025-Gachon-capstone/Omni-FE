@@ -1,38 +1,65 @@
 import styled from '@emotion/styled';
 import { Button, Input } from '../../../../shared/ui';
 import { toast } from 'react-toastify';
+import { useApplyBenefit } from '../api/useApplyBenefit';
+import Loading from '../../../../pages/Loading';
 
 interface BenefitApplyProps {
   cardNumber: string;
   setCardNumber: (value: string) => void;
+  productList: CartItem[];
   isApply: (value: boolean) => void;
-  setDiscountRate: (rate: number) => void;
+  initial: number;
+  setDiscount: (rate: number) => void;
+  setOrderPrice: (total: number) => void;
 }
 
 export const BenefitApply = ({
   cardNumber,
   setCardNumber,
+  productList,
   isApply,
-  setDiscountRate,
+  initial,
+  setDiscount,
+  setOrderPrice,
 }: BenefitApplyProps) => {
-  const handleApply = () => {
+  const { loading, applyBenefit } = useApplyBenefit();
+
+  const handleApply = async () => {
     // 1. 카드번호 유효성 확인
     const exp = /^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$/;
     if (!exp.test(cardNumber)) {
       toast.error('올바른 형식을 입력해주세요.');
       return;
     }
-    // 2. (추후 개발) 혜택 반영 API
-    // case : 혜택 적용 / 적용 혜택 X / 카드 존재 X
+    // 2. 혜택 반영 API
+    const result = await applyBenefit(cardNumber.replace(/-/g, ''));
+    if (!result) return;
+    if (result.length == 0) {
+      toast.error('적용할 혜택이 존재하지 않습니다.');
+      isApply(true);
+    }
 
-    // (임시) 10% 할인 응답 받았다고 가정
-    const responseDiscountRate = 0.1;
+    // 3. 혜택 적용 가능여부 판단
+    let totalDiscount = 0; // 총 할인 금액.
 
-    setDiscountRate(responseDiscountRate); // 부모에 할인율 전달
+    productList.forEach((item) => {
+      const matchedBenefit = result.find((benefit) => benefit.targetProduct === item.productName);
+
+      if (matchedBenefit) {
+        const discountForItem = item.productPrice * item.count * matchedBenefit.discountRate;
+        totalDiscount += discountForItem;
+      }
+    });
+
+    setDiscount(totalDiscount); // 부모에 할인금액 전달
+    setOrderPrice(initial - totalDiscount); // 부모에 최종 금액 전달
     isApply(true);
   };
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <Container>
       <div className="title-container">
         <Title>혜택 적용</Title>

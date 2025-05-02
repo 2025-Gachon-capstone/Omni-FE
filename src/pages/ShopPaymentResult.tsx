@@ -1,14 +1,18 @@
 import styled from '@emotion/styled';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 import { MdError } from 'react-icons/md';
 import { Button } from '../shared/ui';
 import theme from '../shared/styles/theme';
 import { useCartStore, usePendingStore } from './../shared/store';
+import { usePostPayment } from '../features/shop/cart/api/usePostPayment';
+import Loading from './Loading';
+import { toast } from 'react-toastify';
 
 const ShopPaymentResult = ({ type }: { type: string }) => {
   const navigate = useNavigate();
+  const { loading, postPayment } = usePostPayment();
   const { reset } = usePendingStore();
   const { clearCart } = useCartStore();
 
@@ -25,34 +29,50 @@ const ShopPaymentResult = ({ type }: { type: string }) => {
     );
   };
 
+  /** ----------- (API) 결제인증 ------------ */
+  const didCheckRef = useRef(false); // 함수 실행 여부 체크
   useEffect(() => {
     const checkPayment = async () => {
+      if (didCheckRef.current) return;
+      didCheckRef.current = true;
+
       if (type === 'success') {
         try {
-          // Toss 쿼리 (ex. shop/pay/success?paymentType=NORMAL&orderId=MC45MTE4OTE3NTMyMTUy&paymentKey=tgen_20250423194458pNsc4&amount=3600)
-          // 1. 쿼리 값 추출
-          // {
-          //   "cardNumber":"string",
-          //   "orderCode":"string",
-          //   "paymentKey":"string",
-          //   "total_price":1000
-          // }
-          // 2. 결제 인증 API 호출
-          // 3. 스토리지 정리
-          if (isCartPayment()) {
-            clearCart();
+          const searchParams = new URLSearchParams(location.search);
+          const orderCode = searchParams.get('orderId');
+          const paymentKey = searchParams.get('paymentKey');
+          const amount = searchParams.get('amount');
+
+          if (!orderCode || !paymentKey || !amount) {
+            toast.error('잘못된 요청입니다.');
+            return;
           }
+
+          const body = {
+            orderCode,
+            paymentKey,
+            totalPrice: Number(amount),
+          };
+
+          await postPayment(body);
+        } catch (e) {
+          toast.error('결제 승인에 실패했습니다.');
+        } finally {
+          if (isCartPayment()) clearCart();
           reset();
-        } catch (error) {
-          console.error('결제 확인 실패', error);
         }
+      } else {
+        if (isCartPayment()) clearCart();
+        reset();
       }
     };
 
     checkPayment();
   }, [type, location.search]);
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <Container>
       {type == 'success' ? (
         <>

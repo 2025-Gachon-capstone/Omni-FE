@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CartList } from '../features/shop/cart/ui/CartList';
 import { BenefitApply } from '../features/shop/cart/ui/BenefitApply';
 import { PriceBox } from '../features/shop/cart/ui/PriceBox';
@@ -8,23 +8,32 @@ import { useCartStore, usePendingStore } from '../shared/store';
 import { FaBasketShopping } from 'react-icons/fa6';
 import theme from '../shared/styles/theme';
 import { useNavigate } from 'react-router-dom';
+import { usePostOrder } from '../features/shop/cart/api/usePostOrder';
 
 const ShopCart = () => {
   const navigate = useNavigate();
+  const { postOrder } = usePostOrder();
   const productList = useCartStore((state) => state.items); // 장바구니 데이터 불러오기
   const { setItems, setPaymentInfo, setOrderCode } = usePendingStore();
 
   const [cardNumber, setCardNumber] = useState(''); // 카드번호
-  const [discountRate, setDiscountRate] = useState(0); // 서버에서 받아올 할인율
   const [isApply, setIsApply] = useState(false); // 혜택 적용 여부
 
   // 1. 서버에서 가져온 할인율
   // 2. 계산하여 PriceBox 컴포넌트로 전달
-  const initialPrice = productList.reduce((acc, cur) => acc + cur.count * cur.price, 0);
-  const discountAmount = initialPrice * discountRate; // 할인율 적용로직은 달라질 수 있음.
-  const totalPrice = initialPrice - discountAmount;
+  const [initialPrice, setInitialPrice] = useState(0); // 초기 금액
+  const [discount, setDiscount] = useState(0); // 할인 금액
+  const [orderPrice, setOrderPrice] = useState(initialPrice); // 최종 금액
 
-  // 결제하기 API
+  useEffect(() => {
+    const total = productList.reduce((acc, cur) => acc + cur.count * cur.productPrice, 0);
+    setInitialPrice(total);
+    setOrderPrice(total); // 할인 미적용 상태로 재설정
+    setDiscount(0); // 할인 초기화
+    setIsApply(false); // 혜택 적용 해제
+  }, [productList]);
+
+  /** --------- (API) 주문 생성 ---------- */
   // 글자수 제한 함수
   const truncate = (text: string, maxLength: number) => {
     return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
@@ -36,34 +45,33 @@ const ShopCart = () => {
         : `${truncate(productList[0].productName, 10)} 외 ${productList.length - 1}개`
       : '';
 
-  // 주문 생성
-  const handlePay = () => {
+  const handlePay = async () => {
     setItems(productList); // 주문상품 임시저장
-    setPaymentInfo({ cardNumber: cardNumber, orderName: orderName, totalPrice: totalPrice });
+    setPaymentInfo({ cardNumber: cardNumber, orderName: orderName, orderPrice: orderPrice });
 
-    // 주문생성 API req [ cardName, orderName, items, totalPrice ]
-    // const body = {
-    //   cardNumber: cardNumber,
-    //   orderName: orderName,
-    //   items: productList.map((product) => ({
-    //     productId: product.productId,
-    //     quantity: product.count,
-    //   })),
-    //   totalPrice: totalPrice,
-    // };
-    // await privateAxios('/payment/v1/orders',body)
-    const generateRandomString = () => {
-      return window.btoa(Math.random().toString()).slice(0, 20);
+    // 주문생성 API req [ cardName, orderName, items, orderPrice ]
+    const body = {
+      cardNumber: cardNumber.replace(/-/g, ''),
+      orderName: orderName,
+      items: productList.map((product) => ({
+        productId: product.productId,
+        quantity: product.count,
+      })),
+      orderPrice: orderPrice,
     };
-    setOrderCode(generateRandomString()); // (임시) 서버응답값 orderId으로 교체 예정
-    navigate('/shop/pay');
+
+    const result = await postOrder(body);
+    if (result.orderCode !== null) {
+      setOrderCode(result.orderCode);
+      navigate('/shop/pay');
+    }
   };
 
   return (
     <Container>
       <Title>장바구니 내역을 확인해주세요.</Title>
       {productList?.length > 0 ? (
-        <CartList productList={productList} type="cart" onDelete={() => setIsApply(false)} />
+        <CartList productList={productList} type="cart" />
       ) : (
         <EmptyCart>
           <FaBasketShopping size={100} color={theme.color.main} />
@@ -71,12 +79,15 @@ const ShopCart = () => {
         </EmptyCart>
       )}
       <BenefitApply
+        productList={productList}
         cardNumber={cardNumber}
         setCardNumber={setCardNumber}
         isApply={setIsApply}
-        setDiscountRate={setDiscountRate}
+        initial={initialPrice}
+        setDiscount={setDiscount}
+        setOrderPrice={setOrderPrice}
       />
-      <PriceBox initial={initialPrice} discount={discountAmount} total={totalPrice} />
+      <PriceBox initial={initialPrice} discount={discount} total={orderPrice} />
       <div className="button-wrapper">
         <Button onClick={handlePay} width="15rem" disabled={productList.length <= 0 || !isApply}>
           결제하기
