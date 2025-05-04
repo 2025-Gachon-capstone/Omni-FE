@@ -2,12 +2,13 @@
 import { privateAxios } from '../../../../app/customAxios';
 import { toast } from 'react-toastify';
 import {
+  convertBenefitResToReq,
   convertMessageJsonToDto,
   convertMessageJsonToRes,
   convertMessageToReq,
 } from '../type/converter';
 import { useState } from 'react';
-import { MessageDTO } from '../type/ResponseDTO';
+import { BenefitResponseDTO, MessageDTO } from '../type/ResponseDTO';
 
 export const useMessageList = () => {
   const [isMessageLoading, setIsMessageLoading] = useState(false);
@@ -40,6 +41,7 @@ export const useMessageList = () => {
 
   const postMessage = async (
     benefitId: number,
+    benefit: BenefitResponseDTO,
     message: MessageDTO,
     setInput: (value: React.SetStateAction<string>) => void,
   ): Promise<MessageDTO | undefined> => {
@@ -47,9 +49,10 @@ export const useMessageList = () => {
 
     const startTime = Date.now(); // 요청 시작 시간 기록
     try {
+      const benefitReq = convertBenefitResToReq(benefit);
       const res = await privateAxios.post(
         `/flask/v1/benefits/${benefitId}/messages`,
-        convertMessageToReq(message),
+        convertMessageToReq(message, benefitReq),
       );
       setInput('');
       return convertMessageJsonToDto(res.data.result);
