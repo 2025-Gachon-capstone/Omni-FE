@@ -20,6 +20,7 @@ import ShopOrder from '../pages/ShopOrder';
 import ShopPayment from '../pages/ShopPayment';
 import ShopPaymentResult from '../pages/ShopPaymentResult';
 import SponsorBenefit from '../pages/SponsorBenefit';
+import ErrorPage from '../pages/ErrorPage';
 
 function App() {
   return (
@@ -71,6 +72,8 @@ function App() {
               <Route path="/benefit" element={<UserBenefit />} />
             </Route>
           </Route>
+          {/** 존재하지 않는 페이지 */}
+          <Route path="*" element={<ErrorPage />} />
         </Routes>
         <CustomToast />
       </BrowserRouter>
