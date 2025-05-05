@@ -42,7 +42,8 @@ const SponsorPrompt = () => {
 
   const [input, setInput] = useState('');
   const [benefitList, setBenefitList] = useState<BenefitResponseDTO[]>([]);
-  const { getBenefitList, postBenefit, patchBenefit, deleteBenefit, isLoading } = useBenefitList();
+  const { getBenefitList, postBenefit, patchBenefit, submitBenefit, deleteBenefit, isLoading } =
+    useBenefitList();
   const [activeBenefitId, setActiveBenefitId] = useState<number | null>(null);
   const { getMessageList, postMessage, isMessageLoading } = useMessageList();
 
@@ -54,7 +55,7 @@ const SponsorPrompt = () => {
       }
 
       const list = await getBenefitList({ sponsorId });
-      if (list.length === 0) {
+      if (list === undefined || list.length === 0) {
         console.log('혜택내역이 없습니다. 신규 혜택이 생성됩니다.');
         await handleAddBenefit();
       } else {
@@ -116,7 +117,14 @@ const SponsorPrompt = () => {
         };
 
         console.log('📨 handleSend 실행됨:', input);
-        const resMessage = await postMessage(activeBenefitId, newMessage, setInput);
+        if (activeBenefit === undefined) {
+          toast.error('협찬 내용(상품/고객)을 채워주세요.');
+          return;
+        } else if (activeBenefit.targetProduct) {
+          toast.error('협찬 내용(상품/고객)을 채워주세요.');
+        }
+
+        const resMessage = await postMessage(activeBenefitId, activeBenefit, newMessage, setInput);
         if (resMessage === undefined) return;
 
         setMessageSlice((prevResponse) => ({
@@ -214,15 +222,18 @@ const SponsorPrompt = () => {
       return;
     }
 
-    if (modalType === 'submit') {
-      if (startDay > today) activeBenefit.status = 'BEFORE';
-      else activeBenefit.status = 'ONGOING';
-    }
-    console.log(`로그 출력`);
     const request = convertBenefitResToReq(activeBenefit);
-    console.log(`request: ${request}`);
 
-    await patchBenefit(activeBenefitId, request);
+    if (modalType === 'submit') {
+      if (startDay > today) request.status = 'BEFORE';
+      else request.status = 'ONGOING';
+
+      console.log(`request: ${request}`);
+      await submitBenefit(activeBenefitId, request);
+    } else {
+      console.log(`request: ${request}`);
+      await patchBenefit(activeBenefitId, request);
+    }
 
     setModalType(null);
   };
