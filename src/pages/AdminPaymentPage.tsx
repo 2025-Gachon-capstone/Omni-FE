@@ -42,7 +42,7 @@ const AdminPaymentPage = () => {
 
     if (startDate) urlParams.set('startDate', dayjs(startDate).format('YYYY-MM-DD'));
     if (endDate) urlParams.set('endDate', dayjs(endDate).format('YYYY-MM-DD'));
-    if (userId) urlParams.set('orderName', userId);
+    if (userId) urlParams.set('userId', userId);
 
     return urlParams;
   };
@@ -56,7 +56,7 @@ const AdminPaymentPage = () => {
       return;
     }
     const newParams = buildQueryParams({ page: 1, keyword });
-    navigate(`/payment?${newParams.toString()}`);
+    navigate(`/manage/payments?${newParams.toString()}`);
     setPage(1);
     setSearchKeyword(keyword);
   };
@@ -64,7 +64,7 @@ const AdminPaymentPage = () => {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
     const updatedParams = buildQueryParams({ page: newPage, keyword: searchKeyword });
-    navigate(`/payment?${updatedParams.toString()}`);
+    navigate(`/manage/payments?${updatedParams.toString()}`);
   };
 
   /** ----------- (임시) 결제내역 불러오기 API -------------- */
