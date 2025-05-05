@@ -19,6 +19,7 @@ import ShopCart from '../pages/ShopCart';
 import ShopOrder from '../pages/ShopOrder';
 import ShopPayment from '../pages/ShopPayment';
 import ShopPaymentResult from '../pages/ShopPaymentResult';
+import SponsorBenefit from '../pages/SponsorBenefit';
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
             >
               <Route path="/sponsor" element={<Home />} />
               <Route path="/sponsor/prompt" element={<SponsorPrompt />} />
+              <Route path="/sponsor/benefit" element={<SponsorBenefit />} />
             </Route>
 
             {/** 일반유저 페이지 */}
