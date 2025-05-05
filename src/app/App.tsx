@@ -21,6 +21,7 @@ import ShopPayment from '../pages/ShopPayment';
 import ShopPaymentResult from '../pages/ShopPaymentResult';
 import SponsorBenefit from '../pages/SponsorBenefit';
 import ErrorPage from '../pages/ErrorPage';
+import AdminCardPage from '../pages/AdminCardPage';
 
 function App() {
   return (
@@ -72,6 +73,8 @@ function App() {
               <Route path="/benefit" element={<UserBenefit />} />
             </Route>
           </Route>
+          {/** 관리자 페이지 */}
+          <Route path="/manage/cards" element={<AdminCardPage />} />
           {/** 존재하지 않는 페이지 */}
           <Route path="*" element={<ErrorPage />} />
         </Routes>

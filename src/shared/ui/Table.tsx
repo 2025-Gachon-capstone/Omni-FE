@@ -6,6 +6,7 @@ type TableProps<T> = {
   data: T[]; // 테이블 데이터
   rowKey: keyof T;
   renderCell?: (key: keyof T, value: any) => React.ReactNode; // 데이터 변환 함수
+  onRowClick?: (row: T) => void; // 행 클릭 이벤트
 };
 
 const Table = <T extends { [key: string]: any }>({
@@ -13,6 +14,7 @@ const Table = <T extends { [key: string]: any }>({
   data,
   rowKey,
   renderCell,
+  onRowClick,
 }: TableProps<T>) => {
   return (
     <StyledTable>
@@ -27,7 +29,11 @@ const Table = <T extends { [key: string]: any }>({
       {/** 테이블 바디 */}
       <tbody>
         {data.map((row) => (
-          <tr key={String(row[rowKey])}>
+          <tr
+            key={String(row[rowKey])}
+            onClick={() => onRowClick?.(row)}
+            style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+          >
             {columns.map((col) => (
               <Td key={String(col.key)}>
                 {renderCell ? renderCell(col.key, row[col.key]) : row[col.key]}
@@ -48,6 +54,10 @@ const StyledTable = styled.table`
   max-width: 75rem;
   border-collapse: collapse;
   table-layout: auto;
+
+  tbody > tr:hover {
+    background-color: #f9f9f9;
+  }
 `;
 
 const Th = styled.th`
