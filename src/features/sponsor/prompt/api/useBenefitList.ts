@@ -15,9 +15,19 @@ export const useBenefitList = () => {
       console.log(res.data.result);
       return res.data.result.map(convertBenefitJsonToRes);
     } catch (err: any) {
-      console.log(err.response.data);
-      const message = err.response?.data?.message || '혜택내역 조회 실패';
-      toast.error(message);
+      console.log('err:', err);
+
+      if (err.response) {
+        console.log('Server responded with error:', err.response.data);
+        const message = err.response.data?.message || '혜택내역 조회 실패';
+        toast.error(message);
+      } else if (err.request) {
+        console.log('No response received:', err.request);
+        toast.error('서버로부터 응답이 없습니다.');
+      } else {
+        console.log('Error setting up request:', err.message);
+        toast.error('요청 설정 중 문제가 발생했습니다.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -42,11 +52,29 @@ export const useBenefitList = () => {
     try {
       await privateAxios.patch(`/sponsor/v1/benefits/${benefitId}`, benefit);
       if (benefit.status === 'PENDING') toast.success('임시 저장 완료');
-      else toast.success('혜택 제출 완료');
     } catch (err: any) {
       console.log(err.response.data);
       const message = err.response?.data?.message || '임시 저장 실패';
       toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const submitBenefit = async (benefitId: number, benefit: BenefitRequestDTO): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      await privateAxios.patch(`/sponsor/v1/benefits/${benefitId}`, benefit);
+      await privateAxios.post(`/flask/v1/benefits/${benefitId}/submit`, benefit);
+      toast.success('혜택 제출 완료');
+      return true;
+    } catch (err: any) {
+      console.log(err.response.data);
+      benefit.status = 'PENDING';
+      await privateAxios.patch(`/sponsor/v1/benefits/${benefitId}`, benefit);
+      const message = err.response?.data?.message || '혜택 제출 실패';
+      toast.error(message);
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -63,5 +91,5 @@ export const useBenefitList = () => {
     }
   };
 
-  return { getBenefitList, postBenefit, patchBenefit, deleteBenefit, isLoading };
+  return { getBenefitList, postBenefit, patchBenefit, submitBenefit, deleteBenefit, isLoading };
 };
