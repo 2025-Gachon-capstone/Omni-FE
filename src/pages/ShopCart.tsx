@@ -56,6 +56,7 @@ const ShopCart = () => {
       items: productList.map((product) => ({
         productId: product.productId,
         quantity: product.count,
+        addToCartOrder: product.addToCartOrder,
       })),
       orderPrice: orderPrice,
     };

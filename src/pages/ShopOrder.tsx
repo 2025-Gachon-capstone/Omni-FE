@@ -65,10 +65,13 @@ const ShopOrder = () => {
     const body = {
       cardNumber: cardNumber.replace(/-/g, ''),
       orderName: orderName,
-      items: productList.map((product) => ({
-        productId: product.productId,
-        quantity: product.count,
-      })),
+      items: productList.map((product) => {
+        return {
+          productId: product.productId,
+          quantity: product.count,
+          addToCartOrder: product.addToCartOrder,
+        };
+      }),
       orderPrice: orderPrice,
     };
 

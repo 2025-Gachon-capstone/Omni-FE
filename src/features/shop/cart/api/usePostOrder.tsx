@@ -8,7 +8,7 @@ export const usePostOrder = () => {
   const postOrder = async (body: {
     cardNumber: string;
     orderName: string;
-    items: { productId: number; quantity: number }[];
+    items: { productId: number; quantity: number; addToCartOrder: number }[];
     orderPrice: number;
   }): Promise<{ orderCode: string | null }> => {
     setLoading(true);

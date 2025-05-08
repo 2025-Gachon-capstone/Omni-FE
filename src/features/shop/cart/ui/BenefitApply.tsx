@@ -36,8 +36,9 @@ export const BenefitApply = ({
     const result = await applyBenefit(cardNumber.replace(/-/g, ''));
     if (!result) return;
     if (result.length == 0) {
-      toast.error('적용할 혜택이 존재하지 않습니다.');
+      toast.error('혜택이 존재하지 않습니다.');
       isApply(true);
+      return;
     }
 
     // 3. 혜택 적용 가능여부 판단
@@ -52,6 +53,7 @@ export const BenefitApply = ({
       }
     });
 
+    if (totalDiscount == 0) toast.error('적용가능한 혜택이 없습니다.');
     setDiscount(totalDiscount); // 부모에 할인금액 전달
     setOrderPrice(initial - totalDiscount); // 부모에 최종 금액 전달
     isApply(true);

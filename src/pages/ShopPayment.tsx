@@ -1,10 +1,6 @@
 import styled from '@emotion/styled';
 import { useEffect, useRef } from 'react';
-import {
-  ANONYMOUS,
-  loadPaymentWidget,
-  PaymentWidgetInstance,
-} from '@tosspayments/payment-widget-sdk';
+import { loadPaymentWidget, PaymentWidgetInstance } from '@tosspayments/payment-widget-sdk';
 import { Button } from '../shared/ui';
 import { useAuthStore, usePendingStore } from '../shared/store';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +20,7 @@ const ShopPayment = () => {
 
   useEffect(() => {
     (async () => {
-      const paymentWidget = await loadPaymentWidget(clientKey, String(user?.memberId) || ANONYMOUS);
+      const paymentWidget = await loadPaymentWidget(clientKey, 'ANONYMOUS');
       paymentWidgetRef.current = paymentWidget;
 
       paymentWidget.renderPaymentMethods('#payment-widget', { value: paymentInfo.orderPrice }); // 금액 설정
