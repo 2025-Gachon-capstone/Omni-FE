@@ -71,7 +71,7 @@ const ShopPaymentResult = ({ type }: { type: string }) => {
   }, [type, location.search]);
 
   return loading ? (
-    <Loading />
+    <Loading description="결제인증 중입니다. 잠시만 기다려주세요." />
   ) : (
     <Container>
       {type == 'success' ? (

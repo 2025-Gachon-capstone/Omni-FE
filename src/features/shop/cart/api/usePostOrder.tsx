@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { publicAxios } from '../../../../app/customAxios';
 
 export const usePostOrder = () => {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const postOrder = async (body: {
     cardNumber: string;
@@ -11,7 +11,7 @@ export const usePostOrder = () => {
     items: { productId: number; quantity: number; addToCartOrder: number }[];
     orderPrice: number;
   }): Promise<{ orderCode: string | null }> => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const res = await publicAxios.post('/payment/v1/orders', body);
       return { orderCode: res.data.result.orderCode };
@@ -20,9 +20,9 @@ export const usePostOrder = () => {
       toast.error(message);
       return { orderCode: null };
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  return { loading, postOrder };
+  return { isLoading, postOrder };
 };
