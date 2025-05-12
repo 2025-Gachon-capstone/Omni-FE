@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import { FaCheckSquare } from 'react-icons/fa';
-import dayjs from 'dayjs';
 import { SelectedUserResDto } from '../type/UserCard';
 import { Button, Input } from '../../../../shared/ui';
 import useDevice from '../../../../shared/hooks/useDevice';
@@ -51,11 +50,7 @@ const UserInfoBox = ({ userData, activeUserId, onDeleteClick }: Props) => {
         <div className="simple-info">
           <InfoRow>
             <span>발급일자</span>
-            <Input
-              value={dayjs(userData?.createdAt).format('YYYY-MM-DD')}
-              styleType="outline"
-              disabled
-            />
+            <Input value={userData?.createdAt} styleType="outline" disabled />
           </InfoRow>
           <InfoRow>
             <span>카드번호</span>
@@ -68,8 +63,8 @@ const UserInfoBox = ({ userData, activeUserId, onDeleteClick }: Props) => {
             />
           </InfoRow>
           <InfoRow>
-            <span>발급일</span>
-            <Input value={userData?.createdAt || ''} styleType="outline" disabled />
+            <span>발급인</span>
+            <Input value={userData?.memberName || ''} styleType="outline" disabled />
           </InfoRow>
         </div>
       </div>
