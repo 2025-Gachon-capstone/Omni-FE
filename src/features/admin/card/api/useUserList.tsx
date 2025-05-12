@@ -3,7 +3,7 @@ import { privateAxios } from '../../../../app/customAxios';
 import { toast } from 'react-toastify';
 import { SelectedUserResDto, UserCardResDto } from '../type/UserCard';
 
-interface BenefitListResponse {
+interface UserCardListResponse {
   cards: UserCardResDto[];
   totalElements: number;
   isFirst: boolean;
@@ -21,7 +21,7 @@ export const useUserList = () => {
   }: {
     page: number;
     size: number;
-  }): Promise<BenefitListResponse> => {
+  }): Promise<UserCardListResponse> => {
     setLoading(true);
     let params = {
       page: page,
