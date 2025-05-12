@@ -8,11 +8,10 @@ import { toast } from 'react-toastify';
 
 interface Props {
   userData?: SelectedUserResDto;
-  activeUserId: number;
   onDeleteClick: () => void;
 }
 
-const UserInfoBox = ({ userData, activeUserId, onDeleteClick }: Props) => {
+const UserInfoBox = ({ userData, onDeleteClick }: Props) => {
   const { isMobile } = useDevice();
   return (
     <RequestBox isMobile={isMobile}>

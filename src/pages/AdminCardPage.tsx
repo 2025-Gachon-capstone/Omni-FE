@@ -75,11 +75,7 @@ const AdminCardPage = () => {
           <>
             {/** 유저의 추가정보 */}
             {activeUserId !== -1 && (
-              <UserInfoBox
-                userData={userData}
-                activeUserId={activeUserId}
-                onDeleteClick={() => setIsOpen(true)}
-              />
+              <UserInfoBox userData={userData} onDeleteClick={() => setIsOpen(true)} />
             )}
             {/** 유저리스트 */}
             <div className="table">
