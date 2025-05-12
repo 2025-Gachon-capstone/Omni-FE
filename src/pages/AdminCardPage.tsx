@@ -10,6 +10,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Modal from '../shared/ui/Modal';
 import { BsQuestionCircle } from 'react-icons/bs';
 import UserInfoBox from '../features/admin/card/ui/UserInfoBox';
+import { useUserList } from '../features/admin/card/api/useUserList';
+import Loading from './Loading';
 
 const SIZE = 10;
 
@@ -21,10 +23,12 @@ const AdminCardPage = () => {
   const [page, setPage] = useState(initialPage); // 현재 페이지
   const [totalElements, setTotalElements] = useState(0); // 전체 데이터 개수
   const [data, setData] = useState<UserCardResDto[]>([]); // 페이지 데이터
-  const [activeUserId, setActiveUserId] = useState(''); // 선택된 유저 id
+  const [activeUserId, setActiveUserId] = useState(-1); // 선택된 유저 id
   const [userData, setUserData] = useState<SelectedUserResDto>(); // 선택유저 데이터
 
   const [isOpen, setIsOpen] = useState(false); // 유저삭제 모달
+
+  const { loading, getTotalCardList, getUserCard, deleteUser } = useUserList();
 
   // URL쿼리 생성 함수
   const buildQueryParams = (page: number) => {
@@ -35,58 +39,26 @@ const AdminCardPage = () => {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    const updatedParams = buildQueryParams(page);
+    const updatedParams = buildQueryParams(newPage);
     navigate(`/manage/cards?${updatedParams.toString()}`);
   };
 
-  /** ------------ (임시) 유저리스트 불러오기 API ------------ */
-  useEffect(() => {
-    const result: UserCardResDto[] = [
-      {
-        userCode: 'sdlksd',
-        userId: 'user_1',
-        userName: '홍길동',
-        cardNumber: '1111111111111111',
-        createdAt: '2025-01-01',
-        currentBenefit: '초코우유 할인',
-        status: 'active',
-      },
-      {
-        userCode: 'asdfasfd',
-        userId: 'user_2',
-        userName: '김길동',
-        cardNumber: '1111111111111112',
-        createdAt: '2025-01-03',
-        currentBenefit: '딸기우유 할인',
-        status: 'delete',
-      },
-    ];
-    setData(result);
-    setTotalElements(2); // totalElement
-  }, []);
+  /** ------------ 유저리스트 불러오기 API ------------ */
+  const fetchUsers = async () => {
+    const result = await getTotalCardList({ page: page - 1, size: SIZE });
+    setData(result.cards);
+    setTotalElements(result.totalElements);
+  };
 
-  /** ------------- (임시) 선택유저 정보 불러오기 API -------------- */
   useEffect(() => {
-    console.log(activeUserId);
-    // 임시
-    setUserData({
-      userCode: 'asdfasfd',
-      userId: 'user_2',
-      userName: '김길동',
-      cardNumber: '1111111111111112',
-      createdAt: '2025-01-03',
-      currentBenefit: [
-        '딸기우유 할인',
-        '아 졸리다,...흠냐',
-        '그다음은.....',
-        '엽떡먹고싶다.',
-        '허콤추가요',
-      ],
-      status: 'delete',
-    });
-  }, [activeUserId]);
+    // 페이지 이동 시, 새로운 혜택 데이터 불러옴
+    fetchUsers();
+    setActiveUserId(-1);
+  }, [page]);
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <>
       <Container>
         {' '}
@@ -102,7 +74,7 @@ const AdminCardPage = () => {
         ) : (
           <>
             {/** 유저의 추가정보 */}
-            {activeUserId !== '' && (
+            {activeUserId !== -1 && (
               <UserInfoBox
                 userData={userData}
                 activeUserId={activeUserId}
@@ -114,17 +86,17 @@ const AdminCardPage = () => {
               <Table
                 columns={userCardColumns}
                 data={data}
-                rowKey="userCode"
+                rowKey="loginId"
                 renderCell={(key, value) => {
                   if (key === 'createdAt') return dayjs(value).format('YYYY-MM-DD'); // 발급일
                   if (key === 'cardNumber') return value.match(/.{1,4}/g).join('-'); // 카드번호
-                  if (key === 'currentBenefit') {
+                  if (key === 'benefitTitle') {
                     // 최신혜택
                     return <WrapCell>{value}</WrapCell>;
                   }
                   if (key === 'status') {
                     let color, bgColor, title;
-                    if (value === 'active') {
+                    if (value === 'ACTIVE') {
                       color = `${theme.color.main}`;
                       bgColor = '#E8F3FF';
                       title = '활동유저';
@@ -141,7 +113,13 @@ const AdminCardPage = () => {
                   }
                   return value;
                 }}
-                onRowClick={(row) => setActiveUserId(row.userCode)}
+                onRowClick={async (row) => {
+                  if (row.status === 'ACTIVE') {
+                    const result = await getUserCard(row.memberId); // API 호출
+                    setUserData(result); // 유저 데이터 세팅
+                    setActiveUserId(row.memberId); // 이후에 상태 업데이트
+                  }
+                }}
               />
             </div>
           </>
@@ -167,13 +145,17 @@ const AdminCardPage = () => {
             },
             {
               text: '삭제하기',
-              onClick: () => setIsOpen(false), // 삭제 API
+              onClick: async () => {
+                await deleteUser(activeUserId);
+                setActiveUserId(-1);
+                setIsOpen(false);
+              }, // 삭제 API
               bgColor: `${theme.color.red}`,
               textColor: 'white',
             },
           ]}
         >
-          {userData?.userName} 유저를 삭제하겠습니까?
+          {userData?.memberName} 유저를 삭제하겠습니까?
         </Modal>
       )}
     </>
