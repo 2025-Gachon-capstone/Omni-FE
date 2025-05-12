@@ -2,5 +2,5 @@
 export type Keyword = {
   startDate: Date | null;
   endDate: Date | null;
-  userId: string;
+  loginId: string;
 };
