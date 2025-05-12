@@ -76,7 +76,13 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: () => void
           </div>
         ))}
         {ROLE !== 'GUEST' && ROLE !== 'SHOPPER' && (
-          <MenuItem isMobile={isMobile} onClick={logout}>
+          <MenuItem
+            isMobile={isMobile}
+            onClick={() => {
+              setIsOpen();
+              logout();
+            }}
+          >
             로그아웃
           </MenuItem>
         )}
