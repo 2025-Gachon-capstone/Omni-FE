@@ -29,7 +29,7 @@ const MenuList: MenuListType = {
   },
   ADMIN: {
     name: ['홈', '전체 유저 관리', '전체 결제내역'],
-    link: ['/', '/users', '/payments'],
+    link: ['/', '/manage/cards', '/manage/payments'],
   },
   SPONSOR: {
     name: ['홈', '협찬하기', '발행내역'],
@@ -76,7 +76,13 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: () => void
           </div>
         ))}
         {ROLE !== 'GUEST' && ROLE !== 'SHOPPER' && (
-          <MenuItem isMobile={isMobile} onClick={logout}>
+          <MenuItem
+            isMobile={isMobile}
+            onClick={() => {
+              setIsOpen();
+              logout();
+            }}
+          >
             로그아웃
           </MenuItem>
         )}

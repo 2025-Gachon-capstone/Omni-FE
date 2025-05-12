@@ -12,7 +12,7 @@ import { usePostOrder } from '../features/shop/cart/api/usePostOrder';
 
 const ShopOrder = () => {
   const { setItems, setPaymentInfo, setOrderCode } = usePendingStore();
-  const { postOrder } = usePostOrder();
+  const { isLoading, postOrder } = usePostOrder();
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -82,8 +82,8 @@ const ShopOrder = () => {
     }
   };
 
-  return loading ? (
-    <Loading />
+  return loading || isLoading ? (
+    <Loading description="결제창으로 이동중이에요." />
   ) : (
     <Container>
       <Title>주문내역을 확인해주세요.</Title>

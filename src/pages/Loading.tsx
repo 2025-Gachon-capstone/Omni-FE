@@ -1,10 +1,11 @@
 import styled from '@emotion/styled';
 import theme from '../shared/styles/theme';
 
-const Loading = () => {
+const Loading = ({ description }: { description?: string }) => {
   return (
     <SpinnerWrapper>
       <Spinner />
+      <div style={{ fontWeight: 500, fontSize: '1.25rem' }}>{description}</div>
     </SpinnerWrapper>
   );
 };
@@ -19,8 +20,10 @@ const SpinnerWrapper = styled.div`
   width: 100%;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 1rem;
   color: #3e3e3e;
   background-color: rgba(255, 255, 255, 0.4);
 `;

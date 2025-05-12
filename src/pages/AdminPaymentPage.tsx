@@ -13,19 +13,22 @@ import Pagination from '../shared/ui/Pagination';
 import { LuSearchX } from 'react-icons/lu';
 import { TotalPaymentResDto } from '../features/admin/payment/type/TotalPayment';
 import { totalPaymentColumns } from '../features/admin/payment/model/TotalPaymentColumn';
+import { useGetPayment } from '../features/admin/payment/api/useGetPayment';
+import Loading from './Loading';
 
 const SIZE = 10;
 
 const AdminPaymentPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { loading, getTotalPaymentList } = useGetPayment();
 
   // URL 파라미터에서 초기 상태 파싱
   const initialPage = Number(searchParams.get('page')) || 1;
   const initialKeyword: Keyword = {
     startDate: searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : null,
     endDate: searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null,
-    userId: searchParams.get('userId') || '',
+    loginId: searchParams.get('loginId') || '',
   };
 
   const [page, setPage] = useState(initialPage); // 현재 페이지
@@ -36,13 +39,13 @@ const AdminPaymentPage = () => {
 
   // URL쿼리 생성 함수
   const buildQueryParams = (params: { page: number; keyword: Keyword }) => {
-    const { startDate, endDate, userId } = params.keyword;
+    const { startDate, endDate, loginId } = params.keyword;
     const urlParams = new URLSearchParams();
     urlParams.set('page', params.page.toString());
 
     if (startDate) urlParams.set('startDate', dayjs(startDate).format('YYYY-MM-DD'));
     if (endDate) urlParams.set('endDate', dayjs(endDate).format('YYYY-MM-DD'));
-    if (userId) urlParams.set('userId', userId);
+    if (loginId) urlParams.set('userId', loginId);
 
     return urlParams;
   };
@@ -51,7 +54,7 @@ const AdminPaymentPage = () => {
    * 검색 관련 함수 (검색어, 페이징)
    */
   const handleSearch = () => {
-    if (!keyword.userId && (!keyword.startDate || !keyword.endDate)) {
+    if (!keyword.loginId && (!keyword.startDate || !keyword.endDate)) {
       toast.error('검색 조건을 올바르게 입력해주세요.');
       return;
     }
@@ -69,26 +72,28 @@ const AdminPaymentPage = () => {
 
   /** ----------- (임시) 결제내역 불러오기 API -------------- */
   const fetchPayments = async () => {
-    const result = [
-      {
-        userCode: 'U1120122X',
-        userId: 'aaa123',
-        createdAt: '2025-01-01', // 결제일
-        orderId: 'M123455556',
-        orderName: '버거킹와퍼',
-        sponsorName: '버거킹',
-        totalPrice: 5000, // 결제금액
-      },
-    ];
-    setData(result);
-    setTotalElements(1);
+    const result = await getTotalPaymentList({
+      page: page - 1,
+      size: SIZE,
+      loginId: searchKeyword.loginId,
+      startDate: searchKeyword.startDate
+        ? dayjs(searchKeyword.startDate).format('YYYY-MM-DD')
+        : undefined,
+      endDate: searchKeyword.endDate
+        ? dayjs(searchKeyword.endDate).format('YYYY-MM-DD')
+        : undefined,
+    });
+    setData(result.payments);
+    setTotalElements(result.totalElements);
   };
 
   useEffect(() => {
     fetchPayments();
   }, [page, searchKeyword]);
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <Container>
       {/** 결제내역 타이틀 */}
       <Title main="결제내역" sub="유저가 결제한 내역을 확인해보세요." />
@@ -109,11 +114,11 @@ const AdminPaymentPage = () => {
           <Table
             columns={totalPaymentColumns}
             data={data}
-            rowKey="orderId"
+            rowKey="orderCode"
             renderCell={(key, value) => {
               if (key === 'totalPrice') return `${value.toLocaleString()}원`;
-              if (key === 'createdAt') return dayjs(value).format('YYYY-MM-DD');
-              if (key === 'orderId') {
+              if (key === 'createAt') return dayjs(value).format('YYYY-MM-DD');
+              if (key === 'orderCode' || key === 'sponsorName') {
                 return <WrapCell>{value}</WrapCell>;
               }
               return value;

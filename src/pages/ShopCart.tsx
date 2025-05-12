@@ -9,10 +9,11 @@ import { FaBasketShopping } from 'react-icons/fa6';
 import theme from '../shared/styles/theme';
 import { useNavigate } from 'react-router-dom';
 import { usePostOrder } from '../features/shop/cart/api/usePostOrder';
+import Loading from './Loading';
 
 const ShopCart = () => {
   const navigate = useNavigate();
-  const { postOrder } = usePostOrder();
+  const { isLoading, postOrder } = usePostOrder();
   const productList = useCartStore((state) => state.items); // 장바구니 데이터 불러오기
   const { setItems, setPaymentInfo, setOrderCode } = usePendingStore();
 
@@ -68,7 +69,9 @@ const ShopCart = () => {
     }
   };
 
-  return (
+  return isLoading ? (
+    <Loading description="결제창으로 이동중이에요." />
+  ) : (
     <Container>
       <Title>장바구니 내역을 확인해주세요.</Title>
       {productList?.length > 0 ? (

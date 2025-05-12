@@ -75,8 +75,12 @@ function App() {
             </Route>
           </Route>
           {/** 관리자 페이지 */}
-          <Route path="/manage/cards" element={<AdminCardPage />} />
-          <Route path="/manage/payments" element={<AdminPaymentPage />} />
+          <Route
+            element={<RoleRoute allowedRole="ADMIN" message="관리자만 접근 가능한 페이지입니다." />}
+          >
+            <Route path="/manage/cards" element={<AdminCardPage />} />
+            <Route path="/manage/payments" element={<AdminPaymentPage />} />
+          </Route>
           {/** 존재하지 않는 페이지 */}
           <Route path="*" element={<ErrorPage />} />
         </Routes>

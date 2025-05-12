@@ -44,8 +44,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({ keyword, setKeyword, handl
       {/** 유저아이디 입력 */}
       <div className="user-id">
         <Input
-          value={keyword.userId}
-          onChange={(e) => setKeyword((prev) => ({ ...prev, userId: e.target.value }))}
+          value={keyword.loginId}
+          onChange={(e) => setKeyword((prev) => ({ ...prev, loginId: e.target.value }))}
           placeholder="유저아이디를 검색해주세요."
         />
         <BsSearch size={20} color="#bcbcbc" onClick={handleSearch} />

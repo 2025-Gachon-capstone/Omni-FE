@@ -1,14 +1,14 @@
 import styled from '@emotion/styled';
 import { FaCheckSquare } from 'react-icons/fa';
-import dayjs from 'dayjs';
 import { SelectedUserResDto } from '../type/UserCard';
 import { Button, Input } from '../../../../shared/ui';
 import useDevice from '../../../../shared/hooks/useDevice';
 import theme from './../../../../shared/styles/theme';
+import { toast } from 'react-toastify';
 
 interface Props {
   userData?: SelectedUserResDto;
-  activeUserId: string;
+  activeUserId: number;
   onDeleteClick: () => void;
 }
 
@@ -18,9 +18,16 @@ const UserInfoBox = ({ userData, activeUserId, onDeleteClick }: Props) => {
     <RequestBox isMobile={isMobile}>
       <div className="info">
         <div>
-          <span style={{ fontSize: '1.5rem', fontWeight: '600' }}>{activeUserId}</span> 유저정보
+          <span style={{ fontSize: '1.5rem', fontWeight: '600' }}>{userData?.memberName}</span>{' '}
+          유저정보
         </div>
-        <Button color={theme.color.red} width="7rem" onClick={onDeleteClick}>
+        <Button
+          color={theme.color.red}
+          width="7rem"
+          onClick={() =>
+            userData?.memberId ? onDeleteClick() : toast.error('이미 삭제된 유저입니다.')
+          }
+        >
           유저 삭제
         </Button>
       </div>
@@ -32,18 +39,18 @@ const UserInfoBox = ({ userData, activeUserId, onDeleteClick }: Props) => {
               현재 사용가능혜택 확인하기
             </div>
             <div className="available-benefit-list">
-              {userData?.currentBenefit.map((row, idx) => <span key={idx}>{row}</span>)}
+              {userData?.benefits && userData.benefits.length > 0 ? (
+                userData.benefits.map((row, idx) => <span key={idx}>{row.title}</span>)
+              ) : (
+                <span>사용 가능한 혜택이 없습니다.</span>
+              )}
             </div>
           </AvailableBenefit>
         </div>
         <div className="simple-info">
           <InfoRow>
             <span>발급일자</span>
-            <Input
-              value={dayjs(userData?.createdAt).format('YYYY-MM-DD')}
-              styleType="outline"
-              disabled
-            />
+            <Input value={userData?.createdAt} styleType="outline" disabled />
           </InfoRow>
           <InfoRow>
             <span>카드번호</span>
@@ -56,8 +63,8 @@ const UserInfoBox = ({ userData, activeUserId, onDeleteClick }: Props) => {
             />
           </InfoRow>
           <InfoRow>
-            <span>발급일</span>
-            <Input value={userData?.createdAt || ''} styleType="outline" disabled />
+            <span>발급인</span>
+            <Input value={userData?.memberName || ''} styleType="outline" disabled />
           </InfoRow>
         </div>
       </div>
