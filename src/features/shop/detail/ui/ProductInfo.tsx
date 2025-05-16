@@ -30,8 +30,6 @@ export const ProductInfo = ({ product }: { product: ProductItem }) => {
       addToCartOrder: items.length + 1,
       productPrice: product.productPrice,
     });
-    setIsOpen(false);
-    navigate('/shop/cart'); // 장바구니 이동
   };
 
   // 2. 단독 주문
@@ -94,7 +92,10 @@ export const ProductInfo = ({ product }: { product: ProductItem }) => {
             color="white"
             textColor={theme.color.main}
             border={`1px solid ${theme.color.main}`}
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              handleToCart();
+              setIsOpen(true);
+            }}
           >
             장바구니
           </Button>
@@ -120,7 +121,10 @@ export const ProductInfo = ({ product }: { product: ProductItem }) => {
             },
             {
               text: '장바구니로',
-              onClick: () => handleToCart(),
+              onClick: () => {
+                setIsOpen(false);
+                navigate('/shop/cart'); // 장바구니 이동
+              },
               bgColor: `${theme.color.main}`,
               textColor: 'white',
             },
