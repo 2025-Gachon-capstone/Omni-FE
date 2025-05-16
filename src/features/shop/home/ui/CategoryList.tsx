@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import useDevice from '../../../../shared/hooks/useDevice';
 import { useGetGategory } from '../api/useGetCategory';
 import Loading from '../../../../pages/Loading';
+import { useLayoutEffect, useRef } from 'react';
 
 export const CategoryList = () => {
   const { isMobile } = useDevice();
@@ -10,16 +11,42 @@ export const CategoryList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const departmentId = Number(searchParams.get('departmentId') ?? 0);
 
+  /** 특정 카테고리 위치 이동 */
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
+
+  const handleClick = (id: number) => {
+    setSearchParams({ departmentId: String(id), page: '1' });
+  };
+
+  useLayoutEffect(() => {
+    if (!departmentId || !data) return;
+
+    const button = buttonRefs.current[departmentId];
+    const container = containerRef.current;
+
+    if (button && container) {
+      const buttonRect = button.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const offset = buttonRect.left - containerRect.left;
+
+      container.scrollBy({
+        left: offset,
+      });
+    }
+  }, [data, departmentId]);
+
   return loading ? (
     <Loading />
   ) : (
-    <CategoryContainer isMobile={isMobile}>
+    <CategoryContainer ref={containerRef} isMobile={isMobile}>
       {data.map((cat) => (
         <CategoryButton
           key={cat.productCategoryId}
-          onClick={() => {
-            setSearchParams({ departmentId: String(cat.productCategoryId), page: '1' });
+          ref={(el) => {
+            buttonRefs.current[cat.productCategoryId] = el;
           }}
+          onClick={() => handleClick(cat.productCategoryId)}
           selected={cat.productCategoryId === departmentId}
           isMobile={isMobile}
         >

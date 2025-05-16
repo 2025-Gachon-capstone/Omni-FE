@@ -50,7 +50,9 @@ const ShopHome = () => {
     <Container>
       <Banner />
       <CategoryList />
-      {products.length === 0 ? (
+      {loading ? (
+        <Loading />
+      ) : products.length === 0 ? (
         <EmptyContent>
           <LuSearchX size={40} color={theme.color.main} />
           <div className="empty-title">상품 리스트가 없습니다.</div>
