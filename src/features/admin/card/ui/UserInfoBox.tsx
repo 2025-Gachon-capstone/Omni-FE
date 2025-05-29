@@ -22,6 +22,7 @@ const UserInfoBox = ({ userData, onDeleteClick }: Props) => {
         </div>
         <Button
           color={theme.color.red}
+          textSize="1rem"
           width="7rem"
           onClick={() =>
             userData?.memberId ? onDeleteClick() : toast.error('이미 삭제된 유저입니다.')
