@@ -24,8 +24,8 @@ const MenuList: MenuListType = {
     link: ['/', '/shop', '/login'],
   },
   USER: {
-    name: ['홈', 'MY카드', '결제내역', '혜택 히스토리', '마이페이지'],
-    link: ['/', '/mycard', '/payment', '/benefit', '/mypage'],
+    name: ['홈', 'MY카드', '결제내역', '혜택 히스토리', '마이페이지', '쇼핑하기'],
+    link: ['/', '/mycard', '/payment', '/benefit', '/mypage', '/shop'],
   },
   ADMIN: {
     name: ['홈', '전체 유저 관리', '전체 결제내역'],
