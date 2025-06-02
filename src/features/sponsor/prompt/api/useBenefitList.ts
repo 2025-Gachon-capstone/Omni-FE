@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { convertBenefitJsonToRes } from '../type/converter';
 import { useState } from 'react';
 import { BenefitRequestDTO } from '../type/RequestDTO';
+import { BenefitResponseDTO } from '../type/ResponseDTO';
 
 export const useBenefitList = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +14,13 @@ export const useBenefitList = () => {
     try {
       const res = await privateAxios.get(`/flask/v1/benefits?sponsorId=${sponsorId}`);
       console.log(res.data.result);
-      return res.data.result.map(convertBenefitJsonToRes);
+
+      return res.data.result.reduce((acc: BenefitResponseDTO[], json: any) => {
+        if (json.status !== 'DELETED') {
+          acc.push(convertBenefitJsonToRes(json));
+        }
+        return acc;
+      }, []);
     } catch (err: any) {
       console.log('err:', err);
 
@@ -47,15 +54,17 @@ export const useBenefitList = () => {
     }
   };
 
-  const patchBenefit = async (benefitId: number, benefit: BenefitRequestDTO): Promise<void> => {
+  const patchBenefit = async (benefitId: number, benefit: BenefitRequestDTO): Promise<boolean> => {
     setIsLoading(true);
     try {
       await privateAxios.patch(`/sponsor/v1/benefits/${benefitId}`, benefit);
       if (benefit.status === 'PENDING') toast.success('임시 저장 완료');
+      return true
     } catch (err: any) {
       console.log(err.response.data);
       const message = err.response?.data?.message || '임시 저장 실패';
       toast.error(message);
+      return false
     } finally {
       setIsLoading(false);
     }
@@ -80,14 +89,16 @@ export const useBenefitList = () => {
     }
   };
 
-  const deleteBenefit = async (benefitId: number): Promise<void> => {
+  const deleteBenefit = async (benefitId: number): Promise<boolean> => {
     try {
       await privateAxios.delete(`/sponsor/v1/benefits/${benefitId}`);
       toast.success('혜택 삭제 완료');
+      return true
     } catch (err: any) {
       console.log(err.response.data);
       const message = err.response?.data?.message || '삭제 실패';
       toast.error(message);
+      return false
     }
   };
 
