@@ -6,6 +6,7 @@ import { ErrorPhrase } from '../features/login/ui/ErrorPhrase';
 import { JoinPhrase } from '../features/login/ui/JoinPhrase';
 import { useLogin } from '../features/login/api/useLogin';
 import Loading from './Loading';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   // 아이디, 비밀번호
@@ -24,13 +25,27 @@ const Login = () => {
     }));
   };
 
+  //  [id, password] 로그인 값 공백 체크 함수
+  const handleCheckEmpty = () => {
+    if (loginData.id == '' || loginData.password == '') {
+      toast.error('로그인 값을 입력해주세요.');
+      return true;
+    }
+    return false;
+  };
+
   // 로그인 API
   const handleLogin = () => {
-    if (loginData.id == '' || loginData.password == '') {
-      alert('로그인 값을 입력해주세요.');
-      return;
+    if (!handleCheckEmpty()) {
+      login(loginData); // 로그인
     }
-    login(loginData); // 로그인
+  };
+
+  // 엔터 이벤트 함수
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
   };
 
   return isLoading ? (
@@ -39,7 +54,7 @@ const Login = () => {
     <Container>
       <LoginContainer>
         <Title>로그인</Title>
-        <LoginForm data={loginData} handleData={handleData} />
+        <LoginForm data={loginData} handleData={handleData} handleKeyDown={handleKeyDown} />
         {isValidate == 0 && <ErrorPhrase />}
         <Button width="100%" onClick={handleLogin}>
           로그인

@@ -41,6 +41,13 @@ export const PasswordAuth: React.FC<PasswordAuthProps> = ({
     }
   };
 
+  // 엔터 이벤트 함수
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      checkPassword();
+    }
+  };
+
   return loading ? (
     <Loading />
   ) : (
@@ -53,6 +60,7 @@ export const PasswordAuth: React.FC<PasswordAuthProps> = ({
         <Input
           value={cardPassword}
           onChange={handleCardPassword}
+          onKeyDown={handleKeyDown}
           styleType="outline"
           placeholder="비밀번호를 입력해주세요"
           type="password"

@@ -7,18 +7,26 @@ interface LoginFormProps {
     password: string;
   };
   handleData: (type: string) => (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ data, handleData }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ data, handleData, handleKeyDown }) => {
   return (
     <InputBox>
-      <Input width="100%" value={data.id} placeholder="아이디" onChange={handleData('id')} />
+      <Input
+        width="100%"
+        value={data.id}
+        placeholder="아이디"
+        onChange={handleData('id')}
+        onKeyDown={handleKeyDown}
+      />
       <Input
         width="100%"
         value={data.password}
         placeholder="비밀번호"
         type="password"
         onChange={handleData('password')}
+        onKeyDown={handleKeyDown}
       />
     </InputBox>
   );
