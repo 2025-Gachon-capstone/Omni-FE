@@ -55,6 +55,7 @@ const SponsorPrompt = () => {
       }
 
       const list = await getBenefitList({ sponsorId });
+
       if (list === undefined || list.length === 0) {
         console.log('혜택내역이 없습니다. 신규 혜택이 생성됩니다.');
         await handleAddBenefit();
@@ -187,6 +188,7 @@ const SponsorPrompt = () => {
 
   const handleReqBtn = async () => {
     if (activeBenefitId === null) return;
+    var success: boolean;
     // 삭제 API
     if (modalType === 'delete') {
       if (benefitList.length < 2) {
@@ -194,7 +196,9 @@ const SponsorPrompt = () => {
         return;
       }
 
-      await deleteBenefit(activeBenefitId);
+      success = await deleteBenefit(activeBenefitId);
+      if (!success) return;
+
       setBenefitList((prev) => {
         const newBenefitList = prev.filter((benefit) => benefit.benefitId !== activeBenefitId);
         setActiveBenefitId(newBenefitList[0].benefitId);
@@ -229,10 +233,19 @@ const SponsorPrompt = () => {
       else request.status = 'ONGOING';
 
       console.log(`request: ${request}`);
-      await submitBenefit(activeBenefitId, request);
+      success = await submitBenefit(activeBenefitId, request);
+
+      if (!success) return;
+
+      setBenefitList((prev) =>
+        prev.map((benefit) =>
+          benefit.benefitId === activeBenefitId ? { ...benefit, status: request.status } : benefit,
+        ),
+      );
     } else {
       console.log(`request: ${request}`);
-      await patchBenefit(activeBenefitId, request);
+      success = await patchBenefit(activeBenefitId, request);
+      if (!success) return;
     }
 
     setModalType(null);
