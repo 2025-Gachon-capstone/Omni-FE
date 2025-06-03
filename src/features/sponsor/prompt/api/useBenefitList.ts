@@ -59,12 +59,12 @@ export const useBenefitList = () => {
     try {
       await privateAxios.patch(`/sponsor/v1/benefits/${benefitId}`, benefit);
       if (benefit.status === 'PENDING') toast.success('임시 저장 완료');
-      return true
+      return true;
     } catch (err: any) {
       console.log(err.response.data);
       const message = err.response?.data?.message || '임시 저장 실패';
       toast.error(message);
-      return false
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +74,8 @@ export const useBenefitList = () => {
     setIsLoading(true);
     try {
       await privateAxios.patch(`/sponsor/v1/benefits/${benefitId}`, benefit);
-      await privateAxios.post(`/flask/v1/benefits/${benefitId}/submit`, benefit);
+      const result = await privateAxios.post(`/flask/v1/benefits/${benefitId}/submit`, benefit);
+      console.log(`submit 응답: ${result}`);
       toast.success('혜택 제출 완료');
       return true;
     } catch (err: any) {
@@ -93,12 +94,12 @@ export const useBenefitList = () => {
     try {
       await privateAxios.delete(`/sponsor/v1/benefits/${benefitId}`);
       toast.success('혜택 삭제 완료');
-      return true
+      return true;
     } catch (err: any) {
       console.log(err.response.data);
       const message = err.response?.data?.message || '삭제 실패';
       toast.error(message);
-      return false
+      return false;
     }
   };
 
