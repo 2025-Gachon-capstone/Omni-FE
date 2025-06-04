@@ -211,16 +211,7 @@ const SponsorPrompt = () => {
     if (activeBenefit === undefined) return;
 
     // 필수 필드 체크
-    if (
-      !activeBenefit.title.trim() ||
-      activeBenefit.discountRate === 0 ||
-      !activeBenefit.targetProduct.trim() ||
-      activeBenefit.amount <= 0 ||
-      !activeBenefit.targetMember.trim()
-    ) {
-      toast.error('모든 필드를 정확히 입력해주세요');
-      return;
-    }
+
     // 임시저장, 제출 API
     const today = new Date().setHours(0, 0, 0, 0);
     const startDay = activeBenefit.startDate.setHours(0, 0, 0, 0);
@@ -239,6 +230,20 @@ const SponsorPrompt = () => {
     const request = convertBenefitResToReq(activeBenefit);
 
     if (modalType === 'submit') {
+      if (
+        !activeBenefit.title ||
+        !activeBenefit.title.trim() ||
+        activeBenefit.discountRate === 0 ||
+        !activeBenefit.targetProduct ||
+        !activeBenefit.targetProduct.trim() ||
+        activeBenefit.amount <= 0 ||
+        !activeBenefit.targetMember ||
+        !activeBenefit.targetMember.trim()
+      ) {
+        toast.error('모든 필드를 정확히 입력해주세요');
+        return;
+      }
+
       if (startDay > today) request.status = 'BEFORE';
       else request.status = 'ONGOING';
 
