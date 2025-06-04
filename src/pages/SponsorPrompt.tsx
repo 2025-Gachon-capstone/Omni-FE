@@ -119,10 +119,8 @@ const SponsorPrompt = () => {
 
         console.log('📨 handleSend 실행됨:', input);
         if (activeBenefit === undefined) {
-          toast.error('협찬 내용(상품/고객)을 채워주세요.');
+          toast.error('협찬 내용(상품/고객 등)을 채워주세요.');
           return;
-        } else if (activeBenefit.targetProduct) {
-          toast.error('협찬 내용(상품/고객)을 채워주세요.');
         }
 
         const resMessage = await postMessage(activeBenefitId, activeBenefit, newMessage, setInput);
@@ -175,7 +173,7 @@ const SponsorPrompt = () => {
       title: '',
       startDate: new Date(),
       endDate: new Date(),
-      discounRate: 0,
+      discountRate: 1,
       targetProduct: '',
       amount: 0,
       targetMember: '',
@@ -211,6 +209,18 @@ const SponsorPrompt = () => {
       return;
     }
     if (activeBenefit === undefined) return;
+
+    // 필수 필드 체크
+    if (
+      !activeBenefit.title.trim() ||
+      activeBenefit.discountRate === 0 ||
+      !activeBenefit.targetProduct.trim() ||
+      activeBenefit.amount <= 0 ||
+      !activeBenefit.targetMember.trim()
+    ) {
+      toast.error('모든 필드를 정확히 입력해주세요');
+      return;
+    }
     // 임시저장, 제출 API
     const today = new Date().setHours(0, 0, 0, 0);
     const startDay = activeBenefit.startDate.setHours(0, 0, 0, 0);
