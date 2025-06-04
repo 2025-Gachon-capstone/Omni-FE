@@ -38,7 +38,7 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({
           </IconButton>
         ) : (
           <IconButton status={status}>
-            <FiCheckCircle size={18} />
+            <FiCheckCircle size={20} />
           </IconButton>
         )}
       </TitleRow>
@@ -84,8 +84,8 @@ export const BenefitPopover: React.FC<BenefitPopoverProps> = ({
           <span style={{ color: 'white' }}>개, </span>
           <Input
             type="number"
-            value={data.discounRate}
-            onChange={(e) => handleData('discounRate', e.target.value)}
+            value={data.discountRate}
+            onChange={(e) => handleData('discountRate', e.target.value)}
           />
           <span style={{ color: 'white' }}>%</span>
         </InlineInputs>
@@ -151,7 +151,7 @@ const TitleRow = styled.div`
 `;
 
 const TitleInput = styled.input`
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   width: 100%;
   max-width: 100%; // ✅ 부모 기준으로 넘지 않게 제한
@@ -202,7 +202,7 @@ const FormGrid = styled.div`
 
 const Label = styled.label`
   display: block;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: ${theme.color.white};
   text-align: right;
 `;
@@ -215,6 +215,7 @@ const InlineInputs = styled.div`
 `;
 
 const Input = styled.input`
+  font-size: 1rem;
   padding: 0.4rem 0.5rem;
   flex: 1; // ✨ 핵심: 공간 균등 분배
   min-width: 0; // ✨ flex: 1 쓸 때 넘침 방지
@@ -248,6 +249,7 @@ const StyledDatePickerWrapper = styled.div`
     color: white;
     width: 100%;
     text-align: center;
+    font-size: 1rem;
 
     &::placeholder {
       color: ${theme.color.white};
@@ -264,6 +266,7 @@ const TextArea = styled.textarea`
   max-width: 100%;
   box-sizing: border-box;
   margin-top: 1rem;
+  font-size: 1rem;
 `;
 
 const Actions = styled.div`
@@ -280,6 +283,7 @@ const Button = styled.button<{ status: BenefitResponseDTO['status'] }>`
   color: ${theme.color.white};
   border-radius: 0.25rem;
   cursor: pointer;
+  font-size: 1rem;
 
   ${({ status }) =>
     status === 'PENDING' &&

@@ -159,7 +159,7 @@ const MessageBubble = styled.div<{ type: 'USER' | 'AI' }>`
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   max-width: 70%;
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   border: ${(props) => (props.type === 'AI' ? `1px solid ${theme.color.bold_border}` : 'none')};
   white-space: pre-wrap; // ✅ 줄바꿈 적용!
 `;

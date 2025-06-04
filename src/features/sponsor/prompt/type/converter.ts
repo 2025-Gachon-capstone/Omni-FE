@@ -7,9 +7,9 @@ export function convertBenefitJsonToRes(json: any): BenefitResponseDTO {
   return {
     benefitId: json.benefitId,
     title: json.title,
-    startDate: new Date(json.startDate),
-    endDate: new Date(json.endDate),
-    discounRate: json.discounRate * 100,
+    startDate: json.startDate ? new Date(json.startDate) : new Date(),
+    endDate: json.endDate ? new Date(json.endDate) : new Date(),
+    discountRate: json.discountRate * 100,
     targetProduct: json.targetProduct,
     amount: json.amount,
     targetMember: json.targetMember,
@@ -33,7 +33,7 @@ export function convertBenefitResToReq(response: BenefitResponseDTO): BenefitReq
       response.endDate instanceof Date
         ? response.endDate.toISOString().split('T')[0]
         : response.endDate,
-    discounRate: response.discounRate / 100,
+    discountRate: response.discountRate / 100,
   };
 }
 
@@ -55,7 +55,10 @@ export function convertMessageJsonToRes(json: any): MessageResponseDTO {
   };
 }
 
-export function convertMessageToReq(response: MessageDTO, benefit: BenefitRequestDTO): MesssageRequestDTO {
+export function convertMessageToReq(
+  response: MessageDTO,
+  benefit: BenefitRequestDTO,
+): MesssageRequestDTO {
   return {
     benefit: benefit,
     content: response.content,

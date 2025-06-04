@@ -3,7 +3,7 @@ export type BenefitFormData = {
   title: string;
   startDate: Date;
   endDate: Date;
-  discounRate: number;
+  discountRate: number;
   targetProduct: string;
   amount: number;
   targetMember: string;
