@@ -109,8 +109,9 @@ const PaymentBox = styled.div`
 `;
 
 const Img = styled.div`
-  max-width: 10rem;
-  max-height: 10rem;
+  max-width: 6rem;
+  max-height: 6rem;
+  margin-bottom: 2.5rem;
   img {
     width: 100%;
     height: 100%;
