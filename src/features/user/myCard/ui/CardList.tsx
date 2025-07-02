@@ -1,24 +1,27 @@
+import { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import IMG from '../../../../shared/assets/img/card.svg';
 import { FaAngleRight } from 'react-icons/fa6';
 import useDevice from '../../../../shared/hooks/useDevice';
 import { CardPreview, formatCardNumber } from '../type/Card';
+import useIntersectionObserver from '../../../../shared/hooks/useIntersectionObserver';
 import dayjs from 'dayjs';
+import { DotLoader } from '../../../../shared/ui';
 
 const DATA: CardPreview[] = [
   {
     cardId: 222,
-    cardNumber: '4198801181868521',
+    cardNumber: '1198801181868521',
     createdAt: '2025-05-03T18:20:14',
   },
   {
     cardId: 223,
-    cardNumber: '4198801181868521',
+    cardNumber: '2198801181868521',
     createdAt: '2025-05-03T18:20:14',
   },
   {
     cardId: 224,
-    cardNumber: '4198801181868521',
+    cardNumber: '3198801181868521',
     createdAt: '2025-05-03T18:20:14',
   },
   {
@@ -28,7 +31,37 @@ const DATA: CardPreview[] = [
   },
   {
     cardId: 226,
-    cardNumber: '4198801181868521',
+    cardNumber: '5198801181868521',
+    createdAt: '2025-05-03T18:20:14',
+  },
+  {
+    cardId: 227,
+    cardNumber: '0000000000000000',
+    createdAt: '2025-05-03T18:20:14',
+  },
+  {
+    cardId: 228,
+    cardNumber: '6198801181868521',
+    createdAt: '2025-05-03T18:20:14',
+  },
+  {
+    cardId: 229,
+    cardNumber: '7198801181868521',
+    createdAt: '2025-05-03T18:20:14',
+  },
+  {
+    cardId: 230,
+    cardNumber: '8198801181868521',
+    createdAt: '2025-05-03T18:20:14',
+  },
+  {
+    cardId: 231,
+    cardNumber: '9198801181868521',
+    createdAt: '2025-05-03T18:20:14',
+  },
+  {
+    cardId: 232,
+    cardNumber: '1098801181868521',
     createdAt: '2025-05-03T18:20:14',
   },
 ];
@@ -42,15 +75,60 @@ export const CardList = ({
 }) => {
   const { isMobile } = useDevice();
 
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const pageRef = useRef(0);
+
+  const [cardData, setCardData] = useState<CardPreview[]>(DATA.slice(0, 5));
+  const [isEnd, setIsEnd] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // (임시 delay function)
+  const testFetch = (delay = 1000) => new Promise((res) => setTimeout(res, delay));
+
+  // observer callback
+  const onIntersect: IntersectionObserverCallback = async ([entry], observer) => {
+    if (entry.isIntersecting) {
+      if (!isEnd) {
+        setLoading(true);
+        await testFetch();
+
+        const next = pageRef.current + 1;
+        const newData = DATA.slice(next * 5, (next + 1) * 5); // API 호출예정
+        if (newData.length < 5) {
+          // 조건문 수정예정 (last==true)
+          setIsEnd(true);
+        }
+        setCardData((prevData) => [...prevData, ...newData]);
+        pageRef.current = next;
+        setLoading(false);
+      }
+
+      observer.unobserve(entry.target);
+    }
+  };
+
+  const { setTarget, setRoot } = useIntersectionObserver({
+    rootMargin: '50px',
+    threshold: 0.5,
+    onIntersect,
+  });
+
+  useEffect(() => {
+    if (listRef.current) {
+      setRoot(listRef.current);
+    }
+  }, [listRef.current]);
+
   return (
-    <Container>
-      {DATA.map((data) => {
+    <Container ref={listRef}>
+      {cardData.map((data) => {
         return (
           <CardBox
             key={data.cardId}
             isMobile={isMobile}
             selected={data.cardId === selectedId}
             onClick={() => handleSelectCard(data.cardId)}
+            ref={!isEnd ? setTarget : null}
           >
             <div className="card-content">
               <img className="img" src={IMG} alt="카드이미지" />
@@ -65,6 +143,7 @@ export const CardList = ({
           </CardBox>
         );
       })}
+      {loading && <DotLoader />}
     </Container>
   );
 };
