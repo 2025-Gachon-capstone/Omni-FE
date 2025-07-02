@@ -60,7 +60,7 @@ const UserMyCard = () => {
             </Button>
           </div>
           <div className="content">
-            <CardList handleSelectCard={handleSelectCard} />
+            <CardList selectedId={selectedCardId} handleSelectCard={handleSelectCard} />
             <CardDetail selectedId={selectedCardId} />
           </div>
         </MyCardContainer>

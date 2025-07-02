@@ -33,7 +33,13 @@ const DATA: CardPreview[] = [
   },
 ];
 
-export const CardList = ({ handleSelectCard }: { handleSelectCard: (cardId: number) => void }) => {
+export const CardList = ({
+  selectedId,
+  handleSelectCard,
+}: {
+  selectedId: number | null;
+  handleSelectCard: (cardId: number) => void;
+}) => {
   const { isMobile } = useDevice();
 
   return (
@@ -43,6 +49,7 @@ export const CardList = ({ handleSelectCard }: { handleSelectCard: (cardId: numb
           <CardBox
             key={data.cardId}
             isMobile={isMobile}
+            selected={data.cardId === selectedId}
             onClick={() => handleSelectCard(data.cardId)}
           >
             <div className="card-content">
@@ -65,21 +72,27 @@ export const CardList = ({ handleSelectCard }: { handleSelectCard: (cardId: numb
 const Container = styled.div`
   background-color: #f9f9f9;
   flex-grow: 1;
+  flex-basis: 20rem;
+  flex-shrink: 0;
   height: 28rem;
-  padding: 2rem 1rem 2rem 2rem;
+  padding: 2rem 0.8rem 2rem 1rem;
   border-radius: 1rem;
   box-sizing: border-box;
   overflow-y: auto;
 `;
 
-const CardBox = styled.div<{ isMobile: boolean }>`
+const CardBox = styled.div<{ isMobile: boolean; selected: boolean }>`
   width: 90%;
-  padding: 1rem 0;
+  box-sizing: border-box;
+
+  padding: 1rem 1.5rem;
   justify-self: center;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #f0f0f0;
+  border-radius: 0.25rem;
+  background-color: ${(props) => (props.selected ? '#e4e4e4' : 'inherit')};
   cursor: pointer;
 
   .card-content {
