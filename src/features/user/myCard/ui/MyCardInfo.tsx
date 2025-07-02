@@ -1,47 +1,51 @@
-import { useState, useEffect } from 'react';
-import { useCardInfo } from '../api/useCardInfo';
+import { useState } from 'react';
 import styled from '@emotion/styled';
 import { InfoInput } from './InfoInput';
 import { Card, mapCardToItemList } from '../type/Card';
-import Loading from '../../../../pages/Loading';
+import useDevice from '../../../../shared/hooks/useDevice';
 
-export const MyCardInfo = () => {
-  const { loading, getCardInfo } = useCardInfo();
-  const [cardData, setCardData] = useState<Card | null>(null);
+const DATA = {
+  CardId: 0,
+  createdAt: '2025-06-24 00:00:00',
+  cardNumber: '1111-1111-1111-1111',
+  memberName: '홍길동',
+  expired: '10/30',
+  securityCode: '123',
+};
 
-  // 카드 정보 가져오기 API
-  useEffect(() => {
-    const fetchCardInfo = async () => {
-      const { isSuccess, data } = await getCardInfo();
-      if (isSuccess) {
-        setCardData(data);
-      }
-    };
-    fetchCardInfo();
-  }, []);
+export const MyCardInfo = ({ selectedId }: { selectedId: number }) => {
+  const { isMobile } = useDevice();
+  const [cardData] = useState<Card | null>(DATA);
 
-  if (!cardData) {
-    return <Container>카드 정보가 없습니다.</Container>;
-  }
-
-  const cardItemList = mapCardToItemList(cardData); // 서버 데이터 매핑
-
-  return loading ? (
-    <Loading />
-  ) : (
-    <Container>
+  const cardItemList = cardData ? mapCardToItemList(cardData) : [];
+  console.log('선택된 카드아이디 : ' + selectedId);
+  return (
+    <Form isMobile={isMobile}>
+      <div className="title">카드 상세정보</div>
+      <SeparateBar />
       {cardItemList.map((card, i) => (
         <InfoInput key={i} label={card.label} value={card.value} />
       ))}
-    </Container>
+    </Form>
   );
 };
 
-const Container = styled.div`
+const Form = styled.div<{ isMobile: boolean }>`
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 2rem;
+
+  .title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #1d1d1f;
+  }
+`;
+
+const SeparateBar = styled.div`
   width: 100%;
-  max-width: 37rem;
-  gap: 1rem;
+  height: 1px;
+  margin: 0 auto;
+  background-color: #f0f0f0;
 `;

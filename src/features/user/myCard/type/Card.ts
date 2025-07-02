@@ -33,8 +33,8 @@ export const formatCardNumber = (cardNumber: string): string => {
 
 export const mapCardToItemList = (data: Card): CardItem[] => [
   { label: '발급일자', value: dayjs(data.createdAt).format('YYYY.MM.DD') },
-  { label: '카드번호', value: formatCardNumber(data.cardNumber) },
-  { label: '발급인', value: data.memberName },
-  { label: '만료일', value: dayjs(data.expired).format('MM/YY') },
-  { label: 'CVC', value: data.securityCode },
+  { label: '카드번호', value: data.cardNumber.replace(/(\d{4})(?=\d)/g, '$1-') },
+  { label: '발급인명', value: data.memberName },
+  { label: '만료일자', value: dayjs(data.expired).format('MM/YY') },
+  { label: '보안코드', value: data.securityCode },
 ];

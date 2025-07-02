@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { Input } from '../../../../shared/ui';
 import useDevice from '../../../../shared/hooks/useDevice';
 
 export const InfoInput = ({ label, value }: { label: string; value: string | number }) => {
@@ -7,22 +6,43 @@ export const InfoInput = ({ label, value }: { label: string; value: string | num
   return (
     <InfoBox isMobile={isMobile}>
       <div className="label">{label}</div>
-      <Input styleType="outline" value={value} width={isMobile ? '15rem' : ''} disabled />
+      <div className="value">{value}</div>
     </InfoBox>
   );
 };
 
 const InfoBox = styled.div<{ isMobile: boolean }>`
-  width: ${(props) => (props.isMobile ? '100%' : '80%')};
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: ${(props) => (props.isMobile ? '1rem' : '2rem')};
-  ${(props) => props.isMobile && ` justify-content:space-between`};
-  margin-right: auto;
+  font-weight: 500;
+
   .label {
+    flex-grow: 0.8;
+    flex-basis: 1rem;
+    flex-shrink: 0;
     color: #595959;
-    font-size: ${(props) => (props.isMobile ? '1rem' : '1.25rem')};
-    white-space: nowrap;
+    font-size: ${(props) => (props.isMobile ? '0.75rem' : '1rem')};
+
+    display: flex;
+    align-items: center;
+
+    &::after {
+      content: '';
+      height: 1.25rem;
+      width: 0.1rem;
+      background-color: #f0f0f0;
+      display: inline-block;
+      margin-left: 2rem;
+    }
+  }
+  .value {
+    flex-grow: 1;
+    flex-basis: 3rem;
+    flex-shrink: 0;
+    justify-self: flex-start;
     margin-right: auto;
+    color: #1d1d1f;
+    white-space: nowrap;
   }
 `;
