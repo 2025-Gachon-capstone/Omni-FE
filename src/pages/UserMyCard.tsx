@@ -5,12 +5,15 @@ import { Button, Title } from '../shared/ui';
 import Modal from '../shared/ui/Modal';
 import theme from '../shared/styles/theme';
 import { toast } from 'react-toastify';
+import { CardDetail } from '../features/user/myCard/ui/CardDetail';
+import { CardList } from '../features/user/myCard/ui/CardList';
 
 const UserMyCard = () => {
   const { isMobile } = useDevice();
   const [isOpen, setIsOpen] = useState(false); // 카드추가 모달창
   const [cardPassword, setCardPassword] = useState(''); // 카드비밀번호
   const [isCardPasswordValid, setIsCardPasswordValid] = useState(-1); // 카드 비밀번호 형식 (-1: 초기, 0: 형식X, 1: 형식O)
+  const [selectedCardId, setSelectedCardId] = useState<number | null>(null); // 선택된 Card ID 관리
 
   // 모달창 컨텐츠 초기화
   const resetContent = () => {
@@ -39,6 +42,11 @@ const UserMyCard = () => {
     }
   }, [cardPassword, isCardPasswordValid]);
 
+  // 특정 카드 선택 함수
+  const handleSelectCard = (id: number) => {
+    setSelectedCardId(id);
+  };
+
   return (
     <>
       <Container>
@@ -51,7 +59,10 @@ const UserMyCard = () => {
               카드 추가하기
             </Button>
           </div>
-          <div className="content"></div>
+          <div className="content">
+            <CardList handleSelectCard={handleSelectCard} />
+            <CardDetail selectedId={selectedCardId} />
+          </div>
         </MyCardContainer>
       </Container>
       {isOpen && (
@@ -117,6 +128,13 @@ const MyCardContainer = styled.div<{ isMobile: boolean }>`
   }
   .new-button {
     align-self: flex-end;
+  }
+  .content {
+    width: 100%;
+    display: flex;
+    align-content: center;
+    flex-flow: ${(props) => (props.isMobile ? 'column-reverse ' : 'row')};
+    gap: 4rem;
   }
 `;
 
