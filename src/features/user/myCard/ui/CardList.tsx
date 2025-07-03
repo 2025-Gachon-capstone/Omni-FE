@@ -121,14 +121,15 @@ export const CardList = ({
 
   return (
     <Container ref={listRef}>
-      {cardData.map((data) => {
+      {cardData.map((data, index) => {
+        const isLastCard = index === cardData.length - 1;
         return (
           <CardBox
             key={data.cardId}
             isMobile={isMobile}
             selected={data.cardId === selectedId}
             onClick={() => handleSelectCard(data.cardId)}
-            ref={!isEnd ? setTarget : null}
+            ref={isLastCard && !isEnd ? setTarget : null}
           >
             <div className="card-content">
               <img className="img" src={IMG} alt="카드이미지" />
