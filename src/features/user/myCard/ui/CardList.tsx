@@ -9,64 +9,6 @@ import dayjs from 'dayjs';
 import { DotLoader } from '../../../../shared/ui';
 import { useCardInfo } from '../api/useCardInfo';
 
-const DATA: CardPreview[] = [
-  {
-    cardId: 222,
-    cardNumber: '1198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 223,
-    cardNumber: '2198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 224,
-    cardNumber: '3198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 225,
-    cardNumber: '4198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 226,
-    cardNumber: '5198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 227,
-    cardNumber: '0000000000000000',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 228,
-    cardNumber: '6198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 229,
-    cardNumber: '7198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 230,
-    cardNumber: '8198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 231,
-    cardNumber: '9198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 232,
-    cardNumber: '1098801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-];
-
 export const CardList = ({
   selectedId,
   handleSelectCard,
