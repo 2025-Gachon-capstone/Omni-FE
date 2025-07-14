@@ -7,8 +7,11 @@ import theme from '../shared/styles/theme';
 import { toast } from 'react-toastify';
 import { CardDetail } from '../features/user/myCard/ui/CardDetail';
 import { CardList } from '../features/user/myCard/ui/CardList';
+import { useCardInfo } from '../features/user/myCard/api/useCardInfo';
 
 const UserMyCard = () => {
+  const { createNewCard } = useCardInfo();
+
   const { isMobile } = useDevice();
   const [isOpen, setIsOpen] = useState(false); // 카드추가 모달창
   const [cardPassword, setCardPassword] = useState(''); // 카드비밀번호
@@ -23,7 +26,7 @@ const UserMyCard = () => {
   };
 
   /** ------------- 카드 생성하기 API --------------- */
-  const createCard = useCallback(() => {
+  const createCard = useCallback(async () => {
     if (/^\d{4}$/.test(cardPassword)) {
       setIsCardPasswordValid(1);
     } else {
@@ -32,13 +35,13 @@ const UserMyCard = () => {
 
     if (isCardPasswordValid) {
       // 카드 생성 API
-      // 성공, 실패
-      let result = 1;
-      if (result) {
-        toast.success('카드가 성공적으로 추가되었습니다.');
+      const result = await createNewCard(cardPassword);
+      if (result.isSuccess) {
+        toast.success(result.message);
       } else {
-        toast.error('카드 추가에 실패했습니다.');
+        toast.error(result.message);
       }
+      setIsCardPasswordValid(-1);
     }
   }, [cardPassword, isCardPasswordValid]);
 

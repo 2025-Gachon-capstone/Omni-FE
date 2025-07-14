@@ -6,6 +6,29 @@ import { toast } from 'react-toastify';
 export const useCardInfo = () => {
   const [loading, setLoading] = useState(false);
 
+  // 카드 생성 API
+  const createNewCard = async (
+    password: string,
+  ): Promise<{ isSuccess: boolean; message: string }> => {
+    let result = { isSuccess: false, message: '' };
+    setLoading(true);
+    try {
+      const res = await privateAxios.post('/card/v1/cards/self', { cardPassword: password });
+      result = {
+        isSuccess: res.data.isSuccess,
+        message: '새로운 카드가 추가되었습니다.',
+      };
+    } catch (err: any) {
+      result = {
+        isSuccess: false,
+        message: err.response?.data?.message || '카드 추가에 실패했습니다.',
+      };
+    } finally {
+      setLoading(false);
+      return result;
+    }
+  };
+
   // 카드번호 인증 API
   const verifyCard = async (password: string): Promise<{ isSuccess: boolean; message: string }> => {
     let result = { isSuccess: false, message: '' };
@@ -39,7 +62,8 @@ export const useCardInfo = () => {
 
   return {
     loading,
-    verifyCard,
-    getCardInfo,
+    createNewCard, // 카드 생성
+    verifyCard, // 카드 비밀번호 인증
+    getCardInfo, // 카드 상세정보
   };
 };
