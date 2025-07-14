@@ -20,7 +20,7 @@ export const useApplyBenefit = () => {
   const applyBenefit = async (cardNumber: string): Promise<Benefit[] | null> => {
     setLoading(true);
     try {
-      const res = await publicAxios.post('/card/v1/cardBenefits/check', { cardNumber });
+      const res = await publicAxios.post('/user/v1/memberBenefits/check', { cardNumber });
       return res.data.result;
     } catch (err: any) {
       const message = err.response?.data?.message || '혜택 적용 실패';
