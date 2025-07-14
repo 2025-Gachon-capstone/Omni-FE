@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { privateAxios } from '../../../../app/customAxios';
 import { Card, CardPreview } from '../type/Card';
-import { toast } from 'react-toastify';
 
 export const useCardInfo = () => {
   const [loading, setLoading] = useState(false);
@@ -62,31 +61,29 @@ export const useCardInfo = () => {
     }
   };
 
-  // 카드번호 인증 API
-  const verifyCard = async (password: string): Promise<{ isSuccess: boolean; message: string }> => {
-    let result = { isSuccess: false, message: '' };
+  // 카드번호 인증 API (반환값 : 카드 상세정보)
+  const verifyCard = async ({
+    cardId,
+    password,
+  }: {
+    cardId: number;
+    password: string;
+  }): Promise<{ isSuccess: boolean; message: string; data: Card | null }> => {
+    let result = { isSuccess: false, message: '', data: null };
     setLoading(true);
     try {
-      const res = await privateAxios.post('/card/v1/cards/verify', { cardPassword: password });
-      result = { isSuccess: res.data.isSuccess, message: '인증에 성공하였습니다.' };
+      const res = await privateAxios.post(`/card/v1/cards/${cardId}`, { cardPassword: password });
+      result = {
+        isSuccess: res.data.isSuccess,
+        message: '인증에 성공하였습니다.',
+        data: res.data.result,
+      };
     } catch (err: any) {
-      result = { isSuccess: false, message: err.response?.data?.message || '인증에 실패했습니다.' };
-    } finally {
-      setLoading(false);
-      return result;
-    }
-  };
-
-  // 카드정보 가져오기 API
-  const getCardInfo = async (): Promise<{ isSuccess: boolean; data: null | Card }> => {
-    let result = { isSuccess: false, data: null };
-    setLoading(true);
-    try {
-      const res = await privateAxios.get('/card/v1/my/cards');
-      result = { isSuccess: res.data.isSuccess, data: res.data.result };
-    } catch (err: any) {
-      result = { isSuccess: false, data: null };
-      toast.error(err.response?.data?.message || '카드불러오기에 실패했습니다.');
+      result = {
+        isSuccess: false,
+        message: err.response?.data?.message || '인증에 실패했습니다.',
+        data: null,
+      };
     } finally {
       setLoading(false);
       return result;
@@ -97,7 +94,6 @@ export const useCardInfo = () => {
     loading,
     createNewCard, // 카드 생성
     getCardList, // 카드 리스트
-    verifyCard, // 카드 비밀번호 인증
-    getCardInfo, // 카드 상세정보
+    verifyCard, // 카드 비밀번호 인증 & 카드 상세정보
   };
 };

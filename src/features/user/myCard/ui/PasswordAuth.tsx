@@ -4,8 +4,18 @@ import theme from '../../../../shared/styles/theme';
 import { BsArrowRightCircleFill } from 'react-icons/bs';
 import useDevice from '../../../../shared/hooks/useDevice';
 import { useState } from 'react';
+import { Card } from '../type/Card';
+import { useCardInfo } from '../api/useCardInfo';
+import { toast } from 'react-toastify';
 
-export const PasswordAuth = ({ handleValid }: { handleValid: (value: number) => void }) => {
+export const PasswordAuth = ({
+  selectedId,
+  onSuccess,
+}: {
+  selectedId: number;
+  onSuccess: (data: Card | null) => void;
+}) => {
+  const { verifyCard } = useCardInfo();
   const { isMobile } = useDevice();
   const [cardPassword, setCardPassword] = useState('');
   const [errorPhrase, setErrorPhrase] = useState('');
@@ -14,17 +24,21 @@ export const PasswordAuth = ({ handleValid }: { handleValid: (value: number) => 
   const checkPassword = async () => {
     if (!/^\d{4}$/.test(cardPassword)) {
       setErrorPhrase('비밀번호 형식에 맞지 않습니다.');
-      handleValid(0);
+      return;
+    }
+    let body = {
+      cardId: selectedId,
+      password: cardPassword,
+    };
+    const result = await verifyCard(body);
+    if (result.isSuccess) {
+      // 인증 성공
+      setErrorPhrase('');
+      toast.success(result.message);
+      onSuccess(result.data);
     } else {
-      if (1) {
-        // 인증 성공
-        setErrorPhrase('');
-        handleValid(1);
-      } else {
-        // 인증 실패
-        setErrorPhrase('비밀번호가 일치하지 않습니다.');
-        handleValid(0);
-      }
+      // 인증 실패
+      setErrorPhrase(result.message);
     }
   };
 

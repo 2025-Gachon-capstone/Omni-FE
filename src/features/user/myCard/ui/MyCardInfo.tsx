@@ -4,21 +4,11 @@ import { InfoInput } from './InfoInput';
 import { Card, mapCardToItemList } from '../type/Card';
 import useDevice from '../../../../shared/hooks/useDevice';
 
-const DATA = {
-  CardId: 0,
-  createdAt: '2025-06-24 00:00:00',
-  cardNumber: '1111-1111-1111-1111',
-  memberName: '홍길동',
-  expired: '10/30',
-  securityCode: '123',
-};
-
-export const MyCardInfo = ({ selectedId }: { selectedId: number }) => {
+export const MyCardInfo = ({ cardInfo }: { cardInfo: Card }) => {
   const { isMobile } = useDevice();
-  const [cardData] = useState<Card | null>(DATA);
+  const [cardData] = useState<Card | null>(cardInfo);
 
   const cardItemList = cardData ? mapCardToItemList(cardData) : [];
-  console.log('선택된 카드아이디 : ' + selectedId);
   return (
     <Form isMobile={isMobile}>
       <div className="title">카드 상세정보</div>
