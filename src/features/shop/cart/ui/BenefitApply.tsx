@@ -53,7 +53,7 @@ export const BenefitApply = ({
       }
     });
 
-    if (totalDiscount == 0) toast.error('적용가능한 혜택이 없습니다.');
+    if (totalDiscount == 0) toast.error('혜택적용가능한 상품이 없습니다.');
     setDiscount(totalDiscount); // 부모에 할인금액 전달
     setOrderPrice(initial - totalDiscount); // 부모에 최종 금액 전달
     isApply(true);
