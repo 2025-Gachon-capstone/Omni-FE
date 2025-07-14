@@ -43,7 +43,7 @@ const UserBenefit = () => {
 
   const fetchBenefits = async () => {
     const result = await getBenefitList({ page: page - 1, size: SIZE });
-    setBenefits(result.benefits);
+    setBenefits(result.benefits || []);
     setTotalElements(result.totalElements);
   };
 

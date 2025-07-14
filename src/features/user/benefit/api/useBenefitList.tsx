@@ -28,9 +28,8 @@ export const useBenefitList = () => {
       size: size,
     };
     try {
-      const res = await privateAxios.get('/card/v1/my/cardBenefits', { params });
+      const res = await privateAxios.get('/user/v1/my/memberBenefits', { params });
       const data = res.data?.result;
-
       return {
         benefits: data.cardBenefits,
         totalElements: data.totalElements,
@@ -57,7 +56,7 @@ export const useBenefitList = () => {
   const getAvailableBenefit = async (): Promise<Benefit[]> => {
     setLoading(true);
     try {
-      const res = await privateAxios('/card/v1/my/cardBenefits/available');
+      const res = await privateAxios.get('/user/v1/my/memberBenefits/available');
 
       return res.data.result;
     } catch (err: any) {
