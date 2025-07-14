@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { privateAxios } from '../../../../app/customAxios';
-import { Card } from '../type/Card';
+import { Card, CardPreview } from '../type/Card';
 import { toast } from 'react-toastify';
 
 export const useCardInfo = () => {
@@ -22,6 +22,39 @@ export const useCardInfo = () => {
       result = {
         isSuccess: false,
         message: err.response?.data?.message || '카드 추가에 실패했습니다.',
+      };
+    } finally {
+      setLoading(false);
+      return result;
+    }
+  };
+
+  // 카드 리스트 API
+  const getCardList = async (
+    page: number,
+  ): Promise<{
+    isSuccess: boolean;
+    message: string;
+    data: CardPreview[] | null;
+    last: boolean;
+  }> => {
+    console.log(page);
+    let result = { isSuccess: false, data: null, last: true, message: '' };
+    setLoading(true);
+    try {
+      const res = await privateAxios.get('/card/v1/my/cards', { params: { page } });
+      result = {
+        isSuccess: res.data.isSuccess,
+        data: res.data.result.cards,
+        last: res.data.result.last,
+        message: '',
+      };
+    } catch (err: any) {
+      result = {
+        isSuccess: false,
+        data: null,
+        last: true,
+        message: '카드불러오기에 실패했습니다.',
       };
     } finally {
       setLoading(false);
@@ -63,6 +96,7 @@ export const useCardInfo = () => {
   return {
     loading,
     createNewCard, // 카드 생성
+    getCardList, // 카드 리스트
     verifyCard, // 카드 비밀번호 인증
     getCardInfo, // 카드 상세정보
   };
