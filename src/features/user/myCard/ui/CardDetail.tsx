@@ -2,22 +2,31 @@ import styled from '@emotion/styled';
 import { PasswordAuth } from './PasswordAuth';
 import { useEffect, useState } from 'react';
 import { MyCardInfo } from './MyCardInfo';
+import { Card } from '../type/Card';
 
 export const CardDetail = ({ selectedId }: { selectedId: number | null }) => {
   const [isValid, setIsValid] = useState(-1); // 카드 비밀번호 체크완료 (-1: 초기, 0: 실패, 1: 성공)
+  const [cardInfo, setCardInfo] = useState<Card | null>(null); // 카드 상세정보
 
   useEffect(() => {
     setIsValid(-1);
+    setCardInfo(null);
   }, [selectedId]);
 
   return (
     <Container>
       {!selectedId ? (
         <NonSelected>카드를 선택해주세요.</NonSelected>
-      ) : isValid == 1 ? (
-        <MyCardInfo selectedId={selectedId} />
+      ) : isValid == 1 && cardInfo ? (
+        <MyCardInfo cardInfo={cardInfo} />
       ) : (
-        <PasswordAuth handleValid={setIsValid} />
+        <PasswordAuth
+          selectedId={selectedId}
+          onSuccess={(data: Card | null) => {
+            setIsValid(1);
+            setCardInfo(data);
+          }}
+        />
       )}
     </Container>
   );

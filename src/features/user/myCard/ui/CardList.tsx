@@ -7,64 +7,7 @@ import { CardPreview, formatCardNumber } from '../type/Card';
 import useIntersectionObserver from '../../../../shared/hooks/useIntersectionObserver';
 import dayjs from 'dayjs';
 import { DotLoader } from '../../../../shared/ui';
-
-const DATA: CardPreview[] = [
-  {
-    cardId: 222,
-    cardNumber: '1198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 223,
-    cardNumber: '2198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 224,
-    cardNumber: '3198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 225,
-    cardNumber: '4198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 226,
-    cardNumber: '5198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 227,
-    cardNumber: '0000000000000000',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 228,
-    cardNumber: '6198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 229,
-    cardNumber: '7198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 230,
-    cardNumber: '8198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 231,
-    cardNumber: '9198801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-  {
-    cardId: 232,
-    cardNumber: '1098801181868521',
-    createdAt: '2025-05-03T18:20:14',
-  },
-];
+import { useCardInfo } from '../api/useCardInfo';
 
 export const CardList = ({
   selectedId,
@@ -73,51 +16,58 @@ export const CardList = ({
   selectedId: number | null;
   handleSelectCard: (cardId: number) => void;
 }) => {
+  const { loading, getCardList } = useCardInfo();
   const { isMobile } = useDevice();
 
   const listRef = useRef<HTMLDivElement | null>(null);
   const pageRef = useRef(0);
 
-  const [cardData, setCardData] = useState<CardPreview[]>(DATA.slice(0, 5));
+  const [cardData, setCardData] = useState<CardPreview[]>([]);
   const [isEnd, setIsEnd] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  // (임시 delay function)
-  const testFetch = (delay = 1000) => new Promise((res) => setTimeout(res, delay));
 
   // observer callback
   const onIntersect: IntersectionObserverCallback = async ([entry], observer) => {
     if (entry.isIntersecting) {
       if (!isEnd) {
-        setLoading(true);
-        await testFetch();
-
         const next = pageRef.current + 1;
-        const newData = DATA.slice(next * 5, (next + 1) * 5); // API 호출예정
-        if (newData.length < 5) {
-          // 조건문 수정예정 (last==true)
+        const result = await getCardList(next);
+        if (result.last) {
           setIsEnd(true);
         }
-        setCardData((prevData) => [...prevData, ...newData]);
+        setCardData((prevData) => [...prevData, ...(result.data || [])]);
         pageRef.current = next;
-        setLoading(false);
       }
 
       observer.unobserve(entry.target);
     }
   };
 
+  // 옵저버 객체
   const { setTarget, setRoot } = useIntersectionObserver({
     rootMargin: '50px',
     threshold: 0.5,
     onIntersect,
   });
 
+  // 옵저버 컨테이너 설정
   useEffect(() => {
     if (listRef.current) {
       setRoot(listRef.current);
     }
   }, [listRef.current]);
+
+  // 초기 데이터 설정
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      const result = await getCardList(0);
+      setCardData(result.data || []);
+      if (result.last) {
+        setIsEnd(true);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
 
   return (
     <Container ref={listRef}>
