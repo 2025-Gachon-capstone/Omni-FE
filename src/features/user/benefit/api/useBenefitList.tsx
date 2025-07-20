@@ -31,7 +31,7 @@ export const useBenefitList = () => {
       const res = await privateAxios.get('/user/v1/my/memberBenefits', { params });
       const data = res.data?.result;
       return {
-        benefits: data.cardBenefits,
+        benefits: data.memberBenefits,
         totalElements: data.totalElements,
         isFirst: data.isFirst,
         last: data.last,

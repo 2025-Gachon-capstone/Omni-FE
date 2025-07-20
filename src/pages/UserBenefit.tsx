@@ -87,7 +87,7 @@ const UserBenefit = () => {
               <Table
                 columns={benefitColumns}
                 data={benefits}
-                rowKey="cardBenefitId"
+                rowKey="benefitId"
                 renderCell={(key, value) => {
                   if (key === 'updatedAt') return dayjs(value).format('YYYY-MM-DD');
                   return value;
