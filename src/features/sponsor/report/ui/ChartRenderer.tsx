@@ -18,7 +18,7 @@ export const ChartRenderer = ({ selectedTab, data }: Props) => {
       break;
     case 'orderHour':
     case 'orderDow':
-      chartComponent = <ChartTime type={selectedTab} data={data as ReorderData[]} />;
+      chartComponent = <ChartTime type={selectedTab} data={data as TimeData[]} />;
       break;
     case 'relatedProduct':
       chartComponent = null;
