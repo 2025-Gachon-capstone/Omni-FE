@@ -1,8 +1,9 @@
 import styled from '@emotion/styled';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { StepGuide } from './StepGuide';
 import { ProductStatistics } from './ProductStatistics';
 import { ProductAI } from './ProductAI';
+import { Button } from '../../../../shared/ui';
 
 /** (수정예정) 판매통계 데이터 불러오기-API */
 const DATA = {
@@ -55,8 +56,19 @@ const DATA = {
 };
 
 export const ProductReport = () => {
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const productName = params.get('name');
+
+  const handleNextStep = () => {
+    const newParams = new URLSearchParams({
+      productId: params.get('productId') ?? '',
+      name: params.get('name') ?? '',
+      step: '2',
+    });
+
+    navigate(`/sponsor/report?${newParams}`);
+  };
 
   return (
     <ContentWrapper>
@@ -69,12 +81,18 @@ export const ProductReport = () => {
       <ProductStatistics data={DATA} />
       {/** AI 리포트 */}
       <ProductAI report={DATA.report} />
+      {/** 다음 단계 버튼 */}
+      <ButtonBox>
+        <Button width="10rem" padding="1rem" textSize="1rem" onClick={handleNextStep}>
+          다음 단계로
+        </Button>
+      </ButtonBox>
     </ContentWrapper>
   );
 };
 
 const ContentWrapper = styled.div`
-  padding: 7rem 4.8rem;
+  padding: 7rem 4.8rem 5rem 4.8rem;
 `;
 
 const HeaderWrapper = styled.div`
@@ -85,4 +103,10 @@ const HeaderWrapper = styled.div`
 const Header = styled.div`
   font-size: 1.75rem;
   font-weight: 600;
+`;
+
+const ButtonBox = styled.div`
+  display: flex;
+  justify-content: end;
+  margin-top: 2rem;
 `;

@@ -36,7 +36,6 @@ const SponsorReport = () => {
           </>
         ) : (
           <>
-            {/** 콘텐츠 영역 */}
             {step == '1' && <ProductReport />}
             {step == '2' && <></>}
           </>
