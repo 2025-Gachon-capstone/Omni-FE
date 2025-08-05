@@ -16,6 +16,8 @@
     "@types/react-datepicker": "^7.0.0",
     "apexcharts": "^5.3.2",
     "axios": "^1.8.4",
+    "d3": "^7.9.0",
+    "d3-cloud": "^1.2.7",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "react": "^19.0.0",
