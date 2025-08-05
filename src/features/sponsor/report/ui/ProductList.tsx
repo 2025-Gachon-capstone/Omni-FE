@@ -3,21 +3,24 @@ import { BsPlusSquareFill } from 'react-icons/bs';
 import theme from '../../../../shared/styles/theme';
 import { useNavigate } from 'react-router-dom';
 
-const products = [
-  {
-    productId: 0,
-    productName: '딸기우유',
-  },
-  { productId: 1, productName: '초코우유' },
-  { productId: 2, productName: '메론우유' },
-];
+type Product = {
+  productId: number;
+  productName: string;
+};
 
-export const ProductList = ({ selectedId }: { selectedId: number | null }) => {
+type ProductListDTO = {
+  selectedId: number | null;
+  products: Product[];
+};
+
+export const ProductList = ({ selectedId, products }: ProductListDTO) => {
   const navigate = useNavigate();
 
-  const handleSelectedProduct = (id: number) => {
+  const handleSelectedProduct = (product: Product) => {
     const newParams = new URLSearchParams();
-    newParams.set('productId', id.toString());
+    newParams.set('productId', product.productId.toString());
+    newParams.set('name', product.productName.toString());
+    newParams.set('step', '1');
     navigate(`/sponsor/report?${newParams.toString()}`, { replace: true });
   };
 
@@ -36,7 +39,7 @@ export const ProductList = ({ selectedId }: { selectedId: number | null }) => {
         {products.map((product) => (
           <ListItem
             selected={product.productId == selectedId}
-            onClick={() => handleSelectedProduct(product.productId)}
+            onClick={() => handleSelectedProduct(product)}
           >
             {product.productName}
           </ListItem>
