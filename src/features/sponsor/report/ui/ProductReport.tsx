@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { useSearchParams } from 'react-router-dom';
 import { StepGuide } from './StepGuide';
 import { ProductStatistics } from './ProductStatistics';
+import { ProductAI } from './ProductAI';
 
 /** (수정예정) 판매통계 데이터 불러오기-API */
 const DATA = {
@@ -28,12 +29,22 @@ const DATA = {
     {
       productId: 0,
       label: '상품1',
-      count: 10, // 상품1이랑 같이 구매한 횟수
+      count: 10,
     },
     {
       productId: 1,
       label: '상품20',
-      count: 1, // 상품20이랑 같이 구매한 횟수
+      count: 5,
+    },
+    {
+      productId: 2,
+      label: '상품11',
+      count: 15,
+    },
+    {
+      productId: 3,
+      label: '상품12',
+      count: 30,
     },
   ],
   report: '맛깔난 리포트',
@@ -57,6 +68,7 @@ export const ProductReport = () => {
       {/** 제품 최근 100건 판매 통계 */}
       <ProductStatistics data={DATA} />
       {/** AI 리포트 */}
+      <ProductAI report={DATA.report} />
     </ContentWrapper>
   );
 };
