@@ -34,7 +34,7 @@ const DATA = {
     },
     {
       productId: 1,
-      label: '상품20',
+      label: 'Smart Ones',
       count: 5,
     },
     {
@@ -44,8 +44,18 @@ const DATA = {
     },
     {
       productId: 3,
-      label: '상품12',
+      label: '바나나',
       count: 30,
+    },
+    {
+      productId: 3,
+      label: '딸기',
+      count: 30,
+    },
+    {
+      productId: 3,
+      label: '수박',
+      count: 10,
     },
   ],
   report: '맛깔난 리포트',

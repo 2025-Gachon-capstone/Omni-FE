@@ -3,6 +3,7 @@ import { ReorderData, TimeData, RelatedProductData } from '../type/StatisticsTyp
 import styled from '@emotion/styled';
 import { ChartReordered } from './ChartReordered';
 import { ChartTime } from './ChartTime';
+import { ChartWord } from './ChartWord';
 
 type Props = {
   selectedTab: keyof typeof TabChart;
@@ -21,7 +22,7 @@ export const ChartRenderer = ({ selectedTab, data }: Props) => {
       chartComponent = <ChartTime type={selectedTab} data={data as TimeData[]} />;
       break;
     case 'relatedProduct':
-      chartComponent = null;
+      chartComponent = <ChartWord data={data as RelatedProductData[]} />;
       break;
     default:
       chartComponent = null;
