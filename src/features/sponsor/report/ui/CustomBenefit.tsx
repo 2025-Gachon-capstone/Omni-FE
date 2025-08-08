@@ -4,6 +4,7 @@ import { StepGuide } from './StepGuide';
 import { CustomTabList } from '../model/CustomTabList';
 import theme from '../../../../shared/styles/theme';
 import { CustomMarketing } from './CustomMarketing';
+import { BenefitCustomizer } from './BenefitCustomizer';
 
 export const CustomBenefit = () => {
   const [selectedTab, setSelectedTab] =
@@ -33,6 +34,8 @@ export const CustomBenefit = () => {
       <TabsContent>
         <CustomMarketing selected={selectedTab} />
       </TabsContent>
+      {/** 혜택 조정 */}
+      <BenefitCustomizer />
     </ContentWrapper>
   );
 };
