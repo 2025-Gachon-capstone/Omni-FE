@@ -1,7 +1,7 @@
 // 맞춤 마케팅 탭
 export const CustomTabList = [
   {
-    key: 'REORDERD',
+    key: 'REORDERED',
     label: '재구매',
   },
   {

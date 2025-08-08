@@ -3,9 +3,11 @@ import styled from '@emotion/styled';
 import { StepGuide } from './StepGuide';
 import { CustomTabList } from '../model/CustomTabList';
 import theme from '../../../../shared/styles/theme';
+import { CustomMarketing } from './CustomMarketing';
 
 export const CustomBenefit = () => {
-  const [selectedTab, setSelectedTab] = useState<(typeof CustomTabList)[number]['key']>('REORDERD');
+  const [selectedTab, setSelectedTab] =
+    useState<(typeof CustomTabList)[number]['key']>('REORDERED');
 
   return (
     <ContentWrapper>
@@ -13,7 +15,7 @@ export const CustomBenefit = () => {
       <HeaderWrapper>
         <StepGuide />
       </HeaderWrapper>
-      {/** 맞춤 마케팅 (재구매&관련제품)*/}
+      {/** 맞춤 마케팅 컴포넌트*/}
       <Title>맞춤 마케팅</Title>
       {/** 탭 */}
       <Tabs>
@@ -27,6 +29,10 @@ export const CustomBenefit = () => {
           </Tab>
         ))}
       </Tabs>
+      {/** 탭 컨텐츠 (재구매, 관련제품)*/}
+      <TabsContent>
+        <CustomMarketing selected={selectedTab} />
+      </TabsContent>
     </ContentWrapper>
   );
 };
@@ -67,4 +73,8 @@ const Tab = styled.div<{ selected: boolean }>`
   &:hover {
     opacity: 0.8;
   }
+`;
+
+const TabsContent = styled.div`
+  padding: 2rem 1.5rem;
 `;
