@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import theme from '../../../../shared/styles/theme';
 import { BsExclamationCircleFill } from 'react-icons/bs';
 import { CustomRatioSection } from './CustomRatioSection';
+import { CustomWordSection } from './CustomWordSection';
 
 export const CustomMarketing = ({ selected }: { selected: string }) => {
   return (
@@ -20,7 +21,7 @@ export const CustomMarketing = ({ selected }: { selected: string }) => {
           : '당사의 제품과 무관하게 같이 구매되는 상품을 제외하여 마케팅 효과를 높여보세요.'}
       </Hint>
       {/** 콘텐츠 내용 */}
-      {selected === 'REORDERED' ? <CustomRatioSection /> : <></>}
+      {selected === 'REORDERED' ? <CustomRatioSection /> : <CustomWordSection />}
     </Wrapper>
   );
 };
