@@ -37,11 +37,11 @@ export const useCustomBenefit = create<CustomBenefitState>((set, get) => ({
   // 관련 제품 제외 메서드
   addExcludeProduct: (product) => {
     const { customState } = get();
-    if (!customState.excludeProductIdList.includes(product.productId)) {
+    if (!customState.excludeProductIdList.includes(product)) {
       set({
         customState: {
           ...customState,
-          excludeProductIdList: [...customState.excludeProductIdList, product.productId],
+          excludeProductIdList: [...customState.excludeProductIdList, product],
         },
       });
     }
@@ -52,7 +52,7 @@ export const useCustomBenefit = create<CustomBenefitState>((set, get) => ({
       customState: {
         ...customState,
         excludeProductIdList: customState.excludeProductIdList.filter(
-          (id) => id !== product.productId,
+          (el) => el.productId !== product.productId,
         ),
       },
     });

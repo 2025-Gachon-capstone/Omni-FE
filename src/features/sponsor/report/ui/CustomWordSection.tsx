@@ -2,7 +2,9 @@ import styled from '@emotion/styled';
 import { IoIosClose } from 'react-icons/io';
 import useDevice from './../../../../shared/hooks/useDevice';
 import WordCloud from 'react-d3-cloud';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { RelatedProductData } from '../type/StatisticsType';
+import { useCustomBenefit } from '../model/useCustomBenefit';
 
 const DATA = [
   // 20개 제공
@@ -27,12 +29,12 @@ const DATA = [
     count: 30,
   },
   {
-    productId: 3,
+    productId: 4,
     label: '딸기',
     count: 30,
   },
   {
-    productId: 3,
+    productId: 5,
     label: '수박',
     count: 10,
   },
@@ -45,11 +47,16 @@ type Word = {
 
 export const CustomWordSection = () => {
   const { isMobile } = useDevice();
+  const { customState, addExcludeProduct, subExcludeProduct } = useCustomBenefit((state) => state);
+
+  const [exclude, setExclude] = useState<RelatedProductData[]>(customState.excludeProductIdList);
 
   const words: Word[] = DATA.map((word) => ({
     text: word.label,
     value: word.count,
   }));
+
+  /** ----- wordcloud 레이아웃 메서드 ------ */
   const fontSize = useCallback((word: Word) => word.value * 1.3, []);
   const handleMouseOver = (event: any, d: any) => {
     const target = event.target;
@@ -65,6 +72,20 @@ export const CustomWordSection = () => {
       target.style.fontSize = `${d.value * 1.3}px`;
     }
   };
+
+  /** --------- 태그 추가, 삭제 메서드 ---------- */
+  const addProductTag = (tag: RelatedProductData) => {
+    if (!customState.excludeProductIdList.includes(tag)) {
+      addExcludeProduct(tag);
+      setExclude((prev) => [...prev, tag]);
+    }
+  };
+  const subProductTag = (tag: RelatedProductData) => {
+    const newArr = exclude.filter((product) => product.productId !== tag.productId);
+    subExcludeProduct(tag);
+    setExclude(newArr);
+  };
+
   return (
     <Wrapper isMobile={isMobile}>
       <WordCloud
@@ -74,6 +95,10 @@ export const CustomWordSection = () => {
         fontSize={fontSize}
         onWordMouseOver={handleMouseOver}
         onWordMouseOut={handleMouseOut}
+        onWordClick={(_: React.MouseEvent<SVGTextElement>, word: Word) => {
+          const product = DATA.find((product) => product.label === word.text); // 텍스트 비교진행.
+          if (product) addProductTag(product);
+        }}
         data={words}
       />
       {/** 제외 제품 리스트 */}
@@ -82,10 +107,12 @@ export const CustomWordSection = () => {
         <Bar />
         {/** 제외 제품 태그 */}
         <ExcludeList>
-          <Tag>
-            하이
-            <IoIosClose size={20} />
-          </Tag>
+          {exclude.map((tag) => (
+            <Tag key={tag.productId} onClick={() => subProductTag(tag)}>
+              {tag.label}
+              <IoIosClose size={20} />
+            </Tag>
+          ))}
         </ExcludeList>
       </LeftBox>
     </Wrapper>
@@ -128,6 +155,7 @@ const Bar = styled.div`
 const ExcludeList = styled.div`
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
 `;
 
 const Tag = styled.div`
