@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { useSearchParams } from 'react-router-dom';
 import { ProductList } from '../features/sponsor/report/ui/ProductList';
 import { ProductReport } from '../features/sponsor/report/ui/ProductReport';
+import { CustomBenefit } from '../features/sponsor/report/ui/CustomBenefit';
 
 // (수정) 목록불러오기 useCallback
 const products = [
@@ -37,7 +38,7 @@ const SponsorReport = () => {
         ) : (
           <>
             {step == '1' && <ProductReport />}
-            {step == '2' && <></>}
+            {step == '2' && <CustomBenefit />}
           </>
         )}
       </ContentWrapper>
