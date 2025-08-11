@@ -38,7 +38,7 @@ export const useCustomBenefit = create<CustomBenefitState>((set, get) => ({
   // 관련 제품 제외 메서드
   addExcludeProduct: (product) => {
     const { customState } = get();
-    if (!customState.excludeProductIdList.includes(product)) {
+    if (!customState.excludeProductIdList.some((p) => p.productId === product.productId)) {
       set({
         customState: {
           ...customState,

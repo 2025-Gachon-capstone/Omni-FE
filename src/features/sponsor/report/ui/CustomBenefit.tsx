@@ -51,7 +51,7 @@ export const CustomBenefit = () => {
         name: params.get('name') ?? '',
         step: '1',
       });
-      navigate(`/sponsor/report?${query}`);
+      navigate(`/sponsor/report?${query}`, { replace: true });
       clearState();
     }
     // 실패

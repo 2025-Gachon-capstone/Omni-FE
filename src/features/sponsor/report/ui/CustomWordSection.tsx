@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { IoIosClose } from 'react-icons/io';
 import useDevice from './../../../../shared/hooks/useDevice';
 import WordCloud from 'react-d3-cloud';
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { RelatedProductData } from '../type/StatisticsType';
 import { useCustomBenefit } from '../model/useCustomBenefit';
 
@@ -45,37 +45,39 @@ type Word = {
   value: number;
 };
 
+const MemoizedWordCloud = memo(WordCloud); // 리렌더링 방지를 위한 WordCloud 컴포넌트 메모이징.
+
 export const CustomWordSection = () => {
   const { isMobile } = useDevice();
   const { customState, addExcludeProduct, subExcludeProduct } = useCustomBenefit((state) => state);
-
-  const [exclude, setExclude] = useState<RelatedProductData[]>(customState.excludeProductIdList);
-
-  const words: Word[] = DATA.map((word) => ({
-    text: word.label,
-    value: word.count,
-  }));
+  const [exclude, setExclude] = useState<RelatedProductData[]>(customState.excludeProductIdList); // 제외할 제품 리스트
+  const [words] = useState<Word[]>(() =>
+    DATA.map((word) => ({
+      text: word.label,
+      value: word.count,
+    })),
+  );
 
   /** ----- wordcloud 레이아웃 메서드 ------ */
   const fontSize = useCallback((word: Word) => word.value * 1.3, []);
-  const handleMouseOver = (event: any, d: any) => {
+  const handleMouseOver = useCallback((event: any, d: any) => {
     const target = event.target;
     if (target) {
       target.style.cursor = 'pointer';
       target.style.fontSize = `${d.value * 1.4}px`;
     }
-  };
-  const handleMouseOut = (event: any, d: any) => {
+  }, []);
+  const handleMouseOut = useCallback((event: any, d: any) => {
     const target = event.target;
     if (target) {
       target.style.cursor = 'default';
       target.style.fontSize = `${d.value * 1.3}px`;
     }
-  };
+  }, []);
 
   /** --------- 태그 추가, 삭제 메서드 ---------- */
   const addProductTag = (tag: RelatedProductData) => {
-    if (!customState.excludeProductIdList.includes(tag)) {
+    if (!customState.excludeProductIdList.some((p) => p.productId === tag.productId)) {
       addExcludeProduct(tag);
       setExclude((prev) => [...prev, tag]);
     }
@@ -86,20 +88,25 @@ export const CustomWordSection = () => {
     setExclude(newArr);
   };
 
+  // wordcloud 클릭 이벤트 함수
+  const handleWordClick = useCallback((_: React.MouseEvent<SVGTextElement>, word: Word) => {
+    const product = DATA.find((product) => product.label === word.text);
+    if (product) {
+      addProductTag(product);
+    }
+  }, []);
+
   return (
     <Wrapper isMobile={isMobile}>
-      <WordCloud
+      <MemoizedWordCloud
         padding={10}
         fontStyle="Pretendard"
         fontWeight="bold"
+        data={words}
         fontSize={fontSize}
         onWordMouseOver={handleMouseOver}
         onWordMouseOut={handleMouseOut}
-        onWordClick={(_: React.MouseEvent<SVGTextElement>, word: Word) => {
-          const product = DATA.find((product) => product.label === word.text); // 텍스트 비교진행.
-          if (product) addProductTag(product);
-        }}
-        data={words}
+        onWordClick={handleWordClick}
       />
       {/** 제외 제품 리스트 */}
       <LeftBox>
@@ -129,7 +136,8 @@ const Wrapper = styled.div<{ isMobile: boolean }>`
     4px 4px 12px 0 rgba(213, 212, 212, 0.2),
     -4px -4px 12px 0 rgba(213, 212, 212, 0.2);
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  ${({ isMobile }) =>
+    isMobile ? `grid-template-rows: 1fr 1fr;` : `grid-template-columns: 1fr 1fr;`}
 `;
 
 const LeftBox = styled.div`
