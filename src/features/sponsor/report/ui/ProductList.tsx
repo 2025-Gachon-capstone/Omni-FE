@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { BsPlusSquareFill } from 'react-icons/bs';
 import theme from '../../../../shared/styles/theme';
 import { useNavigate } from 'react-router-dom';
+import { useCustomBenefit } from '../model/useCustomBenefit';
 
 type Product = {
   productId: number;
@@ -15,6 +16,7 @@ type ProductListDTO = {
 
 export const ProductList = ({ selectedId, products }: ProductListDTO) => {
   const navigate = useNavigate();
+  const { clearState } = useCustomBenefit((state) => state);
 
   const handleSelectedProduct = (product: Product) => {
     const newParams = new URLSearchParams();
@@ -22,6 +24,7 @@ export const ProductList = ({ selectedId, products }: ProductListDTO) => {
     newParams.set('name', product.productName.toString());
     newParams.set('step', '1');
     navigate(`/sponsor/report?${newParams.toString()}`, { replace: true });
+    clearState();
   };
 
   return (
