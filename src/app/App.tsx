@@ -32,7 +32,6 @@ function App() {
         <ScrollToTop />
         <Header />
         <Routes>
-          <Route path="/sponsor/report" element={<SponsorReport />} />
           {/** 로그인 전 페이지 */}
           <Route path="/" element={<Home />} />
           <Route element={<PublicRoute />}>
@@ -61,6 +60,7 @@ function App() {
               <Route path="/sponsor" element={<Home />} />
               <Route path="/sponsor/prompt" element={<SponsorPrompt />} />
               <Route path="/sponsor/benefit" element={<SponsorBenefit />} />
+              <Route path="/sponsor/report" element={<SponsorReport />} />
             </Route>
 
             {/** 일반유저 페이지 */}
