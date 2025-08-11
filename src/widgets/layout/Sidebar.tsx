@@ -32,8 +32,8 @@ const MenuList: MenuListType = {
     link: ['/', '/manage/cards', '/manage/payments'],
   },
   SPONSOR: {
-    name: ['홈', '협찬하기', '발행내역'],
-    link: ['/', '/sponsor/prompt', '/sponsor/benefit'],
+    name: ['홈', '협찬하기', 'new협찬하기', '발행내역'],
+    link: ['/', '/sponsor/prompt', '/sponsor/report', '/sponsor/benefit'],
   },
   SHOPPER: {
     name: ['쇼핑하기', '장바구니', 'Omni 카드'],

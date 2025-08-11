@@ -23,6 +23,7 @@ import SponsorBenefit from '../pages/SponsorBenefit';
 import ErrorPage from '../pages/ErrorPage';
 import AdminCardPage from '../pages/AdminCardPage';
 import AdminPaymentPage from '../pages/AdminPaymentPage';
+import SponsorReport from '../pages/SponsorReport';
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
               <Route path="/sponsor" element={<Home />} />
               <Route path="/sponsor/prompt" element={<SponsorPrompt />} />
               <Route path="/sponsor/benefit" element={<SponsorBenefit />} />
+              <Route path="/sponsor/report" element={<SponsorReport />} />
             </Route>
 
             {/** 일반유저 페이지 */}
