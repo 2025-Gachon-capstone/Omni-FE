@@ -14,6 +14,7 @@ interface CustomBenefitState {
   setDiscount: (discount: number) => void;
   setAmount: (amount: number) => void;
   setDate: (type: string, date: Date) => void;
+  clearState: () => void;
 }
 
 const initialCustomBenefit: CustomBenefit = {
@@ -84,4 +85,5 @@ export const useCustomBenefit = create<CustomBenefitState>((set, get) => ({
       }
     }
   },
+  clearState: () => set({ customState: initialCustomBenefit }),
 }));

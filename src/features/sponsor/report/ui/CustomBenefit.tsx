@@ -16,7 +16,7 @@ export const CustomBenefit = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  const { customState } = useCustomBenefit((state) => state); // 혜택 데이터
+  const { customState, clearState } = useCustomBenefit((state) => state); // 혜택 데이터
   const [isOpen, setIsOpen] = useState(false); // 모달
 
   const [selectedTab, setSelectedTab] =
@@ -52,6 +52,7 @@ export const CustomBenefit = () => {
         step: '1',
       });
       navigate(`/sponsor/report?${query}`);
+      clearState();
     }
     // 실패
     // (공통)
