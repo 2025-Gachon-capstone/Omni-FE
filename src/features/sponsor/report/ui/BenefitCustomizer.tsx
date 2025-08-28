@@ -4,6 +4,7 @@ import theme from '../../../../shared/styles/theme';
 import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/locale/ko';
 import { useCustomBenefit } from '../model/useCustomBenefit';
+import { useMemo } from 'react';
 
 export const BenefitCustomizer = () => {
   const { customState, setTitle, setDiscount, setAmount, setDate } = useCustomBenefit(
@@ -23,6 +24,19 @@ export const BenefitCustomizer = () => {
       }
     }
   };
+
+  const minEndDate = useMemo(() => {
+    if (!customState.startDate) {
+      return undefined;
+    }
+    if (customState.startDate < customState.endDate) {
+      return customState.endDate;
+    }
+    const dayAfterStart = new Date(customState.startDate);
+    dayAfterStart.setDate(dayAfterStart.getDate() + 1);
+    setDate('end', dayAfterStart);
+    return dayAfterStart;
+  }, [customState.startDate]);
 
   return (
     <Wrapper>
@@ -79,7 +93,7 @@ export const BenefitCustomizer = () => {
               onChange={(date) => setDate('end', date!)}
               dateFormat="yyyy-MM-dd"
               placeholderText="마지막일"
-              minDate={customState.startDate || undefined}
+              minDate={minEndDate}
             />
           </Pickers>
         </Field>

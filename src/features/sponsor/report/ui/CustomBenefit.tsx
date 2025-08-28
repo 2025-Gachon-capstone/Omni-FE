@@ -11,12 +11,15 @@ import { useCustomBenefit } from '../model/useCustomBenefit';
 import { toast } from 'react-toastify';
 import { BsCheckCircle } from 'react-icons/bs';
 import Modal from '../../../../shared/ui/Modal';
+import usePostBenefit from '../api/usePostBenefit';
+import { RelatedProductData } from '../type/StatisticsType';
 
-export const CustomBenefit = () => {
+export const CustomBenefit = ({ data }: { data: RelatedProductData[] }) => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  const { customState, clearState } = useCustomBenefit((state) => state); // 혜택 데이터
+  const { postBenefit } = usePostBenefit();
+  const { customState, setStatus, clearState } = useCustomBenefit((state) => state); // 혜택 데이터
   const [isOpen, setIsOpen] = useState(false); // 모달
 
   const [selectedTab, setSelectedTab] =
@@ -24,6 +27,7 @@ export const CustomBenefit = () => {
 
   /** --------- 유효성 검증로직 --------- */
   const checkValidateValue = () => {
+    const currentDate = new Date(); // 현재 시간
     if (!customState.title) {
       toast.error('협찬명을 입력해주세요.');
       return;
@@ -33,15 +37,29 @@ export const CustomBenefit = () => {
     } else if (customState.amount <= 0) {
       toast.error('협찬수량을 입력해주세요.');
       return;
+    } else if (customState.endDate <= currentDate) {
+      toast.error('종료시간을 현재시간보다 뒤로 입력해주세요.');
+      return;
+    } else if (customState.startDate == customState.endDate) {
+      toast.error('종료시간을 시작시간보다 뒤로 입력해주세요.');
+      return;
     }
+
+    // 혜택 적용기간 설정에 따른 status 할당
+    // 1. 현재 시간이 (시작 시간, 종료 시간) 사이인 경우.
+    // 2. 현재 시간이 시작 시간보다 이 전인 경우.
+    if (customState.startDate <= currentDate && currentDate < customState.endDate) {
+      setStatus('ONGOING');
+    } else if (currentDate < customState.startDate) {
+      setStatus('BEFORE');
+    }
+
     setIsOpen(true);
   };
 
   /** ------ (수정) 혜택 발행 API ------- */
-  const onSubmitBenefit = () => {
-    // API 혜택 발행 (customState.excludeProductIdList 가공필요.)
-    console.log(customState);
-    console.log(customState.excludeProductIdList.map((product) => product.productId));
+  const onSubmitBenefit = async () => {
+    await postBenefit({ data: customState, productId: Number(params.get('productId')) });
 
     const isSuccess = true;
     // 성공 => 화면이동
@@ -55,7 +73,6 @@ export const CustomBenefit = () => {
       clearState();
     }
     // 실패
-    // (공통)
     setIsOpen(false);
   };
 
@@ -82,7 +99,7 @@ export const CustomBenefit = () => {
         </Tabs>
         {/** 탭 컨텐츠 (재구매, 관련제품)*/}
         <TabsContent>
-          <CustomMarketing selected={selectedTab} />
+          <CustomMarketing selected={selectedTab} data={data} />
         </TabsContent>
         {/** 혜택 조정 */}
         <BenefitCustomizer />

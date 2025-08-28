@@ -4,15 +4,9 @@ import { StepGuide } from './StepGuide';
 import { ProductStatistics } from './ProductStatistics';
 import { ProductAI } from './ProductAI';
 import { Button } from '../../../../shared/ui';
-import { useEffect, useState } from 'react';
-import { useGetProducts } from '../api/useGetProducts';
 import { StatisticsData } from '../type/StatisticsType';
-import Loading from '../../../../pages/Loading';
 
-export const ProductReport = () => {
-  const { isLoading, getProductsReport } = useGetProducts(); // 통계 데이터 API
-  const [data, setData] = useState<StatisticsData>(); // 통계 데이터
-
+export const ProductReport = ({ data }: { data: StatisticsData }) => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const productName = params.get('name');
@@ -26,24 +20,6 @@ export const ProductReport = () => {
 
     navigate(`/sponsor/report?${newParams}`);
   };
-
-  // 통계 데이터 불러오기 API
-  useEffect(() => {
-    const fetchReport = async () => {
-      const id = params.get('productId');
-      if (id) {
-        const result = await getProductsReport({ productId: Number(id) });
-        if (result) {
-          setData(result);
-        }
-      }
-    };
-    fetchReport();
-  }, [params]);
-
-  if (isLoading || !data) {
-    return <Loading description="통계데이터 불러오는중" />;
-  }
 
   return (
     <ContentWrapper>

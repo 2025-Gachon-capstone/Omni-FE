@@ -6,40 +6,6 @@ import { memo, useCallback, useState } from 'react';
 import { RelatedProductData } from '../type/StatisticsType';
 import { useCustomBenefit } from '../model/useCustomBenefit';
 
-const DATA = [
-  // 20개 제공
-  {
-    productId: 0,
-    label: '상품1',
-    count: 10,
-  },
-  {
-    productId: 1,
-    label: 'Smart Ones',
-    count: 5,
-  },
-  {
-    productId: 2,
-    label: '상품11',
-    count: 15,
-  },
-  {
-    productId: 3,
-    label: '바나나',
-    count: 30,
-  },
-  {
-    productId: 4,
-    label: '딸기',
-    count: 30,
-  },
-  {
-    productId: 5,
-    label: '수박',
-    count: 10,
-  },
-];
-
 type Word = {
   text: string;
   value: number;
@@ -47,12 +13,12 @@ type Word = {
 
 const MemoizedWordCloud = memo(WordCloud); // 리렌더링 방지를 위한 WordCloud 컴포넌트 메모이징.
 
-export const CustomWordSection = () => {
+export const CustomWordSection = ({ data }: { data: RelatedProductData[] }) => {
   const { isMobile } = useDevice();
   const { customState, addExcludeProduct, subExcludeProduct } = useCustomBenefit((state) => state);
   const [exclude, setExclude] = useState<RelatedProductData[]>(customState.excludeProductIdList); // 제외할 제품 리스트
   const [words] = useState<Word[]>(() =>
-    DATA.map((word) => ({
+    data.map((word) => ({
       text: word.label,
       value: word.count,
     })),
@@ -90,7 +56,7 @@ export const CustomWordSection = () => {
 
   // wordcloud 클릭 이벤트 함수
   const handleWordClick = useCallback((_: React.MouseEvent<SVGTextElement>, word: Word) => {
-    const product = DATA.find((product) => product.label === word.text);
+    const product = data.find((product) => product.label === word.text);
     if (product) {
       addProductTag(product);
     }

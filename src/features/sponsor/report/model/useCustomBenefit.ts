@@ -14,22 +14,27 @@ interface CustomBenefitState {
   setDiscount: (discount: number) => void;
   setAmount: (amount: number) => void;
   setDate: (type: string, date: Date) => void;
+  setStatus: (status: 'BEFORE' | 'ONGOING') => void;
   clearState: () => void;
 }
 
-const initialCustomBenefit: CustomBenefit = {
-  reorderRatio: 0.5,
-  excludeProductIdList: [],
-  title: '',
-  startDate: new Date(),
-  endDate: new Date(),
-  discount_rate: 0,
-  amount: 0,
-  status: 'PENDING',
-};
+const createInitialState = (): CustomBenefit => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
+  return {
+    reorderRatio: 0.5,
+    excludeProductIdList: [],
+    title: '',
+    startDate: new Date(),
+    endDate: tomorrow,
+    discount_rate: 0,
+    amount: 0,
+    status: 'ONGOING',
+  };
+};
 export const useCustomBenefit = create<CustomBenefitState>((set, get) => ({
-  customState: initialCustomBenefit,
+  customState: createInitialState(),
   // 비율 메서드
   setRatio: (ratio) => {
     const { customState } = get();
@@ -85,5 +90,9 @@ export const useCustomBenefit = create<CustomBenefitState>((set, get) => ({
       }
     }
   },
-  clearState: () => set({ customState: initialCustomBenefit }),
+  setStatus: (status) => {
+    const { customState } = get();
+    set({ customState: { ...customState, status: status } });
+  },
+  clearState: () => set({ customState: createInitialState() }),
 }));
