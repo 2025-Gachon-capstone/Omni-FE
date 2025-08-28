@@ -25,16 +25,15 @@ export const BenefitCustomizer = () => {
     }
   };
 
+  const maxStartDate = useMemo(() => {
+    const dayBeforeEnd = new Date(customState.endDate);
+    dayBeforeEnd.setDate(dayBeforeEnd.getDate() - 1);
+    return dayBeforeEnd;
+  }, [customState.endDate]);
+
   const minEndDate = useMemo(() => {
-    if (!customState.startDate) {
-      return undefined;
-    }
-    if (customState.startDate < customState.endDate) {
-      return customState.endDate;
-    }
     const dayAfterStart = new Date(customState.startDate);
     dayAfterStart.setDate(dayAfterStart.getDate() + 1);
-    setDate('end', dayAfterStart);
     return dayAfterStart;
   }, [customState.startDate]);
 
@@ -83,7 +82,7 @@ export const BenefitCustomizer = () => {
               onChange={(date) => setDate('start', date!)}
               dateFormat="yyyy-MM-dd"
               placeholderText="시작일"
-              maxDate={customState.endDate || undefined}
+              maxDate={maxStartDate}
             />
             <SeperateBar />
             <DatePicker

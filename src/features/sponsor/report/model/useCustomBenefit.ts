@@ -79,15 +79,9 @@ export const useCustomBenefit = create<CustomBenefitState>((set, get) => ({
   setDate: (type, date) => {
     const { customState } = get();
     if (type === 'start') {
-      if (!customState.endDate) set({ customState: { ...customState, startDate: date } });
-      else {
-        if (date <= customState.endDate) set({ customState: { ...customState, startDate: date } });
-      }
+      set({ customState: { ...customState, startDate: date } });
     } else {
-      if (!customState.startDate) set({ customState: { ...customState, endDate: date } });
-      else {
-        if (date >= customState.startDate) set({ customState: { ...customState, endDate: date } });
-      }
+      set({ customState: { ...customState, endDate: date } });
     }
   },
   setStatus: (status) => {
