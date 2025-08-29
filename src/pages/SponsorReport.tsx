@@ -1,19 +1,12 @@
-import { useEffect } from 'react';
 import styled from '@emotion/styled';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ProductList } from '../features/sponsor/report/ui/ProductList';
 import { ProductReport } from '../features/sponsor/report/ui/ProductReport';
 import { CustomBenefit } from '../features/sponsor/report/ui/CustomBenefit';
-
-// (수정) 목록불러오기 useCallback
-const products = [
-  {
-    productId: 0,
-    productName: '딸기우유',
-  },
-  { productId: 1, productName: '초코우유' },
-  { productId: 2, productName: '메론우유' },
-];
+import { StatisticsData } from '../features/sponsor/report/type/StatisticsType';
+import { useGetProducts } from '../features/sponsor/report/api/useGetProducts';
+import Loading from './Loading';
 
 const SponsorReport = () => {
   const [params] = useSearchParams();
@@ -21,14 +14,25 @@ const SponsorReport = () => {
   const selectedId = rawParams !== null ? Number(rawParams) : null; // 선택된 제품 ID
   const step = params.get('step') || '1'; // 발행 단계 (1,2)
 
+  const { isLoading, getProductsReport } = useGetProducts();
+  const [data, setData] = useState<StatisticsData | null>(null);
+
   useEffect(() => {
-    // 선택된 제품의 (AI) 리포트 내역 불러오기
+    const fetchReport = async () => {
+      if (selectedId) {
+        const result = await getProductsReport({ productId: selectedId });
+        if (result) {
+          setData(result);
+        }
+      }
+    };
+    fetchReport();
   }, [selectedId]);
 
   return (
     <PageWrapper>
       {/** 제품 리스트 영역 */}
-      <ProductList products={products} selectedId={selectedId} />
+      <ProductList selectedId={selectedId} />
       <ContentWrapper>
         {selectedId == null ? (
           <>
@@ -37,8 +41,17 @@ const SponsorReport = () => {
           </>
         ) : (
           <>
-            {step == '1' && <ProductReport />}
-            {step == '2' && <CustomBenefit />}
+            {/* 로딩 및 데이터 유효성 검사 */}
+            {isLoading || !data ? (
+              <Loading
+                description={step === '1' ? '통계데이터 불러오는 중' : '잠시만 기다려주세요'}
+              />
+            ) : (
+              <>
+                {step == '1' && <ProductReport data={data} />}
+                {step == '2' && <CustomBenefit data={data.relatedProduct} />}
+              </>
+            )}
           </>
         )}
       </ContentWrapper>

@@ -3,20 +3,22 @@ import { BsPlusSquareFill } from 'react-icons/bs';
 import theme from '../../../../shared/styles/theme';
 import { useNavigate } from 'react-router-dom';
 import { useCustomBenefit } from '../model/useCustomBenefit';
+import { useGetProducts } from '../api/useGetProducts';
+import { useEffect, useState } from 'react';
+import { useAuthStore } from '../../../../shared/store';
 
 type Product = {
   productId: number;
   productName: string;
 };
 
-type ProductListDTO = {
-  selectedId: number | null;
-  products: Product[];
-};
-
-export const ProductList = ({ selectedId, products }: ProductListDTO) => {
+export const ProductList = ({ selectedId }: { selectedId: number | null }) => {
   const navigate = useNavigate();
+  const { user } = useAuthStore((state) => state); // sponsorId
   const { clearState } = useCustomBenefit((state) => state);
+  const { getProductsList } = useGetProducts();
+
+  const [products, setProducts] = useState<Product[]>([]); // 상품 목록
 
   const handleSelectedProduct = (product: Product) => {
     const newParams = new URLSearchParams();
@@ -26,6 +28,18 @@ export const ProductList = ({ selectedId, products }: ProductListDTO) => {
     navigate(`/sponsor/report?${newParams.toString()}`, { replace: true });
     clearState();
   };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (user?.sponsorId) {
+        const data = await getProductsList({ sponsorId: user.sponsorId });
+        if (data) {
+          setProducts(data);
+        }
+      }
+    };
+    fetchProducts();
+  }, [user?.sponsorId]);
 
   return (
     <Sidebar>
@@ -41,6 +55,7 @@ export const ProductList = ({ selectedId, products }: ProductListDTO) => {
       <List>
         {products.map((product) => (
           <ListItem
+            key={product.productId}
             selected={product.productId == selectedId}
             onClick={() => handleSelectedProduct(product)}
           >
@@ -117,6 +132,7 @@ const ListItem = styled.li<{ selected: boolean }>`
   all: unset;
   box-sizing: border-box;
   width: 100%;
+  min-height: 3rem;
   padding: 1rem 1.25rem;
   border-radius: 8px;
   font-size: 1.1rem;

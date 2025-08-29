@@ -11,12 +11,16 @@ import { useCustomBenefit } from '../model/useCustomBenefit';
 import { toast } from 'react-toastify';
 import { BsCheckCircle } from 'react-icons/bs';
 import Modal from '../../../../shared/ui/Modal';
+import usePostBenefit from '../api/usePostBenefit';
+import { RelatedProductData } from '../type/StatisticsType';
+import Loading from '../../../../pages/Loading';
 
-export const CustomBenefit = () => {
+export const CustomBenefit = ({ data }: { data: RelatedProductData[] }) => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  const { customState, clearState } = useCustomBenefit((state) => state); // 혜택 데이터
+  const { postBenefit, isLoading } = usePostBenefit();
+  const { customState, setStatus, clearState } = useCustomBenefit((state) => state); // 혜택 데이터
   const [isOpen, setIsOpen] = useState(false); // 모달
 
   const [selectedTab, setSelectedTab] =
@@ -24,6 +28,7 @@ export const CustomBenefit = () => {
 
   /** --------- 유효성 검증로직 --------- */
   const checkValidateValue = () => {
+    const currentDate = new Date(); // 현재 시간
     if (!customState.title) {
       toast.error('협찬명을 입력해주세요.');
       return;
@@ -33,84 +38,112 @@ export const CustomBenefit = () => {
     } else if (customState.amount <= 0) {
       toast.error('협찬수량을 입력해주세요.');
       return;
+    } else if (customState.endDate <= currentDate) {
+      toast.error('종료시간을 현재시간보다 뒤로 입력해주세요.');
+      return;
+    } else if (customState.startDate == customState.endDate) {
+      toast.error('종료시간을 시작시간보다 뒤로 입력해주세요.');
+      return;
     }
+
+    // 혜택 적용기간 설정에 따른 status 할당
+    // 1. 현재 시간이 (시작 시간, 종료 시간) 사이인 경우.
+    // 2. 현재 시간이 시작 시간보다 이 전인 경우.
+    if (customState.startDate <= currentDate && currentDate < customState.endDate) {
+      setStatus('ONGOING');
+    } else if (currentDate < customState.startDate) {
+      setStatus('BEFORE');
+    }
+
     setIsOpen(true);
   };
 
   /** ------ (수정) 혜택 발행 API ------- */
-  const onSubmitBenefit = () => {
-    // API 혜택 발행 (customState.excludeProductIdList 가공필요.)
-    console.log(customState);
-    console.log(customState.excludeProductIdList.map((product) => product.productId));
+  const onSubmitBenefit = async () => {
+    const result = await postBenefit({
+      data: customState,
+      productId: Number(params.get('productId')),
+    });
 
-    const isSuccess = true;
-    // 성공 => 화면이동
-    if (isSuccess) {
+    // 성공
+    if (result.isSuccess) {
       const query = new URLSearchParams({
         productId: params.get('productId') ?? '',
         name: params.get('name') ?? '',
         step: '1',
       });
       navigate(`/sponsor/report?${query}`, { replace: true });
+      toast.success('혜택을 성공적으로 발행했습니다.');
       clearState();
+    } else {
+      if (result.type == 'INVALID') {
+        toast.error('잘못된 요청입니다.');
+      } else if (result.type == 'ERROR') {
+        toast.error('혜택 발행에 실패했습니다.');
+      }
     }
     // 실패
-    // (공통)
     setIsOpen(false);
   };
 
   return (
     <>
-      <ContentWrapper>
-        {/** 혜택 발행 단계 가이드 */}
-        <HeaderWrapper>
-          <StepGuide />
-        </HeaderWrapper>
-        {/** 맞춤 마케팅 컴포넌트*/}
-        <Title>맞춤 마케팅</Title>
-        {/** 탭 */}
-        <Tabs>
-          {CustomTabList.map((tab) => (
-            <Tab
-              key={tab.key}
-              selected={selectedTab == tab.key}
-              onClick={() => setSelectedTab(tab.key)}
+      {isLoading ? (
+        <Loading description="잠시만 기다려주세요" />
+      ) : (
+        <>
+          <ContentWrapper>
+            {/** 혜택 발행 단계 가이드 */}
+            <HeaderWrapper>
+              <StepGuide />
+            </HeaderWrapper>
+            {/** 맞춤 마케팅 컴포넌트*/}
+            <Title>맞춤 마케팅</Title>
+            {/** 탭 */}
+            <Tabs>
+              {CustomTabList.map((tab) => (
+                <Tab
+                  key={tab.key}
+                  selected={selectedTab == tab.key}
+                  onClick={() => setSelectedTab(tab.key)}
+                >
+                  {tab.label}
+                </Tab>
+              ))}
+            </Tabs>
+            {/** 탭 컨텐츠 (재구매, 관련제품)*/}
+            <TabsContent>
+              <CustomMarketing selected={selectedTab} data={data} />
+            </TabsContent>
+            {/** 혜택 조정 */}
+            <BenefitCustomizer />
+            <Button width="10rem" padding="1rem 1.5rem" onClick={checkValidateValue}>
+              혜택 발행
+            </Button>
+          </ContentWrapper>
+          {isOpen && (
+            <Modal
+              icon={<BsCheckCircle size={32} color={theme.color.main} />}
+              buttons={[
+                {
+                  text: '취소',
+                  onClick: () => setIsOpen(false),
+                  bgColor: 'white',
+                  textColor: '#7C7F86',
+                  border: '1px solid #7C7F86',
+                },
+                {
+                  text: '발행하기',
+                  onClick: () => onSubmitBenefit(),
+                  bgColor: `${theme.color.main}`,
+                  textColor: 'white',
+                },
+              ]}
             >
-              {tab.label}
-            </Tab>
-          ))}
-        </Tabs>
-        {/** 탭 컨텐츠 (재구매, 관련제품)*/}
-        <TabsContent>
-          <CustomMarketing selected={selectedTab} />
-        </TabsContent>
-        {/** 혜택 조정 */}
-        <BenefitCustomizer />
-        <Button width="10rem" padding="1rem 1.5rem" onClick={checkValidateValue}>
-          혜택 발행
-        </Button>
-      </ContentWrapper>
-      {isOpen && (
-        <Modal
-          icon={<BsCheckCircle size={32} color={theme.color.main} />}
-          buttons={[
-            {
-              text: '취소',
-              onClick: () => setIsOpen(false),
-              bgColor: 'white',
-              textColor: '#7C7F86',
-              border: '1px solid #7C7F86',
-            },
-            {
-              text: '발행하기',
-              onClick: () => onSubmitBenefit(),
-              bgColor: `${theme.color.main}`,
-              textColor: 'white',
-            },
-          ]}
-        >
-          신규혜택을 발행할까요?
-        </Modal>
+              신규혜택을 발행할까요?
+            </Modal>
+          )}
+        </>
       )}
     </>
   );

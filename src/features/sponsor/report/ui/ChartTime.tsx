@@ -4,11 +4,13 @@ import { TimeData } from '../type/StatisticsType';
 import theme from '../../../../shared/styles/theme';
 
 export const ChartTime = ({ type, data }: { type: string; data: TimeData[] }) => {
+  const sortedData = [...data].sort((a, b) => Number(a.label) - Number(b.label)); // 시간,요일 순 정렬
+
   const state: ApexOptions = {
     series: [
       {
         name: '판매 건수',
-        data: data.map((el) => el.count),
+        data: sortedData.map((el) => el.count),
       },
     ],
   };
@@ -16,8 +18,8 @@ export const ChartTime = ({ type, data }: { type: string; data: TimeData[] }) =>
   const xaxisTitle = type === 'orderHour' ? '시간(단위:시)' : '요일(단위:일)';
   const categories =
     type === 'orderHour'
-      ? data.map((el) => `${el.label}시`)
-      : data.map((el) => {
+      ? sortedData.map((el) => `${el.label}시`)
+      : sortedData.map((el) => {
           const days = ['일', '월', '화', '수', '목', '금', '토'];
           return days[Number(el.label)];
         });

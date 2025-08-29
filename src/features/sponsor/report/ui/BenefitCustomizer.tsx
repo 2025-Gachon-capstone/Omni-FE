@@ -4,6 +4,7 @@ import theme from '../../../../shared/styles/theme';
 import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/locale/ko';
 import { useCustomBenefit } from '../model/useCustomBenefit';
+import { useMemo } from 'react';
 
 export const BenefitCustomizer = () => {
   const { customState, setTitle, setDiscount, setAmount, setDate } = useCustomBenefit(
@@ -23,6 +24,18 @@ export const BenefitCustomizer = () => {
       }
     }
   };
+
+  const maxStartDate = useMemo(() => {
+    const dayBeforeEnd = new Date(customState.endDate);
+    dayBeforeEnd.setDate(dayBeforeEnd.getDate() - 1);
+    return dayBeforeEnd;
+  }, [customState.endDate]);
+
+  const minEndDate = useMemo(() => {
+    const dayAfterStart = new Date(customState.startDate);
+    dayAfterStart.setDate(dayAfterStart.getDate() + 1);
+    return dayAfterStart;
+  }, [customState.startDate]);
 
   return (
     <Wrapper>
@@ -69,7 +82,7 @@ export const BenefitCustomizer = () => {
               onChange={(date) => setDate('start', date!)}
               dateFormat="yyyy-MM-dd"
               placeholderText="시작일"
-              maxDate={customState.endDate || undefined}
+              maxDate={maxStartDate}
             />
             <SeperateBar />
             <DatePicker
@@ -79,7 +92,7 @@ export const BenefitCustomizer = () => {
               onChange={(date) => setDate('end', date!)}
               dateFormat="yyyy-MM-dd"
               placeholderText="마지막일"
-              minDate={customState.startDate || undefined}
+              minDate={minEndDate}
             />
           </Pickers>
         </Field>
