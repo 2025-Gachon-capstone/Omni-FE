@@ -73,7 +73,7 @@ export const CustomBenefit = ({ data }: { data: RelatedProductData[] }) => {
         step: '1',
       });
       navigate(`/sponsor/report?${query}`, { replace: true });
-      toast.success('혜택 발행을 성공적으로 발행했습니다.');
+      toast.success('혜택을 성공적으로 발행했습니다.');
       clearState();
     } else {
       if (result.type == 'INVALID') {
