@@ -60,7 +60,7 @@ export function convertMessageToReq(
   benefit: BenefitRequestDTO,
 ): MesssageRequestDTO {
   return {
-    benefit: benefit,
     content: response.content,
+    productName: benefit.targetProduct,
   };
 }

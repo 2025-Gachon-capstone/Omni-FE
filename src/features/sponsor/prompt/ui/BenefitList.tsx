@@ -1,24 +1,18 @@
 import styled from '@emotion/styled';
 import theme from '../../../../shared/styles/theme';
-import { BsPlusSquareFill } from 'react-icons/bs';
 import { BenefitResponseDTO } from '../type/ResponseDTO';
-import { FiLock, FiUnlock } from 'react-icons/fi';
 
 interface BenefitListProps {
   chatRooms: BenefitResponseDTO[];
   activeBenefitId: number | null;
   onSelect: (id: number) => void;
-  onAdd: () => Promise<void>;
 }
 
-export const BenefitList = ({ chatRooms, activeBenefitId, onSelect, onAdd }: BenefitListProps) => {
+export const BenefitList = ({ chatRooms, activeBenefitId, onSelect }: BenefitListProps) => {
   return (
     <Sidebar>
       <Header>
         <Title>협찬 내역</Title>
-        <AddButton onClick={onAdd}>
-          <BsPlusSquareFill size={20} />
-        </AddButton>
       </Header>
 
       <List>
@@ -29,7 +23,7 @@ export const BenefitList = ({ chatRooms, activeBenefitId, onSelect, onAdd }: Ben
             onClick={() => onSelect(room.benefitId)}
           >
             {room.title}
-            {room.status !== 'PENDING' ? <FiLock size={16} /> : <FiUnlock size={16} />}
+            <StatusDot status={room.status} />
           </ListItem>
         ))}
       </List>
@@ -56,26 +50,6 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-`;
-
-const AddButton = styled.button`
-  background: transparent;
-  size: 1.5rem 1.5rem;
-  border: none;
-  color: ${theme.color.main};
-  cursor: pointer;
-  svg {
-    color: ${theme.color.main}; // 아이콘 자체 색상
-    background-color: ${theme.color.white}; // 배경색
-    border-radius: 0.2rem;
-    width: 1.5rem;
-    height: 1.5rem;
-
-    &:hover {
-      color: ${theme.color.white};
-      background-color: ${theme.color.main}; // 배경색
-    }
-  }
 `;
 
 const Title = styled.h2`
@@ -110,4 +84,22 @@ const ListItem = styled.li<{ isActive: boolean }>`
     border-radius: 0.375rem;
     color: ${theme.color.white};
   }
+`;
+
+const StatusDot = styled.span<{ status: BenefitResponseDTO['status'] }>`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: ${({ status }) => {
+    switch (status) {
+      case 'BEFORE':
+        return '#9CA3AF'; // 회색
+      case 'ONGOING':
+        return '#22C55E'; // 초록
+      case 'EXPIRED':
+        return '#EF4444'; // 빨강
+      default:
+        return '#9CA3AF'; // fallback
+    }
+  }};
 `;

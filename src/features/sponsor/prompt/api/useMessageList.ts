@@ -50,6 +50,9 @@ export const useMessageList = () => {
     const startTime = Date.now(); // 요청 시작 시간 기록
     try {
       const benefitReq = convertBenefitResToReq(benefit);
+      console.log('📨 postMessage 요청 데이터:', 
+        convertMessageToReq(message, benefitReq),
+      );
       const res = await privateAxios.post(
         `/flask/v1/benefits/${benefitId}/messages`,
         convertMessageToReq(message, benefitReq),

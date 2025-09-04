@@ -8,6 +8,6 @@ export interface BenefitRequestDTO extends Omit<BenefitFormData, 'startDate' | '
 }
 
 export interface MesssageRequestDTO {
-  benefit: BenefitRequestDTO;
+  productName: string;
   content: string;
 }

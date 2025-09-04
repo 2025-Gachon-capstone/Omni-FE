@@ -32,7 +32,7 @@ const MenuList: MenuListType = {
     link: ['/', '/manage/cards', '/manage/payments'],
   },
   SPONSOR: {
-    name: ['홈', '협찬하기', 'new협찬하기', '발행내역'],
+    name: ['홈', '협찬리뷰', '협찬하기', '발행내역'],
     link: ['/', '/sponsor/prompt', '/sponsor/report', '/sponsor/benefit'],
   },
   SHOPPER: {

@@ -10,17 +10,13 @@ import {
   MessageResponseDTO,
 } from '../features/sponsor/prompt/type/ResponseDTO';
 import {
-  convertBenefitResToReq,
   convertBenefitResToForm,
 } from '../features/sponsor/prompt/type/converter';
 import { useAuthStore } from '../shared/store';
 import { useBenefitList } from '../features/sponsor/prompt/api/useBenefitList';
 import Loading from './Loading';
-import { DeleteModal, SubmitModal } from '../features/sponsor/prompt/ui/Modals';
 import { toast } from 'react-toastify';
 import { useMessageList } from '../features/sponsor/prompt/api/useMessageList';
-
-type ModalType = 'submit' | 'delete' | null;
 
 const initialMessage: MessageDTO = {
   chatMessageId: -1,
@@ -31,7 +27,6 @@ const initialMessage: MessageDTO = {
 const SponsorPrompt = () => {
   const sponsorId = useAuthStore((state) => state.user?.sponsorId);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [modalType, setModalType] = useState<ModalType>(null);
   const [throttle, setThrottle] = useState(false);
   const [messageSlice, setMessageSlice] = useState<MessageResponseDTO>({
     messages: [initialMessage],
@@ -42,8 +37,7 @@ const SponsorPrompt = () => {
 
   const [input, setInput] = useState('');
   const [benefitList, setBenefitList] = useState<BenefitResponseDTO[]>([]);
-  const { getBenefitList, postBenefit, patchBenefit, submitBenefit, deleteBenefit, isLoading } =
-    useBenefitList();
+  const { getBenefitList, isLoading } = useBenefitList();
   const [activeBenefitId, setActiveBenefitId] = useState<number | null>(null);
   const { getMessageList, postMessage, isMessageLoading } = useMessageList();
 
@@ -58,7 +52,6 @@ const SponsorPrompt = () => {
 
       if (list === undefined || list.length === 0) {
         console.log('혜택내역이 없습니다. 신규 혜택이 생성됩니다.');
-        await handleAddBenefit();
       } else {
         console.log('혜택내역이 있습니다. 처음 혜택이 활성화됩니다.');
         setBenefitList(list);
@@ -119,7 +112,7 @@ const SponsorPrompt = () => {
 
         console.log('📨 handleSend 실행됨:', input);
         if (activeBenefit === undefined) {
-          toast.error('협찬 내용(상품/고객 등)을 채워주세요.');
+          toast.error('혜택을 선택해주세요. 혹은 새 혜택을 생성해주세요.');
           return;
         }
 
@@ -153,117 +146,6 @@ const SponsorPrompt = () => {
       updated[index] = { ...updated[index], [field]: value };
       return updated;
     });
-  };
-
-  const handleAddBenefit = async () => {
-    if (sponsorId === undefined) {
-      console.error('Sponsor ID is undefined');
-      return;
-    }
-
-    const benefitId = await postBenefit(sponsorId);
-
-    if (benefitId === undefined) {
-      console.error('benefit ID is undefined');
-      return;
-    }
-
-    const newBenefit: BenefitResponseDTO = {
-      benefitId,
-      title: '',
-      startDate: new Date(),
-      endDate: new Date(),
-      discountRate: 1,
-      targetProduct: '',
-      amount: 0,
-      targetMember: '',
-      status: 'PENDING',
-    };
-
-    setBenefitList((prev) => [newBenefit, ...prev]);
-    setActiveBenefitId(benefitId); // 새로 만든 항목 선택 상태로
-  };
-
-  const handleReqBtn = async () => {
-    if (activeBenefitId === null) return;
-    var success: boolean;
-    // 삭제 API
-    if (modalType === 'delete') {
-      if (benefitList.length < 2) {
-        toast.error(`혜택을 삭제하실 수 없습니다.`);
-        return;
-      }
-
-      success = await deleteBenefit(activeBenefitId);
-      if (!success) return;
-
-      setBenefitList((prev) => {
-        const newBenefitList = prev.filter((benefit) => benefit.benefitId !== activeBenefitId);
-        setActiveBenefitId(newBenefitList[0].benefitId);
-        return newBenefitList;
-      });
-
-      setIsPopoverOpen(false);
-      setModalType(null);
-
-      return;
-    }
-    if (activeBenefit === undefined) return;
-
-    // 필수 필드 체크
-
-    // 임시저장, 제출 API
-    const today = new Date().setHours(0, 0, 0, 0);
-    const startDay = activeBenefit.startDate.setHours(0, 0, 0, 0);
-    const endDay = activeBenefit.endDate.setHours(0, 0, 0, 0);
-    if (startDay < today) {
-      toast.error(`시작일이 오늘보다 빠릅니다`);
-      return;
-    } else if (endDay < today) {
-      toast.error(`종료일이 오늘보다 빠릅니다`);
-      return;
-    } else if (startDay >= endDay) {
-      toast.error('시작일이 종료일보다 늦거나 같습니다');
-      return;
-    }
-
-    const request = convertBenefitResToReq(activeBenefit);
-
-    if (modalType === 'submit') {
-      if (
-        !activeBenefit.title ||
-        !activeBenefit.title.trim() ||
-        activeBenefit.discountRate === 0 ||
-        !activeBenefit.targetProduct ||
-        !activeBenefit.targetProduct.trim() ||
-        activeBenefit.amount <= 0 ||
-        !activeBenefit.targetMember ||
-        !activeBenefit.targetMember.trim()
-      ) {
-        toast.error('모든 필드를 정확히 입력해주세요');
-        return;
-      }
-
-      if (startDay > today) request.status = 'BEFORE';
-      else request.status = 'ONGOING';
-
-      console.log(`request: ${request}`);
-      success = await submitBenefit(activeBenefitId, request);
-
-      if (!success) return;
-
-      setBenefitList((prev) =>
-        prev.map((benefit) =>
-          benefit.benefitId === activeBenefitId ? { ...benefit, status: request.status } : benefit,
-        ),
-      );
-    } else {
-      console.log(`request: ${request}`);
-      success = await patchBenefit(activeBenefitId, request);
-      if (!success) return;
-    }
-
-    setModalType(null);
   };
 
   const handleLoadNext = async () => {
@@ -306,7 +188,6 @@ const SponsorPrompt = () => {
             setActiveBenefitId(id);
             setIsPopoverOpen(false); // 👉 혜택 변경 시 팝오버 닫기
           }}
-          onAdd={handleAddBenefit} // ✅ 신규 혜택 추가
         />
         <PromptWrapper>
           <Prompt
@@ -323,18 +204,8 @@ const SponsorPrompt = () => {
               (console.log('🧩 팝오버에 전달될 데이터:', convertBenefitResToForm(activeBenefit)),
               (
                 <BenefitPopover
-                  status={activeBenefit.status}
                   data={convertBenefitResToForm(activeBenefit)}
                   handleData={handleBenefitDataChange}
-                  setModalType={setModalType}
-                  onClickSave={handleReqBtn}
-                  ModalSlot={
-                    modalType === 'submit' ? (
-                      <SubmitModal onCancel={() => setModalType(null)} onConfirm={handleReqBtn} />
-                    ) : modalType === 'delete' ? (
-                      <DeleteModal onCancel={() => setModalType(null)} onConfirm={handleReqBtn} />
-                    ) : null
-                  }
                 />
               ))
             }

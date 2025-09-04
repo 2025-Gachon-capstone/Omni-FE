@@ -102,7 +102,7 @@ export const Prompt = ({
             value={input}
             onChange={onInputChange}
             onKeyDown={onKeyDown}
-            placeholder="작성중인 혜택에 대해 질문해보세요"
+            placeholder="협찬 상품의 유사 상품에 대해 질문해보세요"
             rows={1}
           />
           <SendButton onClick={onSend}>
